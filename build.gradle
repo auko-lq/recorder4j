@@ -2,7 +2,7 @@ plugins {
     id 'java'
 }
 
-group 'org.example'
+group 'com.aukocharlie'
 version '1.0-SNAPSHOT'
 
 repositories {
@@ -11,6 +11,11 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
+    // https://mvnrepository.com/artifact/org.projectlombok/lombok
+    compile group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
+    annotationProcessor 'org.projectlombok:lombok:1.18.12'
+    // JDI
+    compile files("${System.getProperty('java.home')}/../lib/tools.jar")
 }
 
 
@@ -20,4 +25,13 @@ jar {
                 "Implementation-Version": version,
                 "Main-Class": "com.aukocharlie.recorder4j.Recorder")
     }
+}
+
+compileTestJava {
+    // Show parameter names
+    options.compilerArgs << "-parameters"
+}
+
+test {
+    workingDir = "${project.buildDir}/classes/java/test"
 }
