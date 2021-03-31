@@ -1,5 +1,7 @@
 package com.aukocharlie.recorder4j.target;
 
+import lombok.Getter;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,8 +20,8 @@ public class TargetManager {
     private List<Method> recordMethods = new ArrayList<>();
     private List<Field> recordFields = new ArrayList<>();
 
-    // TODO: exclude
-//    private List<Class<?>> excludeClasses = new ArrayList<>();
+    @Getter
+    private String[] excludeClasses = {"java.*", "javax.*", "sun.*", "com.sun.*", "jdk.internal.*"};
 
 
     public void scanPackage(String[] packages) {

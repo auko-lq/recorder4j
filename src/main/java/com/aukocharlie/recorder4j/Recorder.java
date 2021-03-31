@@ -5,14 +5,12 @@ import com.aukocharlie.recorder4j.exception.BadLaunchingConnectorException;
 import com.aukocharlie.recorder4j.exception.MissingLaunchingConnectorException;
 import com.aukocharlie.recorder4j.launch.EventRegistrar;
 import com.aukocharlie.recorder4j.launch.Launcher;
-import com.aukocharlie.recorder4j.launch.VMWrapper;
+import com.aukocharlie.recorder4j.launch.Context;
 import com.aukocharlie.recorder4j.result.EventHandler;
 import com.aukocharlie.recorder4j.result.StreamRedirectManager;
 import com.aukocharlie.recorder4j.target.TargetManager;
-import com.sun.jdi.VirtualMachine;
 import com.sun.jdi.connect.IllegalConnectorArgumentsException;
 import com.sun.jdi.connect.VMStartException;
-import com.sun.jdi.request.ClassPrepareRequest;
 
 import java.io.IOException;
 import java.lang.reflect.*;
@@ -47,12 +45,10 @@ public class Recorder {
         }
 
         try {
-            VMWrapper vm = launcher.launch();
-            EventRegistrar registrar = new EventRegistrar(vm, targetManager);
-            registrar.InitialRegister();
-            ClassPrepareRequest request = vm.getVm().eventRequestManager().createClassPrepareRequest();
-            request.addClassFilter(vm.getMainClass());
-            request.enable();
+            Context context = launcher.launch();
+            Runtime.getRuntime().addShutdownHook(new Thread(context::shutdown));
+
+            EventRegistrar registrar = new EventRegistrar(context, targetManager);
             EventHandler eventHandler = new EventHandler(registrar);
             eventHandler.start();
             eventHandler.join();
@@ -132,7 +128,7 @@ public class Recorder {
             return this;
         }
 
-        public Builder transferArgs(String[] args) {
+        public Builder mainArgs(String[] args) {
             launcher.setMainArgs(args);
             return this;
         }

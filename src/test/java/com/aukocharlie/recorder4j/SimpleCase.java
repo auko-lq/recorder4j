@@ -8,14 +8,28 @@ import com.aukocharlie.recorder4j.annotation.Target;
  */
 public class SimpleCase {
 
-    private static int y = 0;
+    private static int y;
+
+    private int k;
+
+    public SimpleCase() {
+        y = 0;
+        k = 0;
+    }
 
     @Target
     public static void main(String[] args) {
-        int i = 1;
-        while (i < 20 && y < 20) {
+        SimpleCase simple = new SimpleCase();
+        System.out.println(simple.test(0));
+    }
+
+    public String test(int i) {
+        while (i < 10) {
             i++;
             y++;
+            k++;
         }
+        String str = "res: ";
+        return str + (i + y + k);
     }
 }

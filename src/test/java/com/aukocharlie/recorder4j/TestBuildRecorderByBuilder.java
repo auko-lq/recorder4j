@@ -13,4 +13,16 @@ public class TestBuildRecorderByBuilder {
         recorder.run();
     }
 
+    @Test
+    public void testTwoClasses() {
+        Recorder recorder = Recorder.builder().main(TwoClassesCase.class).build();
+        recorder.run();
+    }
+
+    @Test
+    public void testThreadCase() throws InterruptedException {
+        Recorder recorder = Recorder.builder().main(ThreadCase.class).mainArgs(new String[]{"123"}).build();
+        recorder.run();
+    }
+
 }

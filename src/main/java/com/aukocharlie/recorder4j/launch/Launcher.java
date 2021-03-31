@@ -8,7 +8,6 @@ import com.sun.jdi.connect.Connector;
 import com.sun.jdi.connect.IllegalConnectorArgumentsException;
 import com.sun.jdi.connect.LaunchingConnector;
 import com.sun.jdi.connect.VMStartException;
-import lombok.Getter;
 import lombok.Setter;
 
 import java.io.IOException;
@@ -33,21 +32,23 @@ public class Launcher {
     private static final String COMMAND_LINE_LAUNCH = "com.sun.jdi.CommandLineLaunch";
 
 
-    public VMWrapper launch() throws MissingLaunchingConnectorException, VMStartException, IllegalConnectorArgumentsException, IOException, BadLaunchingConnectorException {
+    public Context launch() throws MissingLaunchingConnectorException, VMStartException, IllegalConnectorArgumentsException, IOException, BadLaunchingConnectorException {
         LaunchingConnector launchingConnector = findLaunchingConnector();
         VirtualMachine vm = launchingConnector.launch(setArguments(launchingConnector));
-        return new VMWrapper(mainClassName, mainArgs, options, vm);
+        Context context = new Context(mainClassName, mainArgs, options, vm);
+        context.setConnected(true);
+        context.setDead(false);
+        return context;
     }
 
     private LaunchingConnector findLaunchingConnector() throws MissingLaunchingConnectorException {
-        return Bootstrap.virtualMachineManager().defaultConnector();
-//        List<Connector> connectors = Bootstrap.virtualMachineManager().allConnectors();
-//        for (Connector connector : connectors) {
-//            if (connector.name().equals(COMMAND_LINE_LAUNCH)) {
-//                return (LaunchingConnector) connector;
-//            }
-//        }
-//        throw new MissingLaunchingConnectorException("Can't find the specified launching connector: " + COMMAND_LINE_LAUNCH);
+        List<Connector> connectors = Bootstrap.virtualMachineManager().allConnectors();
+        for (Connector connector : connectors) {
+            if (connector.name().equals(COMMAND_LINE_LAUNCH)) {
+                return (LaunchingConnector) connector;
+            }
+        }
+        throw new MissingLaunchingConnectorException("Can't find the specified launching connector: " + COMMAND_LINE_LAUNCH);
     }
 
     private Map<String, Connector.Argument> setArguments(LaunchingConnector connector) throws BadLaunchingConnectorException {
