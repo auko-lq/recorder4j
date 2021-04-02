@@ -1,13 +1,14 @@
 package com.aukocharlie.recorder4j.result;
 
 import com.aukocharlie.recorder4j.constant.CommonConstants;
+import com.aukocharlie.recorder4j.launch.Context;
 import com.aukocharlie.recorder4j.launch.EventRegistrar;
 import com.sun.jdi.*;
 import com.sun.jdi.event.*;
 
+import java.io.OutputStream;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author auko
@@ -19,11 +20,13 @@ public class ThreadTrace {
 
     private final ThreadReference thread;
 
+    private OutputManager outputManager;
+
     private int indent = 0;
 
     private EventRegistrar registrar;
 
-    private Map<ObjectReference, Map<LocalVariable, Value>> varValuesInFrame = new HashMap<>();
+    private Map<Method, Map<LocalVariable, Value>> varValuesInMethod = new HashMap<>();
 
     private Map<Field, Value> staticFieldVlaues = new HashMap<>();
 
@@ -31,52 +34,57 @@ public class ThreadTrace {
 
     private boolean staticOrAttrModified = false;
 
-    public ThreadTrace(ThreadReference thread, EventRegistrar registrar) {
+    public ThreadTrace(ThreadReference thread, EventRegistrar registrar, OutputManager outputManager) {
         this.thread = thread;
         this.registrar = registrar;
+        this.outputManager = outputManager;
     }
 
     public void handleMethodEntryEvent(MethodEntryEvent event) {
         Location methodLocation = event.location();
-        println("\"thread=%s\", METHOD_ENTRY: %s", event.thread().name(), OutputUtils.locationToString(methodLocation));
+        println("METHOD_ENTRY: line: %d  \"thread=%s\", %s", event.location().lineNumber(), event.thread().name(), OutputManager.locationToString(methodLocation));
         indent += 4;
     }
 
     public void handleMethodExitEvent(MethodExitEvent event) {
         Location location = event.location();
         indent -= 4;
-        println("\"thread=%s\", METHOD_EXIT: %s, return=%s", event.thread().name(), OutputUtils.locationToString(location), event.returnValue());
+        println("METHOD_EXIT: \"thread=%s\", %s, return=%s", event.thread().name(), OutputManager.locationToString(location), event.returnValue());
     }
 
     /**
-     * TODO: concurrent and array value displaying
+     * TODO: array value displaying
      *
      * @param event
      */
     public void handleBreakpointEvent(BreakpointEvent event) {
+//        Thread.yield();
+//        println("breakpoint: " + event.location().lineNumber());
         try {
             StackFrame topFrame = event.thread().frame(0);
-            if (topFrame.visibleVariables().size() <= 0) {
+//            System.out.println(topFrame);
+            if (topFrame.visibleVariables().size() <= 0 && !staticOrAttrModified) {
+                // Nothing has modified
                 return;
             }
 
-            Map<LocalVariable, Value> varValues = Optional.ofNullable(varValuesInFrame.get(topFrame.thisObject()))
+            Map<LocalVariable, Value> varValues = Optional.ofNullable(varValuesInMethod.get(topFrame.location().method()))
                     .orElse(new HashMap<>(topFrame.visibleVariables().size()));
 
             boolean modified = false;
             for (LocalVariable var : topFrame.visibleVariables()) {
+//                println("LOG: line: %d, old: %s(%s), new = %s", event.location().lineNumber(), varValues.get(var), varValues.toString(), topFrame.getValue(var));
                 if (!varValues.containsKey(var) || !topFrame.getValue(var).equals(varValues.get(var))) {
-//                    println("old: %s(%s), new = %s", varValues.get(var), varValues.toString(), topFrame.getValue(var));
                     modified = true;
                     break;
                 }
             }
+//            System.out.printf("%d, %s, %s\n", event.location().lineNumber(), modified, staticOrAttrModified);
             if (modified || staticOrAttrModified) {
                 // Display modified-field's value
                 List<String> kvString = new ArrayList<>();
                 StringBuilder sb = new StringBuilder();
-                sb.append(indentString())
-                        .append("line: ")
+                sb.append("FIELD_MODIFIED: line: ")
                         .append(event.location().lineNumber())
                         .append("   ");
 
@@ -101,17 +109,21 @@ public class ThreadTrace {
                     kvString.add(String.format("%s = %s", var.name(), topFrame.getValue(var)));
                     varValues.put(var, topFrame.getValue(var));
                 }
-                varValuesInFrame.put(topFrame.thisObject(), varValues);
+                varValuesInMethod.put(topFrame.location().method(), varValues);
                 sb.append(String.join(", ", kvString));
 
                 println(sb.toString());
                 staticOrAttrModified = false;
             }
         } catch (IncompatibleThreadStateException e) {
+//            println("Exception: " + e);
 //            e.printStackTrace();
         } catch (AbsentInformationException e) {
+//            println("Exception: " + e);
 //            e.printStackTrace();
         } catch (IndexOutOfBoundsException e) {
+//            println("Exception: " + e);
+//            e.printStackTrace();
 
         }
     }
@@ -120,7 +132,7 @@ public class ThreadTrace {
         Field field = event.field();
         Value value = event.valueToBe();
         Location location = event.location();
-//        println("\"thread=%s\", MODIFICATION: %s %s = %s , %s", event.thread().name(), field.typeName(), field.name(), value, OutputUtils.locationToSimplifiedString(location));
+//        println("FIELD_MODIFIED(static): line: %d, \"thread=%s\", %s %s = %s , %s", event.location().lineNumber(), event.thread().name(), field.typeName(), field.name(), value, OutputManager.locationToSimplifiedString(location));
         if (field.isStatic()) {
             staticFieldVlaues.put(field, value);
         } else {
@@ -137,21 +149,17 @@ public class ThreadTrace {
 
     }
 
-    public static ThreadTrace currentThread(ThreadReference thread, EventRegistrar registrar) {
+    public static ThreadTrace currentThread(ThreadReference thread, EventRegistrar registrar, OutputManager outputManager) {
         if (!threads.containsKey(thread)) {
-            threads.put(thread, new ThreadTrace(thread, registrar));
+            threads.put(thread, new ThreadTrace(thread, registrar, outputManager));
         }
         return threads.get(thread);
     }
 
     private void println(String format, Object... args) {
-        System.out.print(indentString());
-        System.out.printf(format, args);
-        System.out.print("\n");
-    }
-
-    private void print(String format, Object... args) {
-        System.out.printf(format, args);
+        outputManager.print(indentString());
+        outputManager.printf(format, args);
+        outputManager.print("\n");
     }
 
     private String indentString() {

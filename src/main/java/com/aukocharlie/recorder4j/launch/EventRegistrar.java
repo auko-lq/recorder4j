@@ -87,7 +87,7 @@ public class EventRegistrar {
         request.enable();
     }
 
-    public synchronized void enableModificationWatchpointEvent(List<Field> fields) {
+    public void enableModificationWatchpointEvent(List<Field> fields) {
         EventRequestManager manager = context.getVm().eventRequestManager();
         for (Field field : fields) {
             if (enabledFields.contains(field)) {
@@ -97,7 +97,8 @@ public class EventRegistrar {
             for (String exclusion : targetManager.getExcludeClasses()) {
                 request.addClassExclusionFilter(exclusion);
             }
-            request.setSuspendPolicy(EventRequest.SUSPEND_NONE);
+            // Must be SUSPEND_ALL, otherwise the field's value will be messed up
+            request.setSuspendPolicy(EventRequest.SUSPEND_ALL);
             request.enable();
             enabledFields.add(field);
         }
@@ -128,6 +129,7 @@ public class EventRegistrar {
 
     public void enableBreakpointRequest(Location location) {
         BreakpointRequest request = context.getVm().eventRequestManager().createBreakpointRequest(location);
+        request.setSuspendPolicy(EventRequest.SUSPEND_ALL);
         request.enable();
     }
 

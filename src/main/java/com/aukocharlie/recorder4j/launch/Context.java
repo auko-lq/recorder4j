@@ -1,5 +1,6 @@
 package com.aukocharlie.recorder4j.launch;
 
+import com.aukocharlie.recorder4j.result.OutputManager;
 import com.sun.jdi.VMDisconnectedException;
 import com.sun.jdi.VirtualMachine;
 import lombok.Getter;
@@ -21,6 +22,8 @@ public class Context {
     private VirtualMachine vm;
 
     private Process process;
+
+    private OutputManager outputManager;
 
     @Setter
     private boolean connected = true;
@@ -55,6 +58,10 @@ public class Context {
                 this.process = null;
             }
         }
+    }
+
+    public void addOutputManager(OutputManager manager) {
+        this.outputManager = manager;
     }
 
 }

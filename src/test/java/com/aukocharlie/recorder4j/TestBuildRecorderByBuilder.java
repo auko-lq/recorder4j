@@ -9,7 +9,12 @@ import org.junit.Test;
 public class TestBuildRecorderByBuilder {
     @Test
     public void test() throws NoSuchFieldException {
-        Recorder recorder = Recorder.builder().addRecordClass(SimpleCase.class).addRecordField(SimpleCase.class.getDeclaredField("y")).main(SimpleCase.class).build();
+        Recorder recorder = Recorder.builder()
+                .addRecordClass(SimpleCase.class)
+                .addRecordField(SimpleCase.class.getDeclaredField("y"))
+                .main(SimpleCase.class)
+                .outPutReplace("com.aukocharlie.recorder4j.", "")
+                .outPutReplace("java.lang.String", "String").build();
         recorder.run();
     }
 

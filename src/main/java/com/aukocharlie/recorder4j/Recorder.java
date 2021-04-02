@@ -7,13 +7,14 @@ import com.aukocharlie.recorder4j.launch.EventRegistrar;
 import com.aukocharlie.recorder4j.launch.Launcher;
 import com.aukocharlie.recorder4j.launch.Context;
 import com.aukocharlie.recorder4j.result.EventHandler;
-import com.aukocharlie.recorder4j.result.StreamRedirectManager;
+import com.aukocharlie.recorder4j.result.OutputManager;
 import com.aukocharlie.recorder4j.target.TargetManager;
 import com.sun.jdi.connect.IllegalConnectorArgumentsException;
 import com.sun.jdi.connect.VMStartException;
 
 import java.io.IOException;
 import java.lang.reflect.*;
+import java.util.regex.Pattern;
 
 /**
  * @author auko
@@ -22,7 +23,7 @@ import java.lang.reflect.*;
 public class Recorder {
 
     private TargetManager targetManager;
-    private StreamRedirectManager streamRedirectManager;
+    private OutputManager outputManager;
     private Launcher launcher;
 
     private Recorder() {
@@ -30,7 +31,7 @@ public class Recorder {
 
     private Recorder(Builder builder) {
         this.targetManager = builder.targetManager;
-        this.streamRedirectManager = builder.streamRedirectManager;
+        this.outputManager = builder.outputManager;
         this.launcher = builder.launcher;
         this.targetManager.checkTarget();
     }
@@ -46,6 +47,7 @@ public class Recorder {
 
         try {
             Context context = launcher.launch();
+            context.addOutputManager(outputManager);
             Runtime.getRuntime().addShutdownHook(new Thread(context::shutdown));
 
             EventRegistrar registrar = new EventRegistrar(context, targetManager);
@@ -68,9 +70,9 @@ public class Recorder {
     }
 
     protected static class Builder {
-        TargetManager targetManager = new TargetManager();
-        StreamRedirectManager streamRedirectManager = new StreamRedirectManager();
-        Launcher launcher = new Launcher();
+        private TargetManager targetManager = new TargetManager();
+        private OutputManager outputManager = new OutputManager();
+        private Launcher launcher = new Launcher();
 
         /**
          * Scan the specified package to obtain annotation information
@@ -118,11 +120,6 @@ public class Recorder {
             return this;
         }
 
-        public Builder setToConsole(boolean toConsole) {
-            streamRedirectManager.setToConsole(toConsole);
-            return this;
-        }
-
         public Builder main(Class<?> mainClass) {
             launcher.setMainClassName(mainClass.getName());
             return this;
@@ -130,6 +127,11 @@ public class Recorder {
 
         public Builder mainArgs(String[] args) {
             launcher.setMainArgs(args);
+            return this;
+        }
+
+        public Builder outPutReplace(String reg, String replacement) {
+            outputManager.addReplacePattern(Pattern.compile(reg), replacement);
             return this;
         }
 

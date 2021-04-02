@@ -6,7 +6,6 @@ import com.aukocharlie.recorder4j.launch.Context;
 import com.aukocharlie.recorder4j.target.TargetManager;
 import com.sun.jdi.*;
 import com.sun.jdi.event.*;
-import com.sun.jdi.request.BreakpointRequest;
 
 import java.util.Map;
 
@@ -98,7 +97,7 @@ public class EventHandler extends Thread {
     }
 
     public void handleModificationWatchpointEvent(ModificationWatchpointEvent event) {
-        ThreadTrace.currentThread(event.thread(), registrar).handleModificationWatchpointEvent(event);
+        ThreadTrace.currentThread(event.thread(), registrar, context.getOutputManager()).handleModificationWatchpointEvent(event);
     }
 
     public void handleExceptionEvent(ExceptionEvent event) {
@@ -106,30 +105,29 @@ public class EventHandler extends Thread {
             if (event.catchLocation() == null) {
                 System.out.printf("Exception occurred: %s (uncaught)%n", event.exception().referenceType().name());
             } else {
-                System.out.printf("Exception occurred: %s (to be caught at: %s)%n", event.exception().referenceType().name(), OutputUtils.locationToString(event.catchLocation()));
+                System.out.printf("Exception occurred: %s (to be caught at: %s)%n", event.exception().referenceType().name(), OutputManager.locationToString(event.catchLocation()));
             }
         }
-//        registrar.enableStepRequestForCatchingException(event.thread());
     }
 
     public void handleMethodEntryEvent(MethodEntryEvent event) throws AbsentInformationException {
-        ThreadTrace.currentThread(event.thread(), registrar).handleMethodEntryEvent(event);
+        ThreadTrace.currentThread(event.thread(), registrar, context.getOutputManager()).handleMethodEntryEvent(event);
     }
 
     public void handleMethodExitEvent(MethodExitEvent event) {
-        ThreadTrace.currentThread(event.thread(), registrar).handleMethodExitEvent(event);
+        ThreadTrace.currentThread(event.thread(), registrar, context.getOutputManager()).handleMethodExitEvent(event);
     }
 
     public void handleBreakpointEvent(BreakpointEvent event) {
-        ThreadTrace.currentThread(event.thread(), registrar).handleBreakpointEvent(event);
+        ThreadTrace.currentThread(event.thread(), registrar, context.getOutputManager()).handleBreakpointEvent(event);
     }
 
     public void handleThreadStartEvent(ThreadStartEvent event) {
-        ThreadTrace.currentThread(event.thread(), registrar).handleThreadStartEvent(event);
+        ThreadTrace.currentThread(event.thread(), registrar, context.getOutputManager()).handleThreadStartEvent(event);
     }
 
     public void handleThreadDeathEvent(ThreadDeathEvent event) {
-        ThreadTrace.currentThread(event.thread(), registrar).handleThreadDeathEvent(event);
+        ThreadTrace.currentThread(event.thread(), registrar, context.getOutputManager()).handleThreadDeathEvent(event);
     }
 
     public void handleStepEvent(StepEvent event) {
