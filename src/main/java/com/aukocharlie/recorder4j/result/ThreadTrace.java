@@ -1,12 +1,11 @@
 package com.aukocharlie.recorder4j.result;
 
 import com.aukocharlie.recorder4j.constant.CommonConstants;
-import com.aukocharlie.recorder4j.launch.Context;
+import com.aukocharlie.recorder4j.constant.ThreadConstants;
 import com.aukocharlie.recorder4j.launch.EventRegistrar;
 import com.sun.jdi.*;
 import com.sun.jdi.event.*;
 
-import java.io.OutputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -41,15 +40,22 @@ public class ThreadTrace {
     }
 
     public void handleMethodEntryEvent(MethodEntryEvent event) {
-        Location methodLocation = event.location();
-        println("METHOD_ENTRY: line: %d  \"thread=%s\", %s", event.location().lineNumber(), event.thread().name(), OutputManager.locationToString(methodLocation));
+        ThreadReference threadReference = event.thread();
+        try {
+            // Show the location of caller
+            StackFrame callerFrame = threadReference.frame(threadReference.frameCount() > 1 ? 1 : 0);
+            Location callerLocation = callerFrame.location();
+            println("METHOD_ENTRY: line: %d  \"thread=%s\", %s, %s", callerLocation.lineNumber(), event.thread().name(), FormatUtils.methodEntryToString(event), FormatUtils.locationToSimplifiedString(callerLocation));
+        } catch (IncompatibleThreadStateException e) {
+            e.printStackTrace();
+        }
         indent += 4;
     }
 
     public void handleMethodExitEvent(MethodExitEvent event) {
         Location location = event.location();
         indent -= 4;
-        println("METHOD_EXIT: \"thread=%s\", %s, return=%s", event.thread().name(), OutputManager.locationToString(location), event.returnValue());
+        println("METHOD_EXIT: \"thread=%s\", %s, return=%s", event.thread().name(), FormatUtils.locationToString(location), event.returnValue());
     }
 
     /**
@@ -61,7 +67,7 @@ public class ThreadTrace {
 //        Thread.yield();
 //        println("breakpoint: " + event.location().lineNumber());
         try {
-            StackFrame topFrame = event.thread().frame(0);
+            StackFrame topFrame = event.thread().frame(ThreadConstants.TOP_FRAME);
 //            System.out.println(topFrame);
             if (topFrame.visibleVariables().size() <= 0 && !staticOrAttrModified) {
                 // Nothing has modified
@@ -98,7 +104,7 @@ public class ThreadTrace {
 
                 sb.append("attr: ");
                 List<String> attrFieldString = attributeValues.entrySet().stream()
-                        .map((entry) -> String.format(CommonConstants.KV_FORMAT, entry.getKey(), entry.getValue()))
+                        .map((entry) -> String.format(CommonConstants.KV_FORMAT, entry.getKey().name(), entry.getValue()))
                         .collect(Collectors.toList());
                 sb.append(String.join(", ", attrFieldString));
 

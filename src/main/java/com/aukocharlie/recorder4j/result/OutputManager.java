@@ -1,5 +1,6 @@
 package com.aukocharlie.recorder4j.result;
 
+import com.sun.jdi.ClassNotLoadedException;
 import com.sun.jdi.Location;
 
 import java.io.PrintStream;
@@ -14,26 +15,13 @@ import java.util.regex.Pattern;
  */
 public class OutputManager {
 
-    // Output filtering, replacePattern and replacement ont-to-one correspondence
+    // Output filtering, replacePattern and replacement one-to-one correspondence
     private static final List<Pattern> replacePatterns = new ArrayList<>();
     private static final List<String> replacements = new ArrayList<>();
 
     // TODO: print to file
     private PrintStream writer = System.out;
 
-    static String locationToString(Location location) {
-        return String.format("%s.%s(), line=%d index=%d",
-                location.declaringType().name(),
-                location.method().name(),
-                location.lineNumber(),
-                location.codeIndex());
-    }
-
-    static String locationToSimplifiedString(Location location) {
-        return String.format("line=%d index=%d",
-                location.lineNumber(),
-                location.codeIndex());
-    }
 
     public void addReplacePattern(Pattern pattern, String replacement) {
         replacePatterns.add(pattern);
@@ -41,14 +29,14 @@ public class OutputManager {
     }
 
     public void print(String str) {
-        writer.print(stringReplace(str));
+        writer.print(replace(str));
     }
 
     public void printf(String format, Object... args) {
-        writer.print(stringReplace(String.format(format, args)));
+        writer.print(replace(String.format(format, args)));
     }
 
-    private String stringReplace(String str) {
+    private String replace(String str) {
         for (int i = 0; i < replacePatterns.size(); i++) {
             Pattern pattern = replacePatterns.get(i);
             Matcher matcher = pattern.matcher(str);

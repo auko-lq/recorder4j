@@ -2,6 +2,7 @@ package com.aukocharlie.recorder4j.launch;
 
 import com.aukocharlie.recorder4j.exception.BadLaunchingConnectorException;
 import com.aukocharlie.recorder4j.exception.MissingLaunchingConnectorException;
+import com.aukocharlie.recorder4j.exception.UnsupportVMOperationException;
 import com.sun.jdi.Bootstrap;
 import com.sun.jdi.VirtualMachine;
 import com.sun.jdi.connect.Connector;
@@ -32,16 +33,19 @@ public class Launcher {
     private static final String COMMAND_LINE_LAUNCH = "com.sun.jdi.CommandLineLaunch";
 
 
-    public Context launch() throws MissingLaunchingConnectorException, VMStartException, IllegalConnectorArgumentsException, IOException, BadLaunchingConnectorException {
+    public Context launch() throws VMStartException, IllegalConnectorArgumentsException, IOException, BadLaunchingConnectorException {
         LaunchingConnector launchingConnector = findLaunchingConnector();
         VirtualMachine vm = launchingConnector.launch(setArguments(launchingConnector));
+
+        checkVMOperations(vm);
+
         Context context = new Context(mainClassName, mainArgs, options, vm);
         context.setConnected(true);
         context.setDead(false);
         return context;
     }
 
-    private LaunchingConnector findLaunchingConnector() throws MissingLaunchingConnectorException {
+    private LaunchingConnector findLaunchingConnector() {
         List<Connector> connectors = Bootstrap.virtualMachineManager().allConnectors();
         for (Connector connector : connectors) {
             if (connector.name().equals(COMMAND_LINE_LAUNCH)) {
@@ -64,6 +68,19 @@ public class Launcher {
 
     public void addVMOption(String option) {
         this.options.addOption(option);
+    }
+
+    private void checkVMOperations(VirtualMachine vm) {
+        doAssert(vm.canGetInstanceInfo(), "Virtual machine does not support getting instance info");
+        doAssert(vm.canGetMethodReturnValues(), "Virtual machine does not support getting method return values");
+        doAssert(vm.canWatchFieldAccess(), "Virtual machine does not support watching field access");
+        doAssert(vm.canWatchFieldModification(), "Virtual machine does not support watching field modification");
+    }
+
+    private void doAssert(boolean condition, String message) {
+        if (!condition) {
+            throw new UnsupportVMOperationException(message);
+        }
     }
 
 }

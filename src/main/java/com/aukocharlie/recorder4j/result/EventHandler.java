@@ -42,12 +42,10 @@ public class EventHandler extends Thread {
         } catch (VMDisconnectedException e) {
 //            context.setConnected(false);
             System.out.println(" ==== VM disconnected ====");
-        } catch (UnknownEventException e) {
-            e.printStackTrace();
         }
     }
 
-    private void handleEvent(Event event) throws AbsentInformationException, UnknownEventException {
+    private void handleEvent(Event event) throws AbsentInformationException {
         if (event instanceof ClassPrepareEvent) {
             handleClassPrepareEvent((ClassPrepareEvent) event);
         } else if (event instanceof ExceptionEvent) {
@@ -84,10 +82,13 @@ public class EventHandler extends Thread {
 //            System.out.println(event.referenceType());
             registrar.enableModificationWatchpointEvent(event.referenceType().allFields());
             try {
+                System.out.println(event.referenceType());
+                System.out.println(event.referenceType().sourcePaths(""));
                 for (Location location : event.referenceType().allLineLocations()) {
                     registrar.enableBreakpointRequest(location);
                 }
             } catch (AbsentInformationException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -105,7 +106,7 @@ public class EventHandler extends Thread {
             if (event.catchLocation() == null) {
                 System.out.printf("Exception occurred: %s (uncaught)%n", event.exception().referenceType().name());
             } else {
-                System.out.printf("Exception occurred: %s (to be caught at: %s)%n", event.exception().referenceType().name(), OutputManager.locationToString(event.catchLocation()));
+                System.out.printf("Exception occurred: %s (to be caught at: %s)%n", event.exception().referenceType().name(), FormatUtils.locationToString(event.catchLocation()));
             }
         }
     }

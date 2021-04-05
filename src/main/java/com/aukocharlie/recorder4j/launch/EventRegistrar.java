@@ -60,7 +60,7 @@ public class EventRegistrar {
         for (String exclusion : targetManager.getExcludeClasses()) {
             request.addClassExclusionFilter(exclusion);
         }
-        request.setSuspendPolicy(EventRequest.SUSPEND_NONE);
+        request.setSuspendPolicy(EventRequest.SUSPEND_ALL);
         request.enable();
     }
 
@@ -69,7 +69,7 @@ public class EventRegistrar {
         for (String exclusion : targetManager.getExcludeClasses()) {
             request.addClassExclusionFilter(exclusion);
         }
-        request.setSuspendPolicy(EventRequest.SUSPEND_NONE);
+        request.setSuspendPolicy(EventRequest.SUSPEND_ALL);
         request.enable();
     }
 

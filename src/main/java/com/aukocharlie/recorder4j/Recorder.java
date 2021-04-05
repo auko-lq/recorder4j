@@ -2,6 +2,7 @@ package com.aukocharlie.recorder4j;
 
 
 import com.aukocharlie.recorder4j.exception.BadLaunchingConnectorException;
+import com.aukocharlie.recorder4j.exception.InvalidRecorderOptionException;
 import com.aukocharlie.recorder4j.exception.MissingLaunchingConnectorException;
 import com.aukocharlie.recorder4j.launch.EventRegistrar;
 import com.aukocharlie.recorder4j.launch.Launcher;
@@ -54,8 +55,6 @@ public class Recorder {
             EventHandler eventHandler = new EventHandler(registrar);
             eventHandler.start();
             eventHandler.join();
-        } catch (MissingLaunchingConnectorException e) {
-            e.printStackTrace();
         } catch (VMStartException e) {
             e.printStackTrace();
         } catch (IllegalConnectorArgumentsException e) {
@@ -70,67 +69,96 @@ public class Recorder {
     }
 
     protected static class Builder {
-        private TargetManager targetManager = new TargetManager();
-        private OutputManager outputManager = new OutputManager();
-        private Launcher launcher = new Launcher();
+        private final TargetManager targetManager = new TargetManager();
+        private final OutputManager outputManager = new OutputManager();
+        private final Launcher launcher = new Launcher();
 
         /**
          * Scan the specified package to obtain annotation information
          *
-         * @param target package name
+         * @param targetPackage package name
          * @return
          */
-        public Builder scanPackage(String target) {
-            targetManager.scanPackage(new String[]{target});
+        public Builder scanPackage(String targetPackage) {
+            if (targetPackage == null) {
+                throw new InvalidRecorderOptionException("`scanPackage` option is invalid: `targetPackage` can't not be null");
+            }
+            targetManager.scanPackage(new String[]{targetPackage});
             return this;
         }
 
-        public Builder scanPackage(String[] targets) {
-            targetManager.scanPackage(targets);
+        public Builder scanPackage(String[] targetPackages) {
+            if (targetPackages == null) {
+                throw new InvalidRecorderOptionException("`scanPackage` option is invalid: `targetPackages` can't not be null");
+            }
+            targetManager.scanPackage(targetPackages);
             return this;
         }
 
         public Builder addRecordClass(Class<?> clazz) {
-            targetManager.addRecordClass(clazz);
+            if (clazz != null) {
+                targetManager.addRecordClass(clazz);
+            }
             return this;
         }
 
         public Builder setRecordClasses(Class<?>[] classes) {
-            targetManager.setRecordClasses(classes);
+            if (classes != null) {
+                targetManager.setRecordClasses(classes);
+            }
             return this;
         }
 
         public Builder addRecordMethod(Method method) {
-            targetManager.addRecordMethod(method);
+            if (method != null) {
+                targetManager.addRecordMethod(method);
+            }
             return this;
         }
 
         public Builder setRecordMethods(Method[] methods) {
-            targetManager.setRecordMethods(methods);
+            if (methods != null) {
+                targetManager.setRecordMethods(methods);
+            }
             return this;
         }
 
         public Builder addRecordField(Field field) {
-            targetManager.addRecordField(field);
+            if (field != null) {
+                targetManager.addRecordField(field);
+            }
             return this;
         }
 
         public Builder setRecordFields(Field[] fields) {
-            targetManager.setRecordFields(fields);
+            if (fields != null) {
+                targetManager.setRecordFields(fields);
+            }
             return this;
         }
 
         public Builder main(Class<?> mainClass) {
+            if (mainClass == null) {
+                throw new InvalidRecorderOptionException("`main` option is invalid: `mainClass` must not be null");
+            }
             launcher.setMainClassName(mainClass.getName());
             return this;
         }
 
         public Builder mainArgs(String[] args) {
-            launcher.setMainArgs(args);
+            if (args != null) {
+                launcher.setMainArgs(args);
+            }
             return this;
         }
 
         public Builder outPutReplace(String reg, String replacement) {
+            if (reg == null) {
+                throw new InvalidRecorderOptionException("`outPutReplace` option is invalid: `reg` can't be null");
+            }
+            if (replacement == null) {
+                throw new InvalidRecorderOptionException("`outPutReplace` option is invalid: `replacement` can't be null");
+            }
             outputManager.addReplacePattern(Pattern.compile(reg), replacement);
             return this;
         }

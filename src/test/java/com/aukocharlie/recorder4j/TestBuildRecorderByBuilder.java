@@ -8,7 +8,7 @@ import org.junit.Test;
  */
 public class TestBuildRecorderByBuilder {
     @Test
-    public void test() throws NoSuchFieldException {
+    public void testSimpleCase() throws NoSuchFieldException {
         Recorder recorder = Recorder.builder()
                 .addRecordClass(SimpleCase.class)
                 .addRecordField(SimpleCase.class.getDeclaredField("y"))
@@ -20,7 +20,7 @@ public class TestBuildRecorderByBuilder {
 
     @Test
     public void testTwoClasses() {
-        Recorder recorder = Recorder.builder().main(TwoClassesCase.class).build();
+        Recorder recorder = Recorder.builder().main(TwoClassesCase.class).outPutReplace("com.aukocharlie.recorder4j.", "").build();
         recorder.run();
     }
 
