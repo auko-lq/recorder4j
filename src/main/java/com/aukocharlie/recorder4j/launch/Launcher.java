@@ -37,6 +37,7 @@ public class Launcher {
         LaunchingConnector launchingConnector = findLaunchingConnector();
         VirtualMachine vm = launchingConnector.launch(setArguments(launchingConnector));
 
+        vm.setDebugTraceMode(VirtualMachine.TRACE_NONE);
         checkVMOperations(vm);
 
         Context context = new Context(mainClassName, mainArgs, options, vm);
@@ -57,15 +58,21 @@ public class Launcher {
 
     private Map<String, Connector.Argument> setArguments(LaunchingConnector connector) throws BadLaunchingConnectorException {
         Map<String, Connector.Argument> arguments = connector.defaultArguments();
-        Optional.of(arguments.get("main"))
+        Optional.ofNullable(arguments.get("main"))
                 .orElseThrow(() -> new BadLaunchingConnectorException("Can't get `main` argument from launching connector"))
                 .setValue(String.format("%s %s", mainClassName, String.join(" ", mainArgs)));
-        Optional.of(arguments.get("options"))
+        Optional.ofNullable(arguments.get("options"))
                 .orElseThrow(() -> new BadLaunchingConnectorException("Can't get `options` argument from launching connector"))
                 .setValue(options.toString());
+        Optional.ofNullable(arguments.get("quote"))
+                .orElseThrow(() -> new BadLaunchingConnectorException("Can't get `quote` argument from launching connector"))
+                .setValue("\"");
         return arguments;
     }
 
+    /**
+     * Notes: quotes must be double quotes
+     */
     public void addVMOption(String option) {
         this.options.addOption(option);
     }

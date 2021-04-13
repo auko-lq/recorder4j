@@ -14,15 +14,21 @@ import com.sun.tools.javac.tree.TreeInfo;
  */
 public class SourcePosition {
 
-    String source;
+    protected String source;
 
-    Position startPosition;
-    Position endPosition;
+    protected Position startPosition;
+    protected Position endPosition;
+
+    private static final SourcePosition UNKNOWN_POSITION = new SourcePosition(Position.unknownPosition(), Position.unknownPosition(), "");
 
     protected SourcePosition(Position startPosition, Position endPosition, String source) {
         this.startPosition = startPosition;
         this.endPosition = endPosition;
         this.source = source;
+    }
+
+    public String getSource() {
+        return this.source;
     }
 
     public static SourcePosition getSourcePosition(CompilationUnitTree unitTree, Tree node, LineMap lineMap) {
@@ -40,6 +46,14 @@ public class SourcePosition {
         return new Position(lineMap.getLineNumber(position), lineMap.getColumnNumber(position), position);
     }
 
+    public static SourcePosition unknownPosition() {
+        return UNKNOWN_POSITION;
+    }
+
+    public boolean isUnknown() {
+        return this == UNKNOWN_POSITION;
+    }
+
 
     @Override
     public String toString() {
@@ -53,6 +67,8 @@ public class SourcePosition {
         long line;
         long col;
 
+        private static final Position UNKNOWN_POSITION = new Position(-1, -1, -1);
+
         public Position(long line, long col, long position) {
             this.line = line;
             this.col = col;
@@ -63,9 +79,17 @@ public class SourcePosition {
             this.position = (int) position;
         }
 
+        public static Position unknownPosition() {
+            return UNKNOWN_POSITION;
+        }
+
         public boolean behind(Position position) {
             return position.line < this.line ||
                     (position.line == this.line && position.col < this.col);
+        }
+
+        public boolean isUnknown() {
+            return this == UNKNOWN_POSITION;
         }
 
         @Override

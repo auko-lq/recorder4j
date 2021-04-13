@@ -28,11 +28,11 @@ public class SourceScanner extends TreeScanner<Void, Void> {
     Map<SourcePosition.Position, MethodInvocationPosition> methodInvocationPositionMap = new LinkedHashMap<>();
 
     /**
-     * example: call(paramMethod()).
-     * key: paramMethod's start position
+     * example: call(argMethod()).
+     * key: argMethod's start position
      * value: call's method invocation position
      */
-    Map<SourcePosition.Position, MethodInvocationPosition> methodInParamToCallerMap = new LinkedHashMap<>();
+    Map<SourcePosition.Position, MethodInvocationPosition> methodInArgToCallerMap = new LinkedHashMap<>();
 
     @Override
     public Void visitCompilationUnit(CompilationUnitTree node, Void v) {
@@ -63,27 +63,27 @@ public class SourceScanner extends TreeScanner<Void, Void> {
 
     private void parseMethodInvocationPosition(Tree node) {
         SourcePosition.Position startPosition = SourcePosition.getStartPosition(compilationUnitTree, node, lineMap);
-        if (methodInParamToCallerMap.containsKey(startPosition)) {
-            // this node is in the parameter list
-            List<MethodInvocationPosition> paramMethods = methodInParamToCallerMap.get(startPosition).getParamMethodPosition();
+        if (methodInArgToCallerMap.containsKey(startPosition)) {
+            // this node is in the argument list
+            List<MethodInvocationPosition> argMethods = methodInArgToCallerMap.get(startPosition).getArgMethodPosition();
             boolean positionMatched = false;
-            for (int i = 0; i < paramMethods.size(); i++) {
-                if (paramMethods.get(i).startPosition.equals(startPosition)) {
-                    MethodInvocationPosition newPosition = getMethodInvocationPositionWithParam(node);
-                    if (paramMethods.get(i).endPosition.behind(newPosition.endPosition)) {
+            for (int i = 0; i < argMethods.size(); i++) {
+                if (argMethods.get(i).startPosition.equals(startPosition)) {
+                    MethodInvocationPosition newPosition = getMethodInvocationPositionWithArg(node);
+                    if (argMethods.get(i).endPosition.behind(newPosition.endPosition)) {
                         // Linking method chaining
-                        newPosition.setNextMethod(paramMethods.get(i));
+                        newPosition.setNextMethod(argMethods.get(i));
                     }
-                    paramMethods.set(i, newPosition);
+                    argMethods.set(i, newPosition);
                     positionMatched = true;
                     break;
                 }
             }
             if (!positionMatched) {
-                throw new RecorderRuntimeException("No matching position was found in the parameter list");
+                throw new RecorderRuntimeException("No matching position was found in the argument list");
             }
         } else {
-            MethodInvocationPosition newPosition = getMethodInvocationPositionWithParam(node);
+            MethodInvocationPosition newPosition = getMethodInvocationPositionWithArg(node);
             // Linking method chaining
             newPosition.setNextMethod(methodInvocationPositionMap.get(startPosition));
             methodInvocationPositionMap.put(startPosition, newPosition);
@@ -92,24 +92,24 @@ public class SourceScanner extends TreeScanner<Void, Void> {
 
 
     /**
-     * Recursively get the method invocation position in the parameter list
+     * Recursively get the method invocation position in the argument list
      *
      * @return
      */
-    private MethodInvocationPosition getMethodInvocationPositionWithParam(Tree node) {
+    private MethodInvocationPosition getMethodInvocationPositionWithArg(Tree node) {
         MethodInvocationPosition res = new MethodInvocationPosition(SourcePosition.getSourcePosition(compilationUnitTree, node, lineMap));
         if (node instanceof NewClassTree) {
             for (ExpressionTree arg : ((NewClassTree) node).getArguments()) {
                 if (arg.getKind() == Tree.Kind.METHOD_INVOCATION || arg.getKind() == Tree.Kind.NEW_CLASS) {
-                    res.addParameterMethodPosition(this.getMethodInvocationPositionWithParam(arg));
-                    methodInParamToCallerMap.put(SourcePosition.getStartPosition(compilationUnitTree, arg, lineMap), res);
+                    res.addArgMethodPosition(this.getMethodInvocationPositionWithArg(arg));
+                    methodInArgToCallerMap.put(SourcePosition.getStartPosition(compilationUnitTree, arg, lineMap), res);
                 }
             }
         } else if (node instanceof MethodInvocationTree) {
             for (ExpressionTree arg : ((MethodInvocationTree) node).getArguments()) {
                 if (arg.getKind() == Tree.Kind.METHOD_INVOCATION || arg.getKind() == Tree.Kind.NEW_CLASS) {
-                    res.addParameterMethodPosition(this.getMethodInvocationPositionWithParam(arg));
-                    methodInParamToCallerMap.put(SourcePosition.getStartPosition(compilationUnitTree, arg, lineMap), res);
+                    res.addArgMethodPosition(this.getMethodInvocationPositionWithArg(arg));
+                    methodInArgToCallerMap.put(SourcePosition.getStartPosition(compilationUnitTree, arg, lineMap), res);
                 }
             }
         } else {
@@ -138,8 +138,8 @@ public class SourceScanner extends TreeScanner<Void, Void> {
         methodInvocation.startPosition = newStartPosition;
         methodInvocation.source = sourceCode.substring(newStartPosition.position, methodInvocation.endPosition.position);
 
-        for (MethodInvocationPosition paramMethod : methodInvocation.getParamMethodPosition()) {
-            adjustPositionCol(paramMethod, paramMethod.startPosition);
+        for (MethodInvocationPosition argMethod : methodInvocation.getArgMethodPosition()) {
+            adjustPositionCol(argMethod, argMethod.startPosition);
         }
 
         char[] sourceCodeChars = sourceCode.toCharArray();

@@ -10,21 +10,21 @@ import java.util.List;
 public class MethodInvocationPosition extends SourcePosition {
 
     // example: test.one(another())
-    private List<MethodInvocationPosition> methodInvocationPositionInParameters = new ArrayList<>();
+    private List<MethodInvocationPosition> methodInvocationPositionInArgs = new ArrayList<>();
 
-    // For method chaining
+    // For method chaining, example: test.one().another()
     private MethodInvocationPosition nextMethodInvocationInChain;
 
     public MethodInvocationPosition(SourcePosition sourcePosition) {
         super(sourcePosition.startPosition, sourcePosition.endPosition, sourcePosition.source);
     }
 
-    public void addParameterMethodPosition(MethodInvocationPosition position) {
-        methodInvocationPositionInParameters.add(position);
+    public void addArgMethodPosition(MethodInvocationPosition position) {
+        methodInvocationPositionInArgs.add(position);
     }
 
-    public List<MethodInvocationPosition> getParamMethodPosition() {
-        return this.methodInvocationPositionInParameters;
+    public List<MethodInvocationPosition> getArgMethodPosition() {
+        return this.methodInvocationPositionInArgs;
     }
 
     public void setNextMethod(MethodInvocationPosition nextMethod) {

@@ -1,5 +1,6 @@
 package com.aukocharlie.recorder4j.source;
 
+import com.aukocharlie.recorder4j.constant.CommonConstants;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.util.JavacTask;
 import com.sun.tools.javac.api.JavacTool;
@@ -14,7 +15,6 @@ import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author auko
@@ -35,7 +35,7 @@ public class TestSourceScanner {
         JavacFileManager fileManager = new JavacFileManager(context, true, Charset.defaultCharset());
         JavacTool javacTool = new JavacTool();
 
-        String[] path = new String[]{"E:\\project\\java\\recorder4j\\src\\test\\java\\com\\aukocharlie\\recorder4j\\ChainCase.java"};
+        String[] path = new String[]{CommonConstants.WORKING_DIR + "src\\test\\java\\com\\aukocharlie\\recorder4j\\ChainCase.java"};
         Iterable<? extends JavaFileObject> files = fileManager.getJavaFileObjects(path);
 
         JavaCompiler.CompilationTask compilationTask = javacTool.getTask(null, fileManager, null, null, null, files);
@@ -68,8 +68,8 @@ public class TestSourceScanner {
         if (position == null) {
             return;
         }
-        for (MethodInvocationPosition paramMethod : position.getParamMethodPosition()) {
-            toString(paramMethod);
+        for (MethodInvocationPosition argMethod : position.getArgMethodPosition()) {
+            toString(argMethod);
         }
         sb.append(position.source + ": " + position.toString() + "\n");
         if (position.nextMethod() != null) {

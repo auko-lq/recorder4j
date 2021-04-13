@@ -2,6 +2,7 @@ package com.aukocharlie.recorder4j.launch;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author auko
@@ -9,13 +10,7 @@ import java.util.List;
  */
 public class VMOptions {
 
-    private static final List<String> defaultOptions;
-
-    static {
-        defaultOptions = new ArrayList<>();
-        // -parameters
-//        defaultOptions.add("-parameters");
-    }
+    private static final List<String> defaultOptions = new ArrayList<>();
 
     private List<String> options = new ArrayList<>();
 
@@ -23,6 +18,7 @@ public class VMOptions {
         options.add(option);
     }
 
+    @Override
     public String toString() {
         options.addAll(defaultOptions);
         return String.join(" ", options);

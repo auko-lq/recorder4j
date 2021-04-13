@@ -1,20 +1,22 @@
 package com.aukocharlie.recorder4j;
 
 
+import com.aukocharlie.recorder4j.constant.CommonConstants;
 import com.aukocharlie.recorder4j.exception.BadLaunchingConnectorException;
-import com.aukocharlie.recorder4j.exception.InvalidRecorderOptionException;
-import com.aukocharlie.recorder4j.exception.MissingLaunchingConnectorException;
+import com.aukocharlie.recorder4j.exception.InvalidRecorderArgumentException;
 import com.aukocharlie.recorder4j.launch.EventRegistrar;
 import com.aukocharlie.recorder4j.launch.Launcher;
 import com.aukocharlie.recorder4j.launch.Context;
 import com.aukocharlie.recorder4j.result.EventHandler;
 import com.aukocharlie.recorder4j.result.OutputManager;
+import com.aukocharlie.recorder4j.source.SourceManager;
 import com.aukocharlie.recorder4j.target.TargetManager;
 import com.sun.jdi.connect.IllegalConnectorArgumentsException;
 import com.sun.jdi.connect.VMStartException;
 
 import java.io.IOException;
 import java.lang.reflect.*;
+import java.net.URL;
 import java.util.regex.Pattern;
 
 /**
@@ -25,6 +27,7 @@ public class Recorder {
 
     private TargetManager targetManager;
     private OutputManager outputManager;
+    private SourceManager sourceManager;
     private Launcher launcher;
 
     private Recorder() {
@@ -33,6 +36,7 @@ public class Recorder {
     private Recorder(Builder builder) {
         this.targetManager = builder.targetManager;
         this.outputManager = builder.outputManager;
+        this.sourceManager = builder.sourceManager;
         this.launcher = builder.launcher;
         this.targetManager.checkTarget();
     }
@@ -48,7 +52,8 @@ public class Recorder {
 
         try {
             Context context = launcher.launch();
-            context.addOutputManager(outputManager);
+            context.setOutputManager(outputManager);
+            context.setSourceManager(sourceManager);
             Runtime.getRuntime().addShutdownHook(new Thread(context::shutdown));
 
             EventRegistrar registrar = new EventRegistrar(context, targetManager);
@@ -71,6 +76,7 @@ public class Recorder {
     protected static class Builder {
         private final TargetManager targetManager = new TargetManager();
         private final OutputManager outputManager = new OutputManager();
+        private final SourceManager sourceManager = new SourceManager();
         private final Launcher launcher = new Launcher();
 
         /**
@@ -81,7 +87,7 @@ public class Recorder {
          */
         public Builder scanPackage(String targetPackage) {
             if (targetPackage == null) {
-                throw new InvalidRecorderOptionException("`scanPackage` option is invalid: `targetPackage` can't not be null");
+                throw new InvalidRecorderArgumentException("`scanPackage` argument is invalid: `targetPackage` can't not be null");
             }
             targetManager.scanPackage(new String[]{targetPackage});
             return this;
@@ -89,7 +95,7 @@ public class Recorder {
 
         public Builder scanPackage(String[] targetPackages) {
             if (targetPackages == null) {
-                throw new InvalidRecorderOptionException("`scanPackage` option is invalid: `targetPackages` can't not be null");
+                throw new InvalidRecorderArgumentException("`scanPackage` argument is invalid: `targetPackages` can't not be null");
             }
             targetManager.scanPackage(targetPackages);
             return this;
@@ -139,8 +145,10 @@ public class Recorder {
 
         public Builder main(Class<?> mainClass) {
             if (mainClass == null) {
-                throw new InvalidRecorderOptionException("`main` option is invalid: `mainClass` must not be null");
+                throw new InvalidRecorderArgumentException("`main` argument is invalid: `mainClass` must not be null");
             }
+            URL location = mainClass.getProtectionDomain().getCodeSource().getLocation();
+            launcher.addVMOption(String.format("-cp \"%s\"", location.getFile()));
             launcher.setMainClassName(mainClass.getName());
             return this;
         }
@@ -154,12 +162,28 @@ public class Recorder {
 
         public Builder outPutReplace(String reg, String replacement) {
             if (reg == null) {
-                throw new InvalidRecorderOptionException("`outPutReplace` option is invalid: `reg` can't be null");
+                throw new InvalidRecorderArgumentException("`outPutReplace` argument is invalid: `reg` can't be null");
             }
             if (replacement == null) {
-                throw new InvalidRecorderOptionException("`outPutReplace` option is invalid: `replacement` can't be null");
+                throw new InvalidRecorderArgumentException("`outPutReplace` argument is invalid: `replacement` can't be null");
             }
             outputManager.addReplacePattern(Pattern.compile(reg), replacement);
+            return this;
+        }
+
+        public Builder srcRelativeRootPath(String relativePath) {
+            if (relativePath == null) {
+                throw new InvalidRecorderArgumentException("`srcRelativeRootPath` argument is invalid: `relativePath` can't be null");
+            }
+            sourceManager.setSrcRoot(CommonConstants.WORKING_DIR + relativePath);
+            return this;
+        }
+
+        public Builder srcAbsoluteRootPath(String path) {
+            if (path == null) {
+                throw new InvalidRecorderArgumentException("`srcAbsoluteRootPath` argument is invalid: `path` can't be null");
+            }
+            sourceManager.setSrcRoot(path);
             return this;
         }
 

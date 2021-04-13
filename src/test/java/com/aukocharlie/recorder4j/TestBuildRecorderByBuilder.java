@@ -13,6 +13,7 @@ public class TestBuildRecorderByBuilder {
                 .addRecordClass(SimpleCase.class)
                 .addRecordField(SimpleCase.class.getDeclaredField("y"))
                 .main(SimpleCase.class)
+                .srcRelativeRootPath("src/test/java")
                 .outPutReplace("com.aukocharlie.recorder4j.", "")
                 .outPutReplace("java.lang.String", "String").build();
         recorder.run();

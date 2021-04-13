@@ -1,5 +1,6 @@
 package com.aukocharlie.recorder4j.result;
 
+import com.aukocharlie.recorder4j.exception.RecorderRuntimeException;
 import com.aukocharlie.recorder4j.exception.UnknownEventException;
 import com.aukocharlie.recorder4j.launch.EventRegistrar;
 import com.aukocharlie.recorder4j.launch.Context;
@@ -7,6 +8,7 @@ import com.aukocharlie.recorder4j.target.TargetManager;
 import com.sun.jdi.*;
 import com.sun.jdi.event.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -82,10 +84,15 @@ public class EventHandler extends Thread {
 //            System.out.println(event.referenceType());
             registrar.enableModificationWatchpointEvent(event.referenceType().allFields());
             try {
-                System.out.println(event.referenceType());
-                System.out.println(event.referenceType().sourcePaths(""));
-                for (Location location : event.referenceType().allLineLocations()) {
-                    registrar.enableBreakpointRequest(location);
+                List<String> sourcePaths = event.referenceType().sourcePaths("");
+                if (sourcePaths.size() > 0) {
+                    String srcRelativePath = sourcePaths.get(0);
+                    context.getSourceManager().parseSourceCode(srcRelativePath);
+                    for (Location location : event.referenceType().allLineLocations()) {
+                        registrar.enableBreakpointRequest(location);
+                    }
+                } else {
+                    throw new RecorderRuntimeException("Can't get sourcePath of class: " + event.referenceType().toString());
                 }
             } catch (AbsentInformationException e) {
                 e.printStackTrace();
@@ -98,7 +105,7 @@ public class EventHandler extends Thread {
     }
 
     public void handleModificationWatchpointEvent(ModificationWatchpointEvent event) {
-        ThreadTrace.currentThread(event.thread(), registrar, context.getOutputManager()).handleModificationWatchpointEvent(event);
+        ThreadTrace.currentThread(event.thread(), registrar, context).handleModificationWatchpointEvent(event);
     }
 
     public void handleExceptionEvent(ExceptionEvent event) {
@@ -111,24 +118,24 @@ public class EventHandler extends Thread {
         }
     }
 
-    public void handleMethodEntryEvent(MethodEntryEvent event) throws AbsentInformationException {
-        ThreadTrace.currentThread(event.thread(), registrar, context.getOutputManager()).handleMethodEntryEvent(event);
+    public void handleMethodEntryEvent(MethodEntryEvent event) {
+        ThreadTrace.currentThread(event.thread(), registrar, context).handleMethodEntryEvent(event);
     }
 
     public void handleMethodExitEvent(MethodExitEvent event) {
-        ThreadTrace.currentThread(event.thread(), registrar, context.getOutputManager()).handleMethodExitEvent(event);
+        ThreadTrace.currentThread(event.thread(), registrar, context).handleMethodExitEvent(event);
     }
 
     public void handleBreakpointEvent(BreakpointEvent event) {
-        ThreadTrace.currentThread(event.thread(), registrar, context.getOutputManager()).handleBreakpointEvent(event);
+        ThreadTrace.currentThread(event.thread(), registrar, context).handleBreakpointEvent(event);
     }
 
     public void handleThreadStartEvent(ThreadStartEvent event) {
-        ThreadTrace.currentThread(event.thread(), registrar, context.getOutputManager()).handleThreadStartEvent(event);
+        ThreadTrace.currentThread(event.thread(), registrar, context).handleThreadStartEvent(event);
     }
 
     public void handleThreadDeathEvent(ThreadDeathEvent event) {
-        ThreadTrace.currentThread(event.thread(), registrar, context.getOutputManager()).handleThreadDeathEvent(event);
+        ThreadTrace.currentThread(event.thread(), registrar, context).handleThreadDeathEvent(event);
     }
 
     public void handleStepEvent(StepEvent event) {

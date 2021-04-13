@@ -21,16 +21,11 @@ dependencies {
 jar {
     manifest {
         attributes("Implementation-Title": "Gradle",
-                "Implementation-Version": version,
-                "Main-Class": "com.aukocharlie.recorder4j.Recorder")
+                "Implementation-Version": version)
     }
 }
 
 compileTestJava {
     // Show parameter names
     options.compilerArgs << "-parameters"
-}
-
-test {
-    workingDir = "${project.buildDir}/classes/java/test"
 }

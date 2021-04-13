@@ -2,7 +2,9 @@ package com.aukocharlie.recorder4j.result;
 
 import com.aukocharlie.recorder4j.constant.CommonConstants;
 import com.aukocharlie.recorder4j.constant.ThreadConstants;
+import com.aukocharlie.recorder4j.launch.Context;
 import com.aukocharlie.recorder4j.launch.EventRegistrar;
+import com.aukocharlie.recorder4j.source.SourcePosition;
 import com.sun.jdi.*;
 import com.sun.jdi.event.*;
 
@@ -18,25 +20,20 @@ public class ThreadTrace {
     private static Map<ThreadReference, ThreadTrace> threads = new HashMap<>();
 
     private final ThreadReference thread;
-
-    private OutputManager outputManager;
-
     private int indent = 0;
 
+    private Context context;
     private EventRegistrar registrar;
 
     private Map<Method, Map<LocalVariable, Value>> varValuesInMethod = new HashMap<>();
-
     private Map<Field, Value> staticFieldVlaues = new HashMap<>();
-
     private Map<Field, Value> attributeValues = new HashMap<>();
-
     private boolean staticOrAttrModified = false;
 
-    public ThreadTrace(ThreadReference thread, EventRegistrar registrar, OutputManager outputManager) {
+    public ThreadTrace(ThreadReference thread, EventRegistrar registrar, Context context) {
         this.thread = thread;
         this.registrar = registrar;
-        this.outputManager = outputManager;
+        this.context = context;
     }
 
     public void handleMethodEntryEvent(MethodEntryEvent event) {
@@ -45,7 +42,13 @@ public class ThreadTrace {
             // Show the location of caller
             StackFrame callerFrame = threadReference.frame(threadReference.frameCount() > 1 ? 1 : 0);
             Location callerLocation = callerFrame.location();
-            println("METHOD_ENTRY: line: %d  \"thread=%s\", %s, %s", callerLocation.lineNumber(), event.thread().name(), FormatUtils.methodEntryToString(event), FormatUtils.locationToSimplifiedString(callerLocation));
+            SourcePosition sourcePosition;
+            if ("main".equals(event.method().name())) {
+                sourcePosition = SourcePosition.unknownPosition();
+            } else {
+                sourcePosition = context.getSourceManager().nextPosition(callerFrame.location().declaringType().name());
+            }
+            println("METHOD_ENTRY: line: %d  \"thread=%s\", %s, %s", callerLocation.lineNumber(), event.thread().name(), sourcePosition.getSource(), sourcePosition.toString());
         } catch (IncompatibleThreadStateException e) {
             e.printStackTrace();
         }
@@ -55,7 +58,7 @@ public class ThreadTrace {
     public void handleMethodExitEvent(MethodExitEvent event) {
         Location location = event.location();
         indent -= 4;
-        println("METHOD_EXIT: \"thread=%s\", %s, return=%s", event.thread().name(), FormatUtils.locationToString(location), event.returnValue());
+        println("METHOD_EXIT: \"thread=%s\", return=%s", event.thread().name(), event.returnValue());
     }
 
     /**
@@ -123,13 +126,13 @@ public class ThreadTrace {
             }
         } catch (IncompatibleThreadStateException e) {
 //            println("Exception: " + e);
-//            e.printStackTrace();
+            e.printStackTrace();
         } catch (AbsentInformationException e) {
 //            println("Exception: " + e);
-//            e.printStackTrace();
+            e.printStackTrace();
         } catch (IndexOutOfBoundsException e) {
 //            println("Exception: " + e);
-//            e.printStackTrace();
+            e.printStackTrace();
 
         }
     }
@@ -155,17 +158,17 @@ public class ThreadTrace {
 
     }
 
-    public static ThreadTrace currentThread(ThreadReference thread, EventRegistrar registrar, OutputManager outputManager) {
+    public static ThreadTrace currentThread(ThreadReference thread, EventRegistrar registrar, Context context) {
         if (!threads.containsKey(thread)) {
-            threads.put(thread, new ThreadTrace(thread, registrar, outputManager));
+            threads.put(thread, new ThreadTrace(thread, registrar, context));
         }
         return threads.get(thread);
     }
 
     private void println(String format, Object... args) {
-        outputManager.print(indentString());
-        outputManager.printf(format, args);
-        outputManager.print("\n");
+        context.getOutputManager().print(indentString());
+        context.getOutputManager().printf(format, args);
+        context.getOutputManager().print("\n");
     }
 
     private String indentString() {
