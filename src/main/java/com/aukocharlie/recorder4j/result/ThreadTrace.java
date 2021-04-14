@@ -7,6 +7,10 @@ import com.aukocharlie.recorder4j.launch.EventRegistrar;
 import com.aukocharlie.recorder4j.source.SourcePosition;
 import com.sun.jdi.*;
 import com.sun.jdi.event.*;
+import com.sun.tools.jdi.ArrayReferenceImpl;
+import com.sun.tools.jdi.ClassTypeImpl;
+import com.sun.tools.jdi.EventSetImpl;
+import com.sun.tools.jdi.ObjectReferenceImpl;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -26,8 +30,8 @@ public class ThreadTrace {
     private EventRegistrar registrar;
 
     private Map<Method, Map<LocalVariable, Value>> varValuesInMethod = new HashMap<>();
-    private Map<Field, Value> staticFieldVlaues = new HashMap<>();
-    private Map<Field, Value> attributeValues = new HashMap<>();
+    private Map<Field, Value> staticFieldValues = new HashMap<>();
+    private Map<ObjectReferenceImpl, FieldValuePairs> objectValues = new HashMap<>();
     private boolean staticOrAttrModified = false;
 
     public ThreadTrace(ThreadReference thread, EventRegistrar registrar, Context context) {
@@ -35,6 +39,25 @@ public class ThreadTrace {
         this.registrar = registrar;
         this.context = context;
     }
+
+    public static ThreadTrace currentThread(ThreadReference thread, EventRegistrar registrar, Context context) {
+        if (!threads.containsKey(thread)) {
+            threads.put(thread, new ThreadTrace(thread, registrar, context));
+        }
+        return threads.get(thread);
+    }
+
+
+    class FieldValuePairs extends HashMap<Field, Value> {
+        @Override
+        public String toString() {
+            List<String> staticFieldString = entrySet().stream()
+                    .map((entry) -> String.format(CommonConstants.KV_FORMAT, entry.getKey().name(), valueToString(entry.getValue())))
+                    .collect(Collectors.toList());
+            return String.format("{%s}", String.join(", ", staticFieldString));
+        }
+    }
+
 
     public void handleMethodEntryEvent(MethodEntryEvent event) {
         ThreadReference threadReference = event.thread();
@@ -56,13 +79,11 @@ public class ThreadTrace {
     }
 
     public void handleMethodExitEvent(MethodExitEvent event) {
-        Location location = event.location();
         indent -= 4;
         println("METHOD_EXIT: \"thread=%s\", return=%s", event.thread().name(), event.returnValue());
     }
 
     /**
-     * TODO: array value displaying
      *
      * @param event
      */
@@ -71,7 +92,6 @@ public class ThreadTrace {
 //        println("breakpoint: " + event.location().lineNumber());
         try {
             StackFrame topFrame = event.thread().frame(ThreadConstants.TOP_FRAME);
-//            System.out.println(topFrame);
             if (topFrame.visibleVariables().size() <= 0 && !staticOrAttrModified) {
                 // Nothing has modified
                 return;
@@ -98,24 +118,24 @@ public class ThreadTrace {
                         .append("   ");
 
                 sb.append("static: ");
-                List<String> staticFieldString = staticFieldVlaues.entrySet().stream()
-                        .map((entry) -> String.format(CommonConstants.KV_FORMAT, entry.getKey(), entry.getValue()))
+                List<String> staticFieldString = staticFieldValues.entrySet().stream()
+                        .map((entry) -> String.format(CommonConstants.KV_FORMAT, entry.getKey(), valueToString(entry.getValue())))
                         .collect(Collectors.toList());
                 sb.append(String.join(", ", staticFieldString));
 
-                sb.append(" | ");
-
-                sb.append("attr: ");
-                List<String> attrFieldString = attributeValues.entrySet().stream()
-                        .map((entry) -> String.format(CommonConstants.KV_FORMAT, entry.getKey().name(), entry.getValue()))
-                        .collect(Collectors.toList());
-                sb.append(String.join(", ", attrFieldString));
+//                sb.append(" | ");
+//
+//                sb.append("attr: ");
+//                List<String> attrFieldString = attributeValues.entrySet().stream()
+//                        .map((entry) -> String.format(CommonConstants.KV_FORMAT, entry.getKey().name(), entry.getValue()))
+//                        .collect(Collectors.toList());
+//                sb.append(String.join(", ", attrFieldString));
 
                 sb.append(" | ");
 
                 sb.append("local: ");
                 for (LocalVariable var : topFrame.visibleVariables()) {
-                    kvString.add(String.format("%s = %s", var.name(), topFrame.getValue(var)));
+                    kvString.add(String.format("%s = %s", var.name(), valueToString(topFrame.getValue(var))));
                     varValues.put(var, topFrame.getValue(var));
                 }
                 varValuesInMethod.put(topFrame.location().method(), varValues);
@@ -140,12 +160,14 @@ public class ThreadTrace {
     public void handleModificationWatchpointEvent(ModificationWatchpointEvent event) {
         Field field = event.field();
         Value value = event.valueToBe();
-        Location location = event.location();
 //        println("FIELD_MODIFIED(static): line: %d, \"thread=%s\", %s %s = %s , %s", event.location().lineNumber(), event.thread().name(), field.typeName(), field.name(), value, OutputManager.locationToSimplifiedString(location));
         if (field.isStatic()) {
-            staticFieldVlaues.put(field, value);
+            staticFieldValues.put(field, value);
         } else {
-            attributeValues.put(field, value);
+            objectValues.computeIfPresent((ObjectReferenceImpl) event.object(), (key, oldValues) -> {
+                oldValues.put(field, value);
+                return oldValues;
+            });
         }
         staticOrAttrModified = true;
     }
@@ -158,12 +180,6 @@ public class ThreadTrace {
 
     }
 
-    public static ThreadTrace currentThread(ThreadReference thread, EventRegistrar registrar, Context context) {
-        if (!threads.containsKey(thread)) {
-            threads.put(thread, new ThreadTrace(thread, registrar, context));
-        }
-        return threads.get(thread);
-    }
 
     private void println(String format, Object... args) {
         context.getOutputManager().print(indentString());
@@ -177,5 +193,36 @@ public class ThreadTrace {
             spaces[i] = ' ';
         }
         return new String(spaces);
+    }
+
+    private String valueToString(Value value) {
+        if (value instanceof ArrayReference) {
+            return arrayValueToString((ArrayReferenceImpl) value);
+        } else if (value instanceof StringReference) {
+            return value.toString();
+        } else if (value instanceof ObjectReference) {
+            return objValueToString((ObjectReferenceImpl) value);
+        }
+        return value.toString();
+    }
+
+    private String arrayValueToString(ArrayReferenceImpl value) {
+        List<String> arrayItemStrings = value.getValues().stream()
+                .map(this::valueToString)
+                .collect(Collectors.toList());
+        return String.format("[%s]", String.join(", ", arrayItemStrings));
+    }
+
+    private String objValueToString(ObjectReferenceImpl value) {
+        if (!objectValues.containsKey(value)) {
+            List<Field> fields = value.referenceType().visibleFields();
+            Map<Field, Value> fieldValueMap = value.getValues(fields);
+            FieldValuePairs fieldValuePairs = new FieldValuePairs();
+            fieldValuePairs.putAll(fieldValueMap);
+            objectValues.put(value, fieldValuePairs);
+            return fieldValuePairs.toString();
+        } else {
+            return objectValues.get(value).toString();
+        }
     }
 }

@@ -44,6 +44,10 @@ public class SourceManager {
     }
 
     public void parseSourceCode(String srcRelativePath) {
+        String className = convertResourcePathToClassName(srcRelativePath);
+        if (classNameMethodInvocationsMap.containsKey(className)) {
+            return;
+        }
         File srcFile = new File(srcRoot, srcRelativePath);
         Iterable<? extends JavaFileObject> srcFileObjects = fileManager.getJavaFileObjects(srcFile);
         JavaCompiler.CompilationTask compilationTask = javacTool.getTask(null, fileManager, null, null, null, srcFileObjects);
@@ -56,7 +60,7 @@ public class SourceManager {
                 SourceScanner scanner = new SourceScanner();
                 tree.accept(scanner, null);
                 List<MethodInvocationPosition> positions = scanner.generateMethodExecChain();
-                classNameMethodInvocationsMap.put(convertResourcePathToClassName(srcRelativePath), new MethodInvocationIterator(positions));
+                classNameMethodInvocationsMap.put(className, new MethodInvocationIterator(positions));
             }
         } catch (IOException e) {
             throw new RecorderRuntimeException(String.format("IOException occurred while parsing %s: %s", srcFile.getAbsolutePath(), e.getMessage()));

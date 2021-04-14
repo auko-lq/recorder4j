@@ -9,30 +9,34 @@ import java.io.*;
 public class TwoClassesCase {
 
     public static int y;
+    public int z;
 
     public static void main(String[] args) {
         TwoClassesCase twoClassesCase = new TwoClassesCase();
         OneClass one = new OneClass();
+        OneClass two = new OneClass();
         AnotherClass another = new AnotherClass();
 
-        System.out.println(twoClassesCase.test(0, one, another));
+        System.out.println(twoClassesCase.test(0, one, two, another));
     }
 
-    public String test(int i, OneClass oneClass, AnotherClass anotherClass) {
+    public String test(int i, OneClass oneClass, OneClass twoClass, AnotherClass anotherClass) {
         while (i < 10) {
             i++;
-            oneClass.j++;
+            oneClass.j[0]++;
+            twoClass.j[0]++;
             TwoClassesCase.y++;
             anotherClass.k++;
+            z++;
         }
         String str = "res: ";
-        return str + (i + oneClass.j + TwoClassesCase.y + anotherClass.k);
+        return str + (i + oneClass.j[0] + twoClass.j[0] + TwoClassesCase.y + anotherClass.k + z);
     }
 
 }
 
 class OneClass {
-    public int j;
+    public int[] j = new int[]{0};
 }
 
 class AnotherClass {

@@ -21,7 +21,11 @@ public class TestBuildRecorderByBuilder {
 
     @Test
     public void testTwoClasses() {
-        Recorder recorder = Recorder.builder().main(TwoClassesCase.class).outPutReplace("com.aukocharlie.recorder4j.", "").build();
+        Recorder recorder = Recorder.builder()
+                .main(TwoClassesCase.class)
+                .srcRelativeRootPath("src/test/java")
+                .outPutReplace("com.aukocharlie.recorder4j.", "")
+                .build();
         recorder.run();
     }
 

@@ -29,7 +29,9 @@ public class SourceScanner extends TreeScanner<Void, Void> {
 
     /**
      * example: call(argMethod()).
+     * <p>
      * key: argMethod's start position
+     * <p>
      * value: call's method invocation position
      */
     Map<SourcePosition.Position, MethodInvocationPosition> methodInArgToCallerMap = new LinkedHashMap<>();
@@ -44,6 +46,16 @@ public class SourceScanner extends TreeScanner<Void, Void> {
         }
         lineMap = node.getLineMap();
         return super.visitCompilationUnit(node, v);
+    }
+
+    public Void visitAssignment(AssignmentTree node, Void p) {
+        System.out.println("assignment: " + node);
+        return super.visitAssignment(node, p);
+    }
+
+    public Void visitCompoundAssignment(CompoundAssignmentTree node, Void p) {
+        System.out.println("compound assignment: " + node);
+        return super.visitCompoundAssignment(node, p);
     }
 
     /**
@@ -68,6 +80,7 @@ public class SourceScanner extends TreeScanner<Void, Void> {
             List<MethodInvocationPosition> argMethods = methodInArgToCallerMap.get(startPosition).getArgMethodPosition();
             boolean positionMatched = false;
             for (int i = 0; i < argMethods.size(); i++) {
+                // All method invocation on the same method chaining will have the same startPosition
                 if (argMethods.get(i).startPosition.equals(startPosition)) {
                     MethodInvocationPosition newPosition = getMethodInvocationPositionWithArg(node);
                     if (argMethods.get(i).endPosition.behind(newPosition.endPosition)) {
