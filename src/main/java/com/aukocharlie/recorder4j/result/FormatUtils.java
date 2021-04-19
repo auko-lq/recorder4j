@@ -12,12 +12,11 @@ public class FormatUtils {
 
     static String locationToString(Location location) {
         try {
-            return String.format("%s.%s(%s), line=%d index=%d",
+            return String.format("%s.%s(%s), line=%d",
                     location.declaringType().name(),
                     location.method().name(),
                     location.method().argumentTypes().toString(),
-                    location.lineNumber(),
-                    location.codeIndex());
+                    location.lineNumber());
         } catch (ClassNotLoadedException e) {
             e.printStackTrace();
         }

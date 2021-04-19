@@ -12,4 +12,6 @@ public class CommonConstants {
 
     public static final String WORKING_DIR = System.getProperty("user.dir") + File.separator;
 
+    public static final String UNKNOWN = "<unknown>";
+
 }

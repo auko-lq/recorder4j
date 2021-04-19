@@ -15,6 +15,8 @@ import com.sun.tools.jdi.ObjectReferenceImpl;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.aukocharlie.recorder4j.constant.ThreadConstants.MAIN_METHOD;
+
 /**
  * @author auko
  * @date 2021/3/20 17:37
@@ -60,18 +62,26 @@ public class ThreadTrace {
 
 
     public void handleMethodEntryEvent(MethodEntryEvent event) {
-        ThreadReference threadReference = event.thread();
         try {
+            if (event.method().isConstructor() && Utils.isLambdaClassName(event.method().declaringType().name())) {
+                // Skip lambda's constructor
+                return;
+            }
+            ThreadReference threadReference = event.thread();
             // Show the location of caller
             StackFrame callerFrame = threadReference.frame(threadReference.frameCount() > 1 ? 1 : 0);
             Location callerLocation = callerFrame.location();
             SourcePosition sourcePosition;
-            if ("main".equals(event.method().name())) {
-                sourcePosition = SourcePosition.unknownPosition();
+
+            if (MAIN_METHOD.equals(event.method().name())) {
+                sourcePosition = SourcePosition.unknownPosition(MAIN_METHOD);
+                sourcePosition.setSource(MAIN_METHOD);
             } else {
-                sourcePosition = context.getSourceManager().nextPosition(callerFrame.location().declaringType().name());
+//                System.out.println("callerFrame.location().declaringType().name(): " + callerFrame.location().declaringType().name());
+                sourcePosition = context.getSourceManager
+                        ().nextPosition(callerFrame.location().declaringType().name());
             }
-            println("METHOD_ENTRY: line: %d  \"thread=%s\", %s, %s", callerLocation.lineNumber(), event.thread().name(), sourcePosition.getSource(), sourcePosition.toString());
+            println("METHOD_ENTRY: line: %d  \"thread=%s\", %s, %s, %s", callerLocation.lineNumber(), event.thread().name(), event.method(), sourcePosition.getSource(), sourcePosition.toString());
         } catch (IncompatibleThreadStateException e) {
             e.printStackTrace();
         }
@@ -79,24 +89,24 @@ public class ThreadTrace {
     }
 
     public void handleMethodExitEvent(MethodExitEvent event) {
+        if (event.method().isConstructor() && Utils.isLambdaClassName(event.method().declaringType().name())) {
+            // Skip lambda's constructor
+            return;
+        }
         indent -= 4;
         println("METHOD_EXIT: \"thread=%s\", return=%s", event.thread().name(), event.returnValue());
     }
 
     /**
-     *
      * @param event
      */
     public void handleBreakpointEvent(BreakpointEvent event) {
-//        Thread.yield();
-//        println("breakpoint: " + event.location().lineNumber());
         try {
             StackFrame topFrame = event.thread().frame(ThreadConstants.TOP_FRAME);
             if (topFrame.visibleVariables().size() <= 0 && !staticOrAttrModified) {
                 // Nothing has modified
                 return;
             }
-
             Map<LocalVariable, Value> varValues = Optional.ofNullable(varValuesInMethod.get(topFrame.location().method()))
                     .orElse(new HashMap<>(topFrame.visibleVariables().size()));
 
@@ -123,14 +133,6 @@ public class ThreadTrace {
                         .collect(Collectors.toList());
                 sb.append(String.join(", ", staticFieldString));
 
-//                sb.append(" | ");
-//
-//                sb.append("attr: ");
-//                List<String> attrFieldString = attributeValues.entrySet().stream()
-//                        .map((entry) -> String.format(CommonConstants.KV_FORMAT, entry.getKey().name(), entry.getValue()))
-//                        .collect(Collectors.toList());
-//                sb.append(String.join(", ", attrFieldString));
-
                 sb.append(" | ");
 
                 sb.append("local: ");
@@ -140,6 +142,16 @@ public class ThreadTrace {
                 }
                 varValuesInMethod.put(topFrame.location().method(), varValues);
                 sb.append(String.join(", ", kvString));
+
+                if (!event.location().method().isStatic() && topFrame.thisObject() != null) {
+                    sb.append(" | ");
+                    sb.append("this: ");
+
+                    List<String> thisFieldString = objectValues.get((ObjectReferenceImpl) topFrame.thisObject()).entrySet().stream()
+                            .map((entry) -> String.format(CommonConstants.KV_FORMAT, entry.getKey().name(), valueToString(entry.getValue())))
+                            .collect(Collectors.toList());
+                    sb.append(String.format("{%s}", String.join(", ", thisFieldString)));
+                }
 
                 println(sb.toString());
                 staticOrAttrModified = false;
@@ -196,6 +208,9 @@ public class ThreadTrace {
     }
 
     private String valueToString(Value value) {
+        if (value == null) {
+            return "null";
+        }
         if (value instanceof ArrayReference) {
             return arrayValueToString((ArrayReferenceImpl) value);
         } else if (value instanceof StringReference) {
@@ -216,6 +231,7 @@ public class ThreadTrace {
     private String objValueToString(ObjectReferenceImpl value) {
         if (!objectValues.containsKey(value)) {
             List<Field> fields = value.referenceType().visibleFields();
+            fields = fields.stream().filter((field -> !field.isStatic())).collect(Collectors.toList());
             Map<Field, Value> fieldValueMap = value.getValues(fields);
             FieldValuePairs fieldValuePairs = new FieldValuePairs();
             fieldValuePairs.putAll(fieldValueMap);

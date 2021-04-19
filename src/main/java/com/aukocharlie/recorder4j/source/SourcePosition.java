@@ -19,8 +19,6 @@ public class SourcePosition {
     protected Position startPosition;
     protected Position endPosition;
 
-    private static final SourcePosition UNKNOWN_POSITION = new SourcePosition(Position.unknownPosition(), Position.unknownPosition(), "");
-
     protected SourcePosition(Position startPosition, Position endPosition, String source) {
         this.startPosition = startPosition;
         this.endPosition = endPosition;
@@ -29,6 +27,10 @@ public class SourcePosition {
 
     public String getSource() {
         return this.source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
     }
 
     public static SourcePosition getSourcePosition(CompilationUnitTree unitTree, Tree node, LineMap lineMap) {
@@ -46,14 +48,9 @@ public class SourcePosition {
         return new Position(lineMap.getLineNumber(position), lineMap.getColumnNumber(position), position);
     }
 
-    public static SourcePosition unknownPosition() {
-        return UNKNOWN_POSITION;
+    public static SourcePosition unknownPosition(String source) {
+        return new SourcePosition(Position.unknownPosition(), Position.unknownPosition(), source);
     }
-
-    public boolean isUnknown() {
-        return this == UNKNOWN_POSITION;
-    }
-
 
     @Override
     public String toString() {

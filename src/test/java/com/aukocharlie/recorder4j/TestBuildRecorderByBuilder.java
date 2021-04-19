@@ -31,7 +31,25 @@ public class TestBuildRecorderByBuilder {
 
     @Test
     public void testThreadCase() throws InterruptedException {
-        Recorder recorder = Recorder.builder().main(ThreadCase.class).mainArgs(new String[]{"123"}).build();
+        Recorder recorder = Recorder.builder()
+                .srcRelativeRootPath("src/test/java").main(ThreadCase.class).mainArgs(new String[]{"123"}).build();
+        recorder.run();
+    }
+
+    @Test
+    public void testLambdaCase() {
+        Recorder recorder = Recorder.builder()
+                .srcRelativeRootPath("src/test/java").main(LambdaCase.class)
+                .build();
+        recorder.run();
+    }
+
+    @Test
+    public void testInnerClassCase(){
+        Recorder recorder = Recorder.builder()
+                .outPutReplace("com.aukocharlie.recorder4j.", "")
+                .srcRelativeRootPath("src/test/java").main(InnerClassCase.class)
+                .build();
         recorder.run();
     }
 

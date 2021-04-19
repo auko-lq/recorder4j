@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.*;
 
+import static com.aukocharlie.recorder4j.constant.CommonConstants.UNKNOWN;
+
 /**
  * @author auko
  * @date 2021/4/6 10:55
@@ -43,12 +45,15 @@ public class SourceManager {
         this.srcRoot = path;
     }
 
-    public void parseSourceCode(String srcRelativePath) {
-        String className = convertResourcePathToClassName(srcRelativePath);
+    public void parseSourceCodeByPath(String srcRelativePath) {
+        parseSourceCodeByClassName(convertResourcePathToClassName(srcRelativePath));
+    }
+
+    public void parseSourceCodeByClassName(String className) {
         if (classNameMethodInvocationsMap.containsKey(className)) {
             return;
         }
-        File srcFile = new File(srcRoot, srcRelativePath);
+        File srcFile = new File(srcRoot, convertClassNameToPath(className));
         Iterable<? extends JavaFileObject> srcFileObjects = fileManager.getJavaFileObjects(srcFile);
         JavaCompiler.CompilationTask compilationTask = javacTool.getTask(null, fileManager, null, null, null, srcFileObjects);
         try {
@@ -69,20 +74,29 @@ public class SourceManager {
 
     public SourcePosition nextPosition(String className) {
         if (!classNameMethodInvocationsMap.containsKey(className)) {
-            return SourcePosition.unknownPosition();
+            return SourcePosition.unknownPosition(UNKNOWN);
         }
         MethodInvocationIterator methodInvocationIterator = classNameMethodInvocationsMap.get(className);
         // TODO: If hasNext is false, check the reason or throw an exception
-        return methodInvocationIterator.hasNext() ? methodInvocationIterator.next() : SourcePosition.unknownPosition();
+        return methodInvocationIterator.hasNext() ? methodInvocationIterator.next() : SourcePosition.unknownPosition(UNKNOWN);
     }
 
     /**
      * example:
      * <p>
-     * com\aukocharlie\recorder4j\SimpleCase.java -> com.aukocharlie.recorder4j.SimpleCase
+     * com/aukocharlie/recorder4j/SimpleCase.java -> com.aukocharlie.recorder4j.SimpleCase
      */
     private static String convertResourcePathToClassName(String path) {
         return path.replace(".java", "").replace(File.separatorChar, '.');
+    }
+
+    /**
+     * example:
+     * <p>
+     * com.aukocharlie.recorder4j.SimpleCase -> com/aukocharlie/recorder4j/SimpleCase.java
+     */
+    private static String convertClassNameToPath(String className) {
+        return className.replace('.', File.separatorChar) + ".java";
     }
 
 

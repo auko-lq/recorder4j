@@ -23,23 +23,26 @@ public class TwoClassesCase {
     public String test(int i, OneClass oneClass, OneClass twoClass, AnotherClass anotherClass) {
         while (i < 10) {
             i++;
-            oneClass.j[0]++;
-            twoClass.j[0]++;
+            twoClass.j++;
             TwoClassesCase.y++;
             anotherClass.k++;
             z++;
         }
         String str = "res: ";
-        return str + (i + oneClass.j[0] + twoClass.j[0] + TwoClassesCase.y + anotherClass.k + z);
+        return str + (i + oneClass.j + twoClass.j + TwoClassesCase.y + anotherClass.k + z);
     }
 
 }
 
 class OneClass {
-    public int[] j = new int[]{0};
+    public int j = 0;
 }
 
 class AnotherClass {
 
     public int k;
+
+    public static void test(){
+        System.out.println("test");
+    }
 }

@@ -9,7 +9,9 @@ import com.sun.jdi.*;
 import com.sun.jdi.event.*;
 
 import java.util.List;
-import java.util.Map;
+
+import static com.aukocharlie.recorder4j.result.Utils.isLambda;
+import static com.aukocharlie.recorder4j.result.Utils.truncateLambdaClassName;
 
 /**
  * @author auko
@@ -21,6 +23,7 @@ public class EventHandler extends Thread {
     private Context context;
     private TargetManager targetManager;
 
+
     public EventHandler(EventRegistrar registrar) {
         super("event handler");
         this.registrar = registrar;
@@ -30,7 +33,7 @@ public class EventHandler extends Thread {
 
     public void run() {
         try {
-            EventSet eventSet = null;
+            EventSet eventSet;
             EventQueue queue = context.getVm().eventQueue();
             while (context.isConnected() && (eventSet = queue.remove()) != null) {
                 for (Event event : eventSet) {
@@ -84,15 +87,19 @@ public class EventHandler extends Thread {
 //            System.out.println(event.referenceType());
             registrar.enableModificationWatchpointEvent(event.referenceType().allFields());
             try {
-                List<String> sourcePaths = event.referenceType().sourcePaths("");
-                if (sourcePaths.size() > 0) {
-                    String srcRelativePath = sourcePaths.get(0);
-                    context.getSourceManager().parseSourceCode(srcRelativePath);
+                if (isLambda(event)) {
+                    String className = truncateLambdaClassName(event.referenceType().name());
+                    context.getSourceManager().parseSourceCodeByClassName(className);
+                } else {
+                    List<String> sourcePaths = event.referenceType().sourcePaths("");
+                    if (sourcePaths.size() > 0) {
+                        context.getSourceManager().parseSourceCodeByPath(sourcePaths.get(0));
+                    } else {
+                        throw new RecorderRuntimeException("Can't get sourcePath of class: " + event.referenceType().toString());
+                    }
                     for (Location location : event.referenceType().allLineLocations()) {
                         registrar.enableBreakpointRequest(location);
                     }
-                } else {
-                    throw new RecorderRuntimeException("Can't get sourcePath of class: " + event.referenceType().toString());
                 }
             } catch (AbsentInformationException e) {
                 e.printStackTrace();
@@ -158,17 +165,5 @@ public class EventHandler extends Thread {
         System.out.println(" ==== VM disconnected ====");
     }
 
-    public void displayVariables(LocatableEvent event) throws IncompatibleThreadStateException,
-            AbsentInformationException {
-        StackFrame stackFrame = event.thread().frame(0);
-        if (stackFrame.location().toString().contains(context.getMainClass())) {
-            Map<LocalVariable, Value> visibleVariables = stackFrame.getValues(stackFrame.visibleVariables());
-            System.out.println("=====  Variables at " + stackFrame.location().toString() + "  ===== ");
-            for (Map.Entry<LocalVariable, Value> entry : visibleVariables.entrySet()) {
-                System.out.printf("%s(%s) = %s%n", entry.getKey().name(), entry.getKey().typeName(), entry.getValue());
-            }
-            System.out.println("=================================\n");
-        }
-    }
 
 }

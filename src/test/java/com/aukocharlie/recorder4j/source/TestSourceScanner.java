@@ -23,6 +23,9 @@ import java.util.List;
 public class TestSourceScanner {
 
     StringBuilder sb;
+    Context context = new Context();
+    JavacFileManager fileManager = new JavacFileManager(context, true, Charset.defaultCharset());
+    JavacTool javacTool = new JavacTool();
 
     @Before
     public void init() {
@@ -30,11 +33,7 @@ public class TestSourceScanner {
     }
 
     @Test
-    public void test() {
-        Context context = new Context();
-        JavacFileManager fileManager = new JavacFileManager(context, true, Charset.defaultCharset());
-        JavacTool javacTool = new JavacTool();
-
+    public void testChainCase() {
         String[] path = new String[]{CommonConstants.WORKING_DIR + "src\\test\\java\\com\\aukocharlie\\recorder4j\\ChainCase.java"};
         Iterable<? extends JavaFileObject> files = fileManager.getJavaFileObjects(path);
 
@@ -63,6 +62,77 @@ public class TestSourceScanner {
             e.printStackTrace();
         }
     }
+
+    @Test
+    public void testLambdaCase(){
+        String[] path = new String[]{CommonConstants.WORKING_DIR + "src\\test\\java\\com\\aukocharlie\\recorder4j\\LambdaCase.java"};
+        Iterable<? extends JavaFileObject> files = fileManager.getJavaFileObjects(path);
+
+        JavaCompiler.CompilationTask compilationTask = javacTool.getTask(null, fileManager, null, null, null, files);
+        JavacTask javacTask = (JavacTask) compilationTask;
+        try {
+            Iterable<? extends CompilationUnitTree> result = javacTask.parse();
+            for (CompilationUnitTree tree : result) {
+                SourceScanner scanner = new SourceScanner();
+                tree.accept(scanner, null);
+                List<MethodInvocationPosition> positions = scanner.generateMethodExecChain();
+                for (MethodInvocationPosition position : positions) {
+                    toString(position);
+                }
+                System.out.println(sb.toString());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    @Test
+    public void testTwoClassCase(){
+        String[] path = new String[]{CommonConstants.WORKING_DIR + "src\\test\\java\\com\\aukocharlie\\recorder4j\\TwoClassesCase.java"};
+        Iterable<? extends JavaFileObject> files = fileManager.getJavaFileObjects(path);
+
+        JavaCompiler.CompilationTask compilationTask = javacTool.getTask(null, fileManager, null, null, null, files);
+        JavacTask javacTask = (JavacTask) compilationTask;
+        try {
+            Iterable<? extends CompilationUnitTree> result = javacTask.parse();
+            for (CompilationUnitTree tree : result) {
+                SourceScanner scanner = new SourceScanner();
+                tree.accept(scanner, null);
+                List<MethodInvocationPosition> positions = scanner.generateMethodExecChain();
+                for (MethodInvocationPosition position : positions) {
+                    toString(position);
+                }
+                System.out.println(sb.toString());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testInnerClass(){
+        String[] path = new String[]{CommonConstants.WORKING_DIR + "src\\test\\java\\com\\aukocharlie\\recorder4j\\InnerClassCase.java"};
+        Iterable<? extends JavaFileObject> files = fileManager.getJavaFileObjects(path);
+
+        JavaCompiler.CompilationTask compilationTask = javacTool.getTask(null, fileManager, null, null, null, files);
+        JavacTask javacTask = (JavacTask) compilationTask;
+        try {
+            Iterable<? extends CompilationUnitTree> result = javacTask.parse();
+            for (CompilationUnitTree tree : result) {
+                SourceScanner scanner = new SourceScanner();
+                tree.accept(scanner, null);
+                List<MethodInvocationPosition> positions = scanner.generateMethodExecChain();
+                for (MethodInvocationPosition position : positions) {
+                    toString(position);
+                }
+                System.out.println(sb.toString());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public void toString(MethodInvocationPosition position) {
         if (position == null) {

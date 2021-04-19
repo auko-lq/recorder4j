@@ -48,6 +48,24 @@ public class SourceScanner extends TreeScanner<Void, Void> {
         return super.visitCompilationUnit(node, v);
     }
 
+    @Override
+    public Void visitClass(ClassTree node, Void p) {
+//        System.out.println("class: " + node);
+        return super.visitClass(node, p);
+    }
+
+    @Override
+    public Void visitMethod(MethodTree node, Void p) {
+
+        return super.visitMethod(node, p);
+    }
+
+    public Void visitLambdaExpression(LambdaExpressionTree node, Void p) {
+//        System.out.println(node.getClass());
+        System.out.println("lambda position: " + SourcePosition.getSourcePosition(compilationUnitTree, node, lineMap));
+        return super.visitLambdaExpression(node, p);
+    }
+
     public Void visitAssignment(AssignmentTree node, Void p) {
         System.out.println("assignment: " + node);
         return super.visitAssignment(node, p);
@@ -74,6 +92,7 @@ public class SourceScanner extends TreeScanner<Void, Void> {
     }
 
     private void parseMethodInvocationPosition(Tree node) {
+//        System.out.println(node.getClass());
         SourcePosition.Position startPosition = SourcePosition.getStartPosition(compilationUnitTree, node, lineMap);
         if (methodInArgToCallerMap.containsKey(startPosition)) {
             // this node is in the argument list
@@ -110,6 +129,7 @@ public class SourceScanner extends TreeScanner<Void, Void> {
      * @return
      */
     private MethodInvocationPosition getMethodInvocationPositionWithArg(Tree node) {
+//        System.out.println(node);
         MethodInvocationPosition res = new MethodInvocationPosition(SourcePosition.getSourcePosition(compilationUnitTree, node, lineMap));
         if (node instanceof NewClassTree) {
             for (ExpressionTree arg : ((NewClassTree) node).getArguments()) {
@@ -120,9 +140,12 @@ public class SourceScanner extends TreeScanner<Void, Void> {
             }
         } else if (node instanceof MethodInvocationTree) {
             for (ExpressionTree arg : ((MethodInvocationTree) node).getArguments()) {
+//                System.out.println(arg.getKind());
                 if (arg.getKind() == Tree.Kind.METHOD_INVOCATION || arg.getKind() == Tree.Kind.NEW_CLASS) {
                     res.addArgMethodPosition(this.getMethodInvocationPositionWithArg(arg));
                     methodInArgToCallerMap.put(SourcePosition.getStartPosition(compilationUnitTree, arg, lineMap), res);
+                } else if (arg.getKind() == Tree.Kind.LAMBDA_EXPRESSION) {
+                    System.out.println("!!!!!! lambda position: " + SourcePosition.getSourcePosition(compilationUnitTree, arg, lineMap));
                 }
             }
         } else {
