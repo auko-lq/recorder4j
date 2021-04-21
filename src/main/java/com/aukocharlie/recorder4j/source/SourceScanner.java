@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 /**
  * @author auko
- * @date 2021/4/7 11:50
  */
 public class SourceScanner extends TreeScanner<Void, Void> {
 

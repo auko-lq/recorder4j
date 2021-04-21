@@ -1,7 +1,5 @@
 package com.aukocharlie.recorder4j.result;
 
-import com.sun.jdi.ClassNotLoadedException;
-import com.sun.jdi.Location;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -11,7 +9,6 @@ import java.util.regex.Pattern;
 
 /**
  * @author auko
- * @date 2021/3/29 15:45
  */
 public class OutputManager {
 
@@ -21,6 +18,8 @@ public class OutputManager {
 
     // TODO: print to file
     private PrintStream writer = System.out;
+
+    private boolean displayMethodPosition = false;
 
 
     public void addReplacePattern(Pattern pattern, String replacement) {
@@ -43,6 +42,14 @@ public class OutputManager {
             str = matcher.replaceAll(replacements.get(i));
         }
         return str;
+    }
+
+    public void setDisplayMethodPosition(boolean display) {
+        this.displayMethodPosition = display;
+    }
+
+    public boolean shouldDisplayMethodPosition() {
+        return this.displayMethodPosition;
     }
 
 }

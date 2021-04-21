@@ -10,7 +10,6 @@ import static java.lang.annotation.ElementType.LOCAL_VARIABLE;
 
 /**
  * @author auko
- * @date 2021/3/15 21:02
  */
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
 @java.lang.annotation.Target({METHOD, CONSTRUCTOR, FIELD, PARAMETER, LOCAL_VARIABLE})

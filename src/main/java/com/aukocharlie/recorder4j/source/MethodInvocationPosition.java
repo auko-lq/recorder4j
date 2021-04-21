@@ -5,7 +5,6 @@ import java.util.List;
 
 /**
  * @author auko
- * @date 2021/4/8 16:23
  */
 public class MethodInvocationPosition extends SourcePosition {
 

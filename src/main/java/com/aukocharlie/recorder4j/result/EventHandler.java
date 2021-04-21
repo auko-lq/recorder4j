@@ -4,7 +4,6 @@ import com.aukocharlie.recorder4j.exception.RecorderRuntimeException;
 import com.aukocharlie.recorder4j.exception.UnknownEventException;
 import com.aukocharlie.recorder4j.launch.EventRegistrar;
 import com.aukocharlie.recorder4j.launch.Context;
-import com.aukocharlie.recorder4j.target.TargetManager;
 import com.sun.jdi.*;
 import com.sun.jdi.event.*;
 
@@ -15,20 +14,17 @@ import static com.aukocharlie.recorder4j.result.Utils.truncateLambdaClassName;
 
 /**
  * @author auko
- * @date 2021/3/16 22:43
  */
 public class EventHandler extends Thread {
 
     private EventRegistrar registrar;
     private Context context;
-    private TargetManager targetManager;
 
 
     public EventHandler(EventRegistrar registrar) {
         super("event handler");
         this.registrar = registrar;
         this.context = registrar.getContext();
-        this.targetManager = registrar.getTargetManager();
     }
 
     public void run() {
@@ -45,7 +41,7 @@ public class EventHandler extends Thread {
         } catch (InterruptedException | AbsentInformationException e) {
             e.printStackTrace();
         } catch (VMDisconnectedException e) {
-//            context.setConnected(false);
+            context.setConnected(false);
             System.out.println(" ==== VM disconnected ====");
         }
     }
@@ -94,11 +90,11 @@ public class EventHandler extends Thread {
                     List<String> sourcePaths = event.referenceType().sourcePaths("");
                     if (sourcePaths.size() > 0) {
                         context.getSourceManager().parseSourceCodeByPath(sourcePaths.get(0));
+                        for (Location location : event.referenceType().allLineLocations()) {
+                            registrar.enableBreakpointRequest(location);
+                        }
                     } else {
                         throw new RecorderRuntimeException("Can't get sourcePath of class: " + event.referenceType().toString());
-                    }
-                    for (Location location : event.referenceType().allLineLocations()) {
-                        registrar.enableBreakpointRequest(location);
                     }
                 }
             } catch (AbsentInformationException e) {

@@ -2,6 +2,7 @@ package com.aukocharlie.recorder4j.launch;
 
 import com.aukocharlie.recorder4j.result.OutputManager;
 import com.aukocharlie.recorder4j.source.SourceManager;
+import com.aukocharlie.recorder4j.target.TargetManager;
 import com.sun.jdi.VMDisconnectedException;
 import com.sun.jdi.VirtualMachine;
 import lombok.Getter;
@@ -9,7 +10,6 @@ import lombok.Setter;
 
 /**
  * @author auko
- * @date 2021/3/17 17:06
  */
 @Getter
 public class Context {
@@ -23,6 +23,8 @@ public class Context {
     private VirtualMachine vm;
 
     private Process process;
+
+    private TargetManager targetManager;
 
     private OutputManager outputManager;
 
@@ -69,6 +71,10 @@ public class Context {
 
     public void setSourceManager(SourceManager sourceManager) {
         this.sourceManager = sourceManager;
+    }
+
+    public void setTargetManager(TargetManager targetmanager) {
+        this.targetManager = targetmanager;
     }
 
 }

@@ -1,10 +1,8 @@
 package com.aukocharlie.recorder4j;
 
-import java.io.*;
 
 /**
  * @author auko
- * @date 2021/3/19 18:06
  */
 public class TwoClassesCase {
 

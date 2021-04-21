@@ -2,7 +2,6 @@ package com.aukocharlie.recorder4j;
 
 /**
  * @author auko
- * @date 2021/4/19 0:05
  */
 public class InnerClassCase {
 

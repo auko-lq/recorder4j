@@ -2,7 +2,6 @@ package com.aukocharlie.recorder4j;
 
 /**
  * @author auko
- * @date 2021/3/20 21:35
  */
 public class ThreadCase {
 

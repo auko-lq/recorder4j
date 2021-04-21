@@ -21,7 +21,6 @@ import java.util.regex.Pattern;
 
 /**
  * @author auko
- * @date 2021/3/15 16:06
  */
 public class Recorder {
 
@@ -29,9 +28,6 @@ public class Recorder {
     private OutputManager outputManager;
     private SourceManager sourceManager;
     private Launcher launcher;
-
-    private Recorder() {
-    }
 
     private Recorder(Builder builder) {
         this.targetManager = builder.targetManager;
@@ -46,17 +42,14 @@ public class Recorder {
     }
 
     public void run() {
-        if (targetManager.shouldRecordFields()) {
-//            launcher.addVMOption("-classic");
-        }
-
         try {
             Context context = launcher.launch();
             context.setOutputManager(outputManager);
             context.setSourceManager(sourceManager);
+            context.setTargetManager(targetManager);
             Runtime.getRuntime().addShutdownHook(new Thread(context::shutdown));
 
-            EventRegistrar registrar = new EventRegistrar(context, targetManager);
+            EventRegistrar registrar = new EventRegistrar(context);
             EventHandler eventHandler = new EventHandler(registrar);
             eventHandler.start();
             eventHandler.join();
@@ -83,7 +76,6 @@ public class Recorder {
          * Scan the specified package to obtain annotation information
          *
          * @param targetPackage package name
-         * @return
          */
         public Builder scanPackage(String targetPackage) {
             if (targetPackage == null) {
@@ -184,6 +176,20 @@ public class Recorder {
                 throw new InvalidRecorderArgumentException("`srcAbsoluteRootPath` argument is invalid: `path` can't be null");
             }
             sourceManager.setSrcRoot(path);
+            return this;
+        }
+
+        /**
+         * If `display` is true, then the detailed position of the method invocation
+         * in the source code will be displayed when the method is called,
+         * such as 18:8 -> 18:14, which means that the position is in the 8th to 14th columns of the 18th row
+         */
+        public Builder displayMethodPosition(boolean display) {
+            // TODO: This part requires a deeper analysis of the source code
+            if (display) {
+                throw new InvalidRecorderArgumentException("This part has not been completed yet");
+            }
+            outputManager.setDisplayMethodPosition(display);
             return this;
         }
 

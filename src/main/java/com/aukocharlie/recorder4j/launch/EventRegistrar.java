@@ -1,6 +1,5 @@
 package com.aukocharlie.recorder4j.launch;
 
-import com.aukocharlie.recorder4j.target.TargetManager;
 import com.sun.jdi.*;
 import com.sun.jdi.request.*;
 import lombok.Getter;
@@ -11,22 +10,18 @@ import java.util.Set;
 
 /**
  * @author auko
- * @date 2021/3/16 22:35
  */
 public class EventRegistrar {
 
     @Getter
     private Context context;
-    @Getter
-    private TargetManager targetManager;
 
     private Set<Field> enabledFields = new HashSet<>();
 
     private Set<ThreadReference> stepEnabledThread = new HashSet<>();
 
-    public EventRegistrar(Context vm, TargetManager targetManager) {
+    public EventRegistrar(Context vm) {
         this.context = vm;
-        this.targetManager = targetManager;
         InitialRegister();
     }
 
@@ -41,7 +36,7 @@ public class EventRegistrar {
 
     public void enableClassPrepareRequest() {
         ClassPrepareRequest request = context.getVm().eventRequestManager().createClassPrepareRequest();
-        for (String exclusion : targetManager.getExcludeClasses()) {
+        for (String exclusion : context.getTargetManager().getExcludeClasses()) {
             request.addClassExclusionFilter(exclusion);
         }
         request.enable();
@@ -57,8 +52,10 @@ public class EventRegistrar {
 
     public void enableMethodEntryRequest() {
         MethodEntryRequest request = context.getVm().eventRequestManager().createMethodEntryRequest();
-        for (String exclusion : targetManager.getExcludeClasses()) {
-            request.addClassExclusionFilter(exclusion);
+        if (context.getOutputManager().shouldDisplayMethodPosition()) {
+            for (String exclusion : context.getTargetManager().getExcludeClasses()) {
+                request.addClassExclusionFilter(exclusion);
+            }
         }
         request.setSuspendPolicy(EventRequest.SUSPEND_ALL);
         request.enable();
@@ -66,8 +63,10 @@ public class EventRegistrar {
 
     public void enableMethodExitRequest() {
         MethodExitRequest request = context.getVm().eventRequestManager().createMethodExitRequest();
-        for (String exclusion : targetManager.getExcludeClasses()) {
-            request.addClassExclusionFilter(exclusion);
+        if (context.getOutputManager().shouldDisplayMethodPosition()) {
+            for (String exclusion : context.getTargetManager().getExcludeClasses()) {
+                request.addClassExclusionFilter(exclusion);
+            }
         }
         request.setSuspendPolicy(EventRequest.SUSPEND_ALL);
         request.enable();
@@ -94,7 +93,7 @@ public class EventRegistrar {
                 continue;
             }
             ModificationWatchpointRequest request = manager.createModificationWatchpointRequest(field);
-            for (String exclusion : targetManager.getExcludeClasses()) {
+            for (String exclusion : context.getTargetManager().getExcludeClasses()) {
                 request.addClassExclusionFilter(exclusion);
             }
             // Must be SUSPEND_ALL, otherwise the field's value will be messed up

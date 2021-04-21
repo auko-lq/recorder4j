@@ -5,7 +5,6 @@ import com.sun.jdi.event.Event;
 
 /**
  * @author auko
- * @date 2021/3/20 17:57
  */
 public class UnknownEventException extends RuntimeException {
 

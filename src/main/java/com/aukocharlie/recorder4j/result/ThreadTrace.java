@@ -8,8 +8,6 @@ import com.aukocharlie.recorder4j.source.SourcePosition;
 import com.sun.jdi.*;
 import com.sun.jdi.event.*;
 import com.sun.tools.jdi.ArrayReferenceImpl;
-import com.sun.tools.jdi.ClassTypeImpl;
-import com.sun.tools.jdi.EventSetImpl;
 import com.sun.tools.jdi.ObjectReferenceImpl;
 
 import java.util.*;
@@ -19,7 +17,6 @@ import static com.aukocharlie.recorder4j.constant.ThreadConstants.MAIN_METHOD;
 
 /**
  * @author auko
- * @date 2021/3/20 17:37
  */
 public class ThreadTrace {
 

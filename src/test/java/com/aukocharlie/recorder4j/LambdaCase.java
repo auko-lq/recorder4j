@@ -4,7 +4,6 @@ import java.util.function.Consumer;
 
 /**
  * @author auko
- * @date 2021/4/16 11:04
  */
 class LambdaCase {
     public static void main(String[] args) {

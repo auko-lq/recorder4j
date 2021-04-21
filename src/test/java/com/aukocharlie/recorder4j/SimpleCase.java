@@ -4,7 +4,6 @@ import com.aukocharlie.recorder4j.annotation.Target;
 
 /**
  * @author auko
- * @date 2021/3/15 17:17
  */
 public class SimpleCase {
 
