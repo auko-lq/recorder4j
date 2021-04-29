@@ -140,7 +140,9 @@ public class ThreadTrace {
                 varValuesInMethod.put(topFrame.location().method(), varValues);
                 sb.append(String.join(", ", kvString));
 
-                if (!event.location().method().isStatic() && topFrame.thisObject() != null) {
+                if (!event.location().method().isConstructor()
+                        && !event.location().method().isStatic()
+                        && topFrame.thisObject() != null) {
                     sb.append(" | ");
                     sb.append("this: ");
 

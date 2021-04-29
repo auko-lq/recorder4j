@@ -1,6 +1,7 @@
 package com.aukocharlie.recorder4j.result;
 
 
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,4 +53,11 @@ public class OutputManager {
         return this.displayMethodPosition;
     }
 
+    public void redirectOutputTo(OutputStream out, Process process){
+        new StreamRedirectThread("output", process.getInputStream(), out).start();
+    }
+
+    public void redirectErrorTo(OutputStream error, Process process){
+        new StreamRedirectThread("error", process.getErrorStream(), error).start();
+    }
 }

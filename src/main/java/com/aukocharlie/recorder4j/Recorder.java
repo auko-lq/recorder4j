@@ -15,6 +15,8 @@ import com.sun.jdi.connect.IllegalConnectorArgumentsException;
 import com.sun.jdi.connect.VMStartException;
 
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.lang.reflect.*;
 import java.net.URL;
 import java.util.regex.Pattern;
@@ -44,6 +46,8 @@ public class Recorder {
     public void run() {
         try {
             Context context = launcher.launch();
+            outputManager.redirectOutputTo(System.out, context.getProcess());
+            outputManager.redirectErrorTo(System.err, context.getProcess());
             context.setOutputManager(outputManager);
             context.setSourceManager(sourceManager);
             context.setTargetManager(targetManager);
@@ -139,8 +143,8 @@ public class Recorder {
             if (mainClass == null) {
                 throw new InvalidRecorderArgumentException("`main` argument is invalid: `mainClass` must not be null");
             }
-            URL location = mainClass.getProtectionDomain().getCodeSource().getLocation();
-            launcher.addVMOption(String.format("-cp \"%s\"", location.getFile()));
+            RuntimeMXBean rmb = ManagementFactory.getRuntimeMXBean();
+            launcher.addVMOption(String.format("-cp \"%s\"", rmb.getClassPath()));
             launcher.setMainClassName(mainClass.getName());
             return this;
         }

@@ -15,19 +15,19 @@ public class InnerClassCase {
         innerStaticClass.test();
     }
 
-}
-
-class InnerStaticClass {
-    class InnerClass {
-        public void test() {
-            System.out.println("inner class");
+    static class InnerStaticClass {
+        class InnerClass {
+            public void test() {
+                System.out.println("inner class");
+            }
         }
-    }
 
-    public void test() {
-        InnerStaticClass.InnerClass innerClass = new InnerStaticClass.InnerClass();
-        innerClass.test();
-        System.out.println("inner static class");
-    }
+        public void test() {
+            InnerStaticClass.InnerClass innerClass = new InnerStaticClass.InnerClass();
+            innerClass.test();
+            System.out.println("inner static class");
+        }
 
+    }
 }
+

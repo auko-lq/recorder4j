@@ -52,7 +52,7 @@ public class EventRegistrar {
 
     public void enableMethodEntryRequest() {
         MethodEntryRequest request = context.getVm().eventRequestManager().createMethodEntryRequest();
-        if (context.getOutputManager().shouldDisplayMethodPosition()) {
+        if (!context.getOutputManager().shouldDisplayMethodPosition()) {
             for (String exclusion : context.getTargetManager().getExcludeClasses()) {
                 request.addClassExclusionFilter(exclusion);
             }
@@ -63,7 +63,7 @@ public class EventRegistrar {
 
     public void enableMethodExitRequest() {
         MethodExitRequest request = context.getVm().eventRequestManager().createMethodExitRequest();
-        if (context.getOutputManager().shouldDisplayMethodPosition()) {
+        if (!context.getOutputManager().shouldDisplayMethodPosition()) {
             for (String exclusion : context.getTargetManager().getExcludeClasses()) {
                 request.addClassExclusionFilter(exclusion);
             }

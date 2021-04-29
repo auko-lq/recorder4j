@@ -61,10 +61,10 @@ public class SourceManager {
             if (compilationResultIterator.hasNext()) {
                 // A tree represents an AST (source code or package-info)
                 CompilationUnitTree tree = compilationResultIterator.next();
-                SourceScanner scanner = new SourceScanner();
+                CompilationUnitScanner scanner = new CompilationUnitScanner();
                 tree.accept(scanner, null);
-                List<MethodInvocationPosition> positions = scanner.generateMethodExecChain();
-                classNameMethodInvocationsMap.put(className, new MethodInvocationIterator(positions));
+//                List<MethodInvocationPosition> positions = scanner.generateMethodExecChain();
+//                classNameMethodInvocationsMap.put(className, new MethodInvocationIterator(positions));
             }
         } catch (IOException e) {
             throw new RecorderRuntimeException(String.format("IOException occurred while parsing %s: %s", srcFile.getAbsolutePath(), e.getMessage()));

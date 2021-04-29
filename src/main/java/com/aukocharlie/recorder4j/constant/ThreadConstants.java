@@ -1,5 +1,6 @@
 package com.aukocharlie.recorder4j.constant;
 
+
 /**
  * @author auko
  */

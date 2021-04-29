@@ -44,10 +44,47 @@ public class TestBuildRecorderByBuilder {
     }
 
     @Test
-    public void testInnerClassCase(){
+    public void testInnerClassCase() {
         Recorder recorder = Recorder.builder()
                 .outPutReplace("com.aukocharlie.recorder4j.", "")
                 .srcRelativeRootPath("src/test/java").main(InnerClassCase.class)
+                .build();
+        recorder.run();
+    }
+
+
+    @Test
+    public void testIfElseCase() {
+        Recorder recorder = Recorder.builder()
+                .outPutReplace("com.aukocharlie.recorder4j.", "")
+                .srcRelativeRootPath("src/test/java").main(IfElseCase.class)
+                .build();
+        recorder.run();
+    }
+
+    @Test
+    public void testLoopCase() {
+        Recorder recorder = Recorder.builder()
+                .outPutReplace("com.aukocharlie.recorder4j.", "")
+                .srcRelativeRootPath("src/test/java").main(LoopCase.class)
+                .build();
+        recorder.run();
+    }
+
+    @Test
+    public void testBinaryCase(){
+        Recorder recorder = Recorder.builder()
+                .outPutReplace("com.aukocharlie.recorder4j.", "")
+                .srcRelativeRootPath("src/test/java").main(BinaryCase.class)
+                .build();
+        recorder.run();
+    }
+
+    @Test
+    public void testTryCatchCase(){
+        Recorder recorder = Recorder.builder()
+                .outPutReplace("com.aukocharlie.recorder4j.", "")
+                .srcRelativeRootPath("src/test/java").main(TryCatchCase.class)
                 .build();
         recorder.run();
     }

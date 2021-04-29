@@ -80,7 +80,6 @@ public class EventHandler extends Thread {
 
     public void handleClassPrepareEvent(ClassPrepareEvent event) {
         if (event.referenceType().classLoader() != null) {
-//            System.out.println(event.referenceType());
             registrar.enableModificationWatchpointEvent(event.referenceType().allFields());
             try {
                 if (isLambda(event)) {
@@ -113,10 +112,13 @@ public class EventHandler extends Thread {
 
     public void handleExceptionEvent(ExceptionEvent event) {
         if (!ExceptionFilter.skip(event)) {
+            Value detailMessage = event.exception().getValue(event.exception().referenceType().fieldByName("detailMessage"));
             if (event.catchLocation() == null) {
-                System.out.printf("Exception occurred: %s (uncaught)%n", event.exception().referenceType().name());
+                System.out.printf("Exception occurred: %s(uncaught), detailMessage: %s %n",
+                        event.exception().referenceType().name(), detailMessage);
             } else {
-                System.out.printf("Exception occurred: %s (to be caught at: %s)%n", event.exception().referenceType().name(), FormatUtils.locationToString(event.catchLocation()));
+                System.out.printf("Exception occurred: %s(to be caught at: %s), detailMessage: %s %n",
+                        event.exception().referenceType().name(), FormatUtils.locationToString(event.catchLocation()), detailMessage);
             }
         }
     }
