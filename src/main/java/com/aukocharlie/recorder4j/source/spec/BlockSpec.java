@@ -65,18 +65,25 @@ public class BlockSpec implements LambdaAllowed {
         @Override
         public Void visitWhileLoop(WhileLoopTree node, CompilationUnitSpec compilationUnitSpec) {
             statements.add(new WhileLoopStatementSpec(node, compilationUnitSpec));
-            return super.visitWhileLoop(node, compilationUnitSpec);
+            return null;
         }
 
         @Override
         public Void visitForLoop(ForLoopTree node, CompilationUnitSpec compilationUnitSpec) {
             statements.add(new ForLoopStatementSpec(node, compilationUnitSpec));
-            return super.visitForLoop(node, compilationUnitSpec);
+            return null;
         }
 
         @Override
         public Void visitIf(IfTree node, CompilationUnitSpec compilationUnitSpec) {
-            return super.visitIf(node, compilationUnitSpec);
+            statements.add(new IfStatementSpec(node, compilationUnitSpec));
+            return null;
+        }
+
+        @Override
+        public Void visitTry(TryTree node, CompilationUnitSpec compilationUnitSpec) {
+            statements.add(new TryCatchFinallyStatementSpec(node, compilationUnitSpec));
+            return null;
         }
 
     }

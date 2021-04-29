@@ -30,7 +30,7 @@ public class DoWhileLoopStatementSpec implements ControlFlowStatement<Boolean> {
     @Override
     public List<BlockSpec> getLambdaBlockList() {
         List<BlockSpec> lambdaList = new ArrayList<>();
-        loopBlock.statements.stream().map(Statement::getLambdaBlockList).forEach(lambdaList::addAll);
+        lambdaList.addAll(loopBlock.getLambdaBlockList());
         lambdaList.addAll(condition.getLambdaBlockList());
         return lambdaList;
     }

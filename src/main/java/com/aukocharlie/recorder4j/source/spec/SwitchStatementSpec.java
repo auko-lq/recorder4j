@@ -36,7 +36,7 @@ public class SwitchStatementSpec implements ControlFlowStatement<Integer> {
     public List<BlockSpec> getLambdaBlockList() {
         List<BlockSpec> lambdaList = new ArrayList<>();
         lambdaList.addAll(condition.getLambdaBlockList());
-        cases.forEach((caseItem) -> caseItem.statements.stream().map(Statement::getLambdaBlockList).forEach(lambdaList::addAll));
+        cases.forEach((caseItem) -> lambdaList.addAll(caseItem.getLambdaBlockList()));
         return lambdaList;
     }
 

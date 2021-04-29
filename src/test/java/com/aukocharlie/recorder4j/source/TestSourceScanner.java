@@ -169,17 +169,29 @@ public class TestSourceScanner {
             for (CompilationUnitTree tree : result) {
                 SourceScanner scanner = new SourceScanner();
                 tree.accept(scanner, null);
-//                List<MethodInvocationPosition> positions = scanner.generateMethodExecChain();
-//                for (MethodInvocationPosition position : positions) {
-//                    toString(position);
-//                }
-//                System.out.println(sb.toString());
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    @Test
+    public void testTryCatchCase(){
+        String[] path = new String[]{CommonConstants.WORKING_DIR + "src\\test\\java\\com\\aukocharlie\\recorder4j\\TryCatchCase.java"};
+        Iterable<? extends JavaFileObject> files = fileManager.getJavaFileObjects(path);
+
+        JavaCompiler.CompilationTask compilationTask = javacTool.getTask(null, fileManager, null, null, null, files);
+        JavacTask javacTask = (JavacTask) compilationTask;
+        try {
+            Iterable<? extends CompilationUnitTree> result = javacTask.parse();
+            for (CompilationUnitTree tree : result) {
+                SourceScanner scanner = new SourceScanner();
+                tree.accept(scanner, null);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void toString(MethodInvocationPosition position) {
         if (position == null) {

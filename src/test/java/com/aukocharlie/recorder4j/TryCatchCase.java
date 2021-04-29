@@ -5,14 +5,17 @@ package com.aukocharlie.recorder4j;
 
 import com.aukocharlie.recorder4j.exception.RecorderRuntimeException;
 
+import java.io.*;
+
 /**
  * @author auko
  */
 public class TryCatchCase {
     public static void main(String[] args) {
-        try {
+
+        try (OutputStream one = new FileOutputStream(new File(""));
+             OutputStream another = new FileOutputStream(new File(""))){
             System.out.println("test");
-//            Method method  = TryCatchCase.class.getMethod("main", String[].class).
         } catch (Exception e) {
             System.out.println("exception");
             throw new RecorderRuntimeException("");

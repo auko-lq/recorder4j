@@ -31,7 +31,7 @@ public class WhileLoopStatementSpec implements ControlFlowStatement<Boolean> {
     public List<BlockSpec> getLambdaBlockList() {
         List<BlockSpec> lambdaList = new ArrayList<>();
         lambdaList.addAll(condition.getLambdaBlockList());
-        loopBlock.statements.stream().map(Statement::getLambdaBlockList).forEach(lambdaList::addAll);
+        lambdaList.addAll(loopBlock.getLambdaBlockList());
         return lambdaList;
     }
 

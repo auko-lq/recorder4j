@@ -37,8 +37,8 @@ public class IfStatementSpec implements ControlFlowStatement<Boolean> {
     public List<BlockSpec> getLambdaBlockList() {
         List<BlockSpec> lambdaList = new ArrayList<>();
         lambdaList.addAll(condition.getLambdaBlockList());
-        thenBlock.statements.stream().map(Statement::getLambdaBlockList).forEach(lambdaList::addAll);
-        elseBlock.statements.stream().map(Statement::getLambdaBlockList).forEach(lambdaList::addAll);
+        lambdaList.addAll(thenBlock.getLambdaBlockList());
+        lambdaList.addAll(elseBlock.getLambdaBlockList());
         return lambdaList;
     }
 }
