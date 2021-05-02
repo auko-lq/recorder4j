@@ -18,7 +18,7 @@ public class SourceScanner extends TreeScanner<Void, CompilationUnitSpec> {
     @Override
     public Void scan(Tree node, CompilationUnitSpec v) {
         if (node != null) {
-            System.out.println(node.getKind() + ": " + node);
+//            System.out.println(node.getKind() + ": " + node);
         }
         return super.scan(node, v);
     }

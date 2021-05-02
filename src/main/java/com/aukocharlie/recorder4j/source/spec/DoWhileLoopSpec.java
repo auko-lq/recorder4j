@@ -11,14 +11,14 @@ import java.util.Map;
 /**
  * @author auko
  */
-public class DoWhileLoopStatementSpec implements ControlFlowStatement<Boolean> {
+public class DoWhileLoopSpec implements ControlFlow<Boolean> {
 
     BlockSpec loopBlock;
-    Expression condition;
+    ExpressionSpec condition;
 
-    public DoWhileLoopStatementSpec(DoWhileLoopTree node, CompilationUnitSpec compilationUnitSpec) {
+    public DoWhileLoopSpec(DoWhileLoopTree node, CompilationUnitSpec compilationUnitSpec) {
         this.loopBlock = new BlockSpec(node.getStatement(), compilationUnitSpec);
-        this.condition = new ExpressionSpec(node.getCondition(), compilationUnitSpec);
+        this.condition = ExpressionSpec.toSpecificExpression(node.getCondition(), compilationUnitSpec);
     }
 
     @Override

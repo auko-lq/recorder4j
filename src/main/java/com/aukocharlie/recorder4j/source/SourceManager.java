@@ -52,6 +52,7 @@ public class SourceManager {
         if (classNameMethodInvocationsMap.containsKey(className)) {
             return;
         }
+        System.out.println("Ready to parse source code: " + className);
         File srcFile = new File(srcRoot, convertClassNameToPath(className));
         Iterable<? extends JavaFileObject> srcFileObjects = fileManager.getJavaFileObjects(srcFile);
         JavaCompiler.CompilationTask compilationTask = javacTool.getTask(null, fileManager, null, null, null, srcFileObjects);
@@ -61,10 +62,10 @@ public class SourceManager {
             if (compilationResultIterator.hasNext()) {
                 // A tree represents an AST (source code or package-info)
                 CompilationUnitTree tree = compilationResultIterator.next();
-                CompilationUnitScanner scanner = new CompilationUnitScanner();
+                SourceScanner scanner = new SourceScanner();
                 tree.accept(scanner, null);
 //                List<MethodInvocationPosition> positions = scanner.generateMethodExecChain();
-//                classNameMethodInvocationsMap.put(className, new MethodInvocationIterator(positions));
+                classNameMethodInvocationsMap.put(className, new MethodInvocationIterator(Collections.emptyList()));
             }
         } catch (IOException e) {
             throw new RecorderRuntimeException(String.format("IOException occurred while parsing %s: %s", srcFile.getAbsolutePath(), e.getMessage()));

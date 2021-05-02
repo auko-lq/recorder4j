@@ -64,7 +64,15 @@ public class ThreadTrace {
                 // Skip lambda's constructor
                 return;
             }
+
             ThreadReference threadReference = event.thread();
+
+            if (event.method().isConstructor()) {
+                // Put the constructed object into `objectValues` through the valueToString method
+                StackFrame topFrame = threadReference.frame(ThreadConstants.TOP_FRAME);
+                valueToString(topFrame.thisObject());
+            }
+
             // Show the location of caller
             StackFrame callerFrame = threadReference.frame(threadReference.frameCount() > 1 ? 1 : 0);
             Location callerLocation = callerFrame.location();

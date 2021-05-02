@@ -11,13 +11,13 @@ import java.util.Map;
 /**
  * @author auko
  */
-public class WhileLoopStatementSpec implements ControlFlowStatement<Boolean> {
+public class WhileLoopSpec implements ControlFlow<Boolean> {
 
-    Expression condition;
+    ExpressionSpec condition;
     BlockSpec loopBlock;
 
-    public WhileLoopStatementSpec(WhileLoopTree node, CompilationUnitSpec compilationUnitSpec) {
-        this.condition = new ExpressionSpec(node.getCondition(), compilationUnitSpec);
+    public WhileLoopSpec(WhileLoopTree node, CompilationUnitSpec compilationUnitSpec) {
+        this.condition = ExpressionSpec.toSpecificExpression(node.getCondition(), compilationUnitSpec);
         this.loopBlock = new BlockSpec(node.getStatement(), compilationUnitSpec);
     }
 

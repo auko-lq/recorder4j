@@ -24,6 +24,10 @@ public class StaticFieldInitializerSpec implements StaticInitializer {
 
     @Override
     public List<BlockSpec> getLambdaBlockList() {
-        return initializer.getLambdaBlockList();
+        List<BlockSpec> lambdaBlock = initializer.getLambdaBlockList();
+        for (BlockSpec blockSpec : lambdaBlock) {
+            blockSpec.name = "static";
+        }
+        return lambdaBlock;
     }
 }

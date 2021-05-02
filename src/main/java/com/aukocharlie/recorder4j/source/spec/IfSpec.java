@@ -11,14 +11,14 @@ import java.util.Map;
 /**
  * @author auko
  */
-public class IfStatementSpec implements ControlFlowStatement<Boolean> {
+public class IfSpec implements ControlFlow<Boolean> {
 
-    Expression condition;
+    ExpressionSpec condition;
     BlockSpec thenBlock;
     BlockSpec elseBlock;
 
-    public IfStatementSpec(IfTree node, CompilationUnitSpec compilationUnitSpec) {
-        this.condition = new ExpressionSpec(node.getCondition(), compilationUnitSpec);
+    public IfSpec(IfTree node, CompilationUnitSpec compilationUnitSpec) {
+        this.condition = ExpressionSpec.toSpecificExpression(node.getCondition(), compilationUnitSpec);
         this.thenBlock = new BlockSpec(node.getThenStatement(), compilationUnitSpec);
         this.elseBlock = new BlockSpec(node.getElseStatement(), compilationUnitSpec);
     }

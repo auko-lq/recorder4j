@@ -3,7 +3,6 @@ package com.aukocharlie.recorder4j.source.spec;
 import com.aukocharlie.recorder4j.source.UniqueMethod;
 import com.sun.jdi.Value;
 import com.sun.source.tree.ConditionalExpressionTree;
-import com.sun.source.tree.ExpressionTree;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,14 +11,16 @@ import java.util.Map;
 /**
  * @author auko
  */
-public class ConditionExpressionSpec extends ExpressionSpec implements ControlFlowStatement<Boolean> {
+public class ConditionExpressionSpec extends ExpressionSpec implements ControlFlow<Boolean> {
 
-    Expression condition;
-    Expression thenExpression;
-    Expression elseExpression;
+    ExpressionSpec condition;
+    ExpressionSpec trueExpression;
+    ExpressionSpec falseExpression;
 
     public ConditionExpressionSpec(ConditionalExpressionTree node, CompilationUnitSpec compilationUnitSpec) {
-        super(node, compilationUnitSpec);
+        this.condition = toSpecificExpression(node.getCondition(), compilationUnitSpec);
+        this.trueExpression = toSpecificExpression(node.getTrueExpression(), compilationUnitSpec);
+        this.falseExpression = toSpecificExpression(node.getFalseExpression(), compilationUnitSpec);
     }
 
     @Override
@@ -31,8 +32,8 @@ public class ConditionExpressionSpec extends ExpressionSpec implements ControlFl
     public List<BlockSpec> getLambdaBlockList() {
         List<BlockSpec> lambdaList = new ArrayList<>();
         lambdaList.addAll(condition.getLambdaBlockList());
-        lambdaList.addAll(thenExpression.getLambdaBlockList());
-        lambdaList.addAll(elseExpression.getLambdaBlockList());
+        lambdaList.addAll(trueExpression.getLambdaBlockList());
+        lambdaList.addAll(falseExpression.getLambdaBlockList());
         return lambdaList;
     }
 

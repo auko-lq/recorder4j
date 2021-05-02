@@ -24,6 +24,10 @@ public class Position {
         this.position = (int) position;
     }
 
+    public int getPosition() {
+        return this.position;
+    }
+
     public static Position unknownPosition() {
         return UNKNOWN_POSITION;
     }

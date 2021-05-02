@@ -11,14 +11,14 @@ import java.util.Map;
 /**
  * @author auko
  */
-public class ForLoopStatementSpec implements ControlFlowStatement<Boolean> {
+public class ForLoopSpec implements ControlFlow<Boolean> {
 
     List<Statement> initializers = new ArrayList<>();
-    Expression condition;
+    ExpressionSpec condition;
     BlockSpec loopBlock;
-    List<Expression> updates;
+    List<ExpressionSpec> updates;
 
-    public ForLoopStatementSpec(ForLoopTree node, CompilationUnitSpec compilationUnitSpec) {
+    public ForLoopSpec(ForLoopTree node, CompilationUnitSpec compilationUnitSpec) {
         node.getInitializer().forEach((initializer) -> {
             if (initializer instanceof VariableTree) {
                 initializers.add(new InitializerOrAssignmentSpec((VariableTree) initializer, compilationUnitSpec));
@@ -30,9 +30,9 @@ public class ForLoopStatementSpec implements ControlFlowStatement<Boolean> {
             }
         });
 
-        this.condition = new ExpressionSpec(node.getCondition(), compilationUnitSpec);
+        this.condition = ExpressionSpec.toSpecificExpression(node.getCondition(), compilationUnitSpec);
         node.getUpdate().forEach((update) ->
-                updates.add(new ExpressionSpec(update.getExpression(), compilationUnitSpec)));
+                updates.add(ExpressionSpec.toSpecificExpression(update.getExpression(), compilationUnitSpec)));
         this.loopBlock = new BlockSpec(node.getStatement(), compilationUnitSpec);
     }
 

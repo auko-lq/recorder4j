@@ -60,7 +60,7 @@ public class ClassSpec {
 
         public Void visitMethod(MethodTree node, CompilationUnitSpec compilationUnitSpec) {
             List<String> parameterTypes = node.getTypeParameters().stream().map(Object::toString).collect(Collectors.toList());
-            BlockSpec methodBlock = new BlockSpec(node.getBody(), compilationUnitSpec);
+            BlockSpec methodBlock = new MethodBlockSpec(node.getBody(), compilationUnitSpec, node.getName().toString());
 
             for (BlockSpec lambdaBlock : methodBlock.getLambdaBlockList()) {
                 addLambdaBlock(String.format("lambda$%s$%s", node.getName().toString(), lambdaBlocks.size()), lambdaBlock);

@@ -11,14 +11,14 @@ import java.util.List;
  */
 public class InitializerOrAssignmentSpec implements Statement {
 
-    Expression valueExpr;
+    ExpressionSpec valueExpr;
 
     public InitializerOrAssignmentSpec(VariableTree node, CompilationUnitSpec compilationUnitSpec) {
-        this.valueExpr = new ExpressionSpec(node.getInitializer(), compilationUnitSpec);
+        this.valueExpr = ExpressionSpec.toSpecificExpression(node.getInitializer(), compilationUnitSpec);
     }
 
     public InitializerOrAssignmentSpec(AssignmentTree node, CompilationUnitSpec compilationUnitSpec) {
-        this.valueExpr = new ExpressionSpec(node.getExpression(), compilationUnitSpec);
+        this.valueExpr = ExpressionSpec.toSpecificExpression(node.getExpression(), compilationUnitSpec);
     }
 
     @Override

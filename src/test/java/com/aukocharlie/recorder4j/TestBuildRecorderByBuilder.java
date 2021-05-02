@@ -18,6 +18,17 @@ public class TestBuildRecorderByBuilder {
         recorder.run();
     }
 
+
+    @Test
+    public void testChainCase() {
+        Recorder recorder = Recorder.builder()
+                .main(ChainCase.class)
+                .srcRelativeRootPath("src/test/java")
+                .outPutReplace("com.aukocharlie.recorder4j.", "")
+                .build();
+        recorder.run();
+    }
+
     @Test
     public void testTwoClasses() {
         Recorder recorder = Recorder.builder()
@@ -31,14 +42,18 @@ public class TestBuildRecorderByBuilder {
     @Test
     public void testThreadCase() throws InterruptedException {
         Recorder recorder = Recorder.builder()
-                .srcRelativeRootPath("src/test/java").main(ThreadCase.class).mainArgs(new String[]{"123"}).build();
+                .srcRelativeRootPath("src/test/java")
+                .main(ThreadCase.class)
+                .mainArgs(new String[]{"123"})
+                .build();
         recorder.run();
     }
 
     @Test
     public void testLambdaCase() {
         Recorder recorder = Recorder.builder()
-                .srcRelativeRootPath("src/test/java").main(LambdaCase.class)
+                .srcRelativeRootPath("src/test/java")
+                .main(LambdaCase.class)
                 .build();
         recorder.run();
     }
@@ -47,7 +62,8 @@ public class TestBuildRecorderByBuilder {
     public void testInnerClassCase() {
         Recorder recorder = Recorder.builder()
                 .outPutReplace("com.aukocharlie.recorder4j.", "")
-                .srcRelativeRootPath("src/test/java").main(InnerClassCase.class)
+                .srcRelativeRootPath("src/test/java")
+                .main(InnerClassCase.class)
                 .build();
         recorder.run();
     }
@@ -72,7 +88,7 @@ public class TestBuildRecorderByBuilder {
     }
 
     @Test
-    public void testBinaryCase(){
+    public void testBinaryCase() {
         Recorder recorder = Recorder.builder()
                 .outPutReplace("com.aukocharlie.recorder4j.", "")
                 .srcRelativeRootPath("src/test/java").main(BinaryCase.class)
@@ -81,7 +97,7 @@ public class TestBuildRecorderByBuilder {
     }
 
     @Test
-    public void testTryCatchCase(){
+    public void testTryCatchCase() {
         Recorder recorder = Recorder.builder()
                 .outPutReplace("com.aukocharlie.recorder4j.", "")
                 .srcRelativeRootPath("src/test/java").main(TryCatchCase.class)

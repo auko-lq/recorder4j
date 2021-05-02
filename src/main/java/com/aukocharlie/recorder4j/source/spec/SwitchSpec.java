@@ -12,13 +12,13 @@ import java.util.Map;
 /**
  * @author auko
  */
-public class SwitchStatementSpec implements ControlFlowStatement<Integer> {
+public class SwitchSpec implements ControlFlow<Integer> {
 
-    Expression condition;
+    ExpressionSpec condition;
     List<BlockSpec> cases = new ArrayList<>();
 
-    public SwitchStatementSpec(SwitchTree node, CompilationUnitSpec compilationUnitSpec) {
-        this.condition = new ExpressionSpec(node.getExpression(), compilationUnitSpec);
+    public SwitchSpec(SwitchTree node, CompilationUnitSpec compilationUnitSpec) {
+        this.condition = ExpressionSpec.toSpecificExpression(node.getExpression(), compilationUnitSpec);
         List<? extends CaseTree> cases = node.getCases();
         if (cases != null) {
             for (CaseTree caseItem : cases) {

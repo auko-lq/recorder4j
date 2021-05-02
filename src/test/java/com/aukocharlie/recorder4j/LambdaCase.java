@@ -10,7 +10,21 @@ class LambdaCase {
     static {
         test((arg) -> {
             print(arg);
+            test((arg1) -> {
+                print(arg1);
+                test((arg2) -> {
+                    print(arg2);
+                }, "inner inner");
+            }, "inner");
         }, "static");
+
+        for (String str = test((arg1) -> {
+            print(arg1);
+        }); str.length() != 0; str = "") {
+            test((arg1) -> {
+                print(arg1);
+            }, "for loop");
+        }
     }
 
     public static String t = true ? test((a) -> {
@@ -30,8 +44,8 @@ class LambdaCase {
     }
 
     public static String test(Consumer<String> consumer) {
-        consumer.accept("test");
-        return "test";
+        consumer.accept("single arg");
+        return "single arg";
     }
 
     public static void lambda1() {

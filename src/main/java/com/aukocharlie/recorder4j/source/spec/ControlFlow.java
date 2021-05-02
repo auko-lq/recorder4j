@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * @author auko
  */
-public interface ControlFlowStatement<C> extends Statement {
+public interface ControlFlow<C> extends Statement {
 
     C evaluateCondition(Map<UniqueMethod, Value> callResults);
 

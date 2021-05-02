@@ -9,10 +9,10 @@ import java.util.List;
  */
 public class ExpressionStatementSpec implements Statement {
 
-    Expression expression;
+    ExpressionSpec expression;
 
     public ExpressionStatementSpec(ExpressionStatementTree node, CompilationUnitSpec compilationUnitSpec) {
-        this.expression = new ExpressionSpec(node.getExpression(), compilationUnitSpec);
+        this.expression = ExpressionSpec.toSpecificExpression(node.getExpression(), compilationUnitSpec);
     }
 
     @Override
