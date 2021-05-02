@@ -53,6 +53,9 @@ public class MethodInvocationExpressionSpec extends ExpressionSpec {
         }
         currentMethodInvocation.nextMethodInvocationOnChain = nextMethodInvocation;
         ExpressionTree methodSelect = currentMethodInvocationNode.getMethodSelect();
+        // TODO: bug fix:  methodSelect is not preMethodInvocation!
+        System.out.println(methodSelect);
+        System.out.println(methodSelect.getClass());
         if (methodSelect instanceof MethodInvocationTree) {
             return generateMethodInvocationChain((MethodInvocationTree) methodSelect, compilationUnitSpec, currentMethodInvocation);
         } else {

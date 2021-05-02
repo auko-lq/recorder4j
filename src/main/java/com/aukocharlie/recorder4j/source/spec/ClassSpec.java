@@ -53,7 +53,7 @@ public class ClassSpec {
             StaticFieldInitializerSpec staticFieldinItializerSpec = new StaticFieldInitializerSpec(node, compilationUnitSpec);
             staticInitializers.add(staticFieldinItializerSpec);
             for (BlockSpec lambdaBlock : staticFieldinItializerSpec.getLambdaBlockList()) {
-                addLambdaBlock(String.format("lambda$static$%s", lambdaBlocks.size()), lambdaBlock);
+                addLambdaBlock(String.format("lambda$%s$%s", lambdaBlock.name, lambdaBlocks.size()), lambdaBlock);
             }
             return null;
         }
@@ -63,7 +63,7 @@ public class ClassSpec {
             BlockSpec methodBlock = new MethodBlockSpec(node.getBody(), compilationUnitSpec, node.getName().toString());
 
             for (BlockSpec lambdaBlock : methodBlock.getLambdaBlockList()) {
-                addLambdaBlock(String.format("lambda$%s$%s", node.getName().toString(), lambdaBlocks.size()), lambdaBlock);
+                addLambdaBlock(String.format("lambda$%s$%s", lambdaBlock.name, lambdaBlocks.size()), lambdaBlock);
             }
 
             UniqueMethod method = new UniqueMethod(className, node.getName().toString(), parameterTypes);
@@ -77,7 +77,7 @@ public class ClassSpec {
                 StaticBlockSpec staticBlockSpec = new StaticBlockSpec(node, compilationUnitSpec);
                 staticInitializers.add(staticBlockSpec);
                 for (BlockSpec lambdaBlock : staticBlockSpec.getLambdaBlockList()) {
-                    addLambdaBlock(String.format("lambda$static$%s", lambdaBlocks.size()), lambdaBlock);
+                    addLambdaBlock(String.format("lambda$%s$%s", lambdaBlock.name, lambdaBlocks.size()), lambdaBlock);
                 }
             }
             return null;

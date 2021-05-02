@@ -16,7 +16,7 @@ public class ForLoopSpec implements ControlFlow<Boolean> {
     List<Statement> initializers = new ArrayList<>();
     ExpressionSpec condition;
     BlockSpec loopBlock;
-    List<ExpressionSpec> updates;
+    List<ExpressionSpec> updates = new ArrayList<>();
 
     public ForLoopSpec(ForLoopTree node, CompilationUnitSpec compilationUnitSpec) {
         node.getInitializer().forEach((initializer) -> {
@@ -31,8 +31,8 @@ public class ForLoopSpec implements ControlFlow<Boolean> {
         });
 
         this.condition = ExpressionSpec.toSpecificExpression(node.getCondition(), compilationUnitSpec);
-        node.getUpdate().forEach((update) ->
-                updates.add(ExpressionSpec.toSpecificExpression(update.getExpression(), compilationUnitSpec)));
+        node.getUpdate().forEach((update) -> updates.add(ExpressionSpec.toSpecificExpression(update.getExpression(), compilationUnitSpec))
+        );
         this.loopBlock = new BlockSpec(node.getStatement(), compilationUnitSpec);
     }
 
