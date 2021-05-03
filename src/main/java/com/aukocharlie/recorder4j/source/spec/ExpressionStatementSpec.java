@@ -24,4 +24,14 @@ public class ExpressionStatementSpec implements Statement {
     public List<BlockSpec> getLambdaBlockList() {
         return expression.getLambdaBlockList();
     }
+
+    @Override
+    public boolean hasNextMethodInvocation() {
+        return false;
+    }
+
+    @Override
+    public MethodInvocationPosition nextMethodInvocation() {
+        return null;
+    }
 }

@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * @author auko
  */
-public class BlockSpec implements LambdaAllowed {
+public class BlockSpec implements LambdaPlaceable {
 
     /**
      * There are three cases for the value:

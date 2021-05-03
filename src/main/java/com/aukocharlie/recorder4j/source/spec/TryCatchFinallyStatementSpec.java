@@ -48,4 +48,14 @@ public class TryCatchFinallyStatementSpec implements Statement {
         lambdaList.addAll(finallyBlock.getLambdaBlockList());
         return lambdaList;
     }
+
+    @Override
+    public boolean hasNextMethodInvocation() {
+        return false;
+    }
+
+    @Override
+    public MethodInvocationPosition nextMethodInvocation() {
+        return null;
+    }
 }

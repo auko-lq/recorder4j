@@ -39,4 +39,14 @@ public class DoWhileLoopSpec implements ControlFlow<Boolean> {
     public Expression nextExpression() {
         return null;
     }
+
+    @Override
+    public boolean hasNextMethodInvocation() {
+        return false;
+    }
+
+    @Override
+    public MethodInvocationPosition nextMethodInvocation() {
+        return null;
+    }
 }

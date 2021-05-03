@@ -30,4 +30,14 @@ public class InitializerOrAssignmentSpec implements Statement {
     public List<BlockSpec> getLambdaBlockList() {
         return valueExpr.getLambdaBlockList();
     }
+
+    @Override
+    public boolean hasNextMethodInvocation() {
+        return false;
+    }
+
+    @Override
+    public MethodInvocationPosition nextMethodInvocation() {
+        return null;
+    }
 }

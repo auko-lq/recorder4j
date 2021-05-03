@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * @author auko
  */
-public interface LambdaAllowed {
+public interface LambdaPlaceable {
 
     List<BlockSpec> getLambdaBlockList();
 

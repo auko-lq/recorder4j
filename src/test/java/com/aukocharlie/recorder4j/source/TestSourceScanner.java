@@ -44,10 +44,6 @@ public class TestSourceScanner {
                 CompilationUnitScanner scanner = new CompilationUnitScanner();
                 tree.accept(scanner, null);
                 System.out.println();
-//                List<MethodInvocationPosition> positions = scanner.generateMethodExecChain();
-//                for (MethodInvocationPosition position : positions) {
-//                    toString(position);
-//                }
 //                Assert.assertEquals("new ChainCase(\"0\"): 16:31 -> 16:49\n" +
 //                        "chain(\"2\"): 17:18 -> 17:28\n" +
 //                        "new ChainCase(\"3\"): 18:24 -> 18:42\n" +
@@ -75,10 +71,6 @@ public class TestSourceScanner {
             for (CompilationUnitTree tree : result) {
                 CompilationUnitScanner scanner = new CompilationUnitScanner();
                 tree.accept(scanner, null);
-//                List<MethodInvocationPosition> positions = scanner.generateMethodExecChain();
-//                for (MethodInvocationPosition position : positions) {
-//                    toString(position);
-//                }
                 System.out.println(sb.toString());
             }
         } catch (IOException e) {
@@ -99,10 +91,6 @@ public class TestSourceScanner {
             for (CompilationUnitTree tree : result) {
                 SourceScanner scanner = new SourceScanner();
                 tree.accept(scanner, null);
-//                List<MethodInvocationPosition> positions = scanner.generateMethodExecChain();
-//                for (MethodInvocationPosition position : positions) {
-//                    toString(position);
-//                }
                 System.out.println(sb.toString());
             }
         } catch (IOException e) {
@@ -122,10 +110,6 @@ public class TestSourceScanner {
             for (CompilationUnitTree tree : result) {
                 SourceScanner scanner = new SourceScanner();
                 tree.accept(scanner, null);
-//                List<MethodInvocationPosition> positions = scanner.generateMethodExecChain();
-//                for (MethodInvocationPosition position : positions) {
-//                    toString(position);
-//                }
                 System.out.println(sb.toString());
             }
         } catch (IOException e) {
@@ -146,11 +130,6 @@ public class TestSourceScanner {
             for (CompilationUnitTree tree : result) {
                 SourceScanner scanner = new SourceScanner();
                 tree.accept(scanner, null);
-//                List<MethodInvocationPosition> positions = scanner.generateMethodExecChain();
-//                for (MethodInvocationPosition position : positions) {
-//                    toString(position);
-//                }
-//                System.out.println(sb.toString());
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -193,18 +172,4 @@ public class TestSourceScanner {
             e.printStackTrace();
         }
     }
-
-    public void toString(MethodInvocationPosition position) {
-        if (position == null) {
-            return;
-        }
-        for (MethodInvocationPosition argMethod : position.getArgMethodPosition()) {
-            toString(argMethod);
-        }
-        sb.append(position.source + ": " + position.toString() + "\n");
-        if (position.nextMethod() != null) {
-            toString(position.nextMethod());
-        }
-    }
-
 }

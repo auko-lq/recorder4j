@@ -13,7 +13,7 @@ import com.sun.tools.javac.tree.TreeInfo;
  */
 public class SourcePosition {
 
-    protected String source;
+    public String source;
 
     public Position startPosition;
     public Position endPosition;

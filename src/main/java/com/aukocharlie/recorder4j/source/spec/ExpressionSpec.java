@@ -1,6 +1,6 @@
 package com.aukocharlie.recorder4j.source.spec;
 
-import com.aukocharlie.recorder4j.source.MethodInvocationPosition;
+import com.aukocharlie.recorder4j.exception.RecorderRuntimeException;
 import com.aukocharlie.recorder4j.source.SourceScanner;
 import com.sun.source.tree.*;
 
@@ -30,13 +30,18 @@ public class ExpressionSpec implements Expression {
     }
 
     @Override
-    public List<MethodInvocationPosition> getMethodInvocations() {
-        return null;
+    public List<BlockSpec> getLambdaBlockList() {
+        return Collections.emptyList();
     }
 
     @Override
-    public List<BlockSpec> getLambdaBlockList() {
-        return Collections.emptyList();
+    public boolean hasNextMethodInvocation() {
+        return false;
+    }
+
+    @Override
+    public MethodInvocationPosition nextMethodInvocation() {
+        throw new RecorderRuntimeException("Useless expression has not next method invocation");
     }
 
     static class ExpressionScanner extends SourceScanner {
@@ -45,7 +50,6 @@ public class ExpressionSpec implements Expression {
 
         @Override
         public Void visitLambdaExpression(LambdaExpressionTree node, CompilationUnitSpec compilationUnitSpec) {
-            // TODO: body kind is EXPRESSION?
             if (this.specificExpr == null && node.getBodyKind() == STATEMENT) {
                 this.specificExpr = new LambdaExpressionSpec(node, compilationUnitSpec);
             }
@@ -76,5 +80,16 @@ public class ExpressionSpec implements Expression {
             return null;
         }
 
+
+        /**
+         * Think of <em>new class</em> as a <em>method invocation</em> (constructor method)
+         */
+        @Override
+        public Void visitNewClass(NewClassTree node, CompilationUnitSpec compilationUnitSpec) {
+            if (this.specificExpr == null) {
+                this.specificExpr = getFirstMethodInvocationOnChain(node, compilationUnitSpec);
+            }
+            return null;
+        }
     }
 }
