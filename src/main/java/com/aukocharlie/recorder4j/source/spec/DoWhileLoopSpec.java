@@ -13,12 +13,19 @@ import java.util.Map;
  */
 public class DoWhileLoopSpec implements ControlFlow<Boolean> {
 
+    String labelName;
+
     BlockSpec loopBlock;
     ExpressionSpec condition;
 
     public DoWhileLoopSpec(DoWhileLoopTree node, CompilationUnitSpec compilationUnitSpec) {
+        this(node, compilationUnitSpec, null);
+    }
+
+    public DoWhileLoopSpec(DoWhileLoopTree node, CompilationUnitSpec compilationUnitSpec, String labelName) {
         this.loopBlock = new BlockSpec(node.getStatement(), compilationUnitSpec);
         this.condition = ExpressionSpec.toSpecificExpression(node.getCondition(), compilationUnitSpec);
+        this.labelName = labelName;
     }
 
     @Override

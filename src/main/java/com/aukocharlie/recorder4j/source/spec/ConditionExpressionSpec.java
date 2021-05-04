@@ -17,7 +17,8 @@ public class ConditionExpressionSpec extends ExpressionSpec implements ControlFl
     ExpressionSpec trueExpression;
     ExpressionSpec falseExpression;
 
-    public ConditionExpressionSpec(ConditionalExpressionTree node, CompilationUnitSpec compilationUnitSpec) {
+    public ConditionExpressionSpec(ConditionalExpressionTree node, CompilationUnitSpec compilationUnitSpec, String originalExpr) {
+        super(originalExpr);
         this.condition = toSpecificExpression(node.getCondition(), compilationUnitSpec);
         this.trueExpression = toSpecificExpression(node.getTrueExpression(), compilationUnitSpec);
         this.falseExpression = toSpecificExpression(node.getFalseExpression(), compilationUnitSpec);

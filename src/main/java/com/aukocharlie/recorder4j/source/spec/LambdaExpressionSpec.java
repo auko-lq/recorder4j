@@ -15,7 +15,8 @@ public class LambdaExpressionSpec extends ExpressionSpec {
 
     BlockSpec lambdaBlock;
 
-    public LambdaExpressionSpec(LambdaExpressionTree node, CompilationUnitSpec compilationUnitSpec) {
+    public LambdaExpressionSpec(LambdaExpressionTree node, CompilationUnitSpec compilationUnitSpec, String originalExpr) {
+        super(originalExpr);
         if (node.getBodyKind() == STATEMENT) {
             this.lambdaBlock = new LambdaBlockSpec((BlockTree) node.getBody(), compilationUnitSpec);
         }

@@ -13,12 +13,15 @@ import java.util.Map;
  */
 public class ForLoopSpec implements ControlFlow<Boolean> {
 
+    String labelName;
+
     List<Statement> initializers = new ArrayList<>();
     ExpressionSpec condition;
     BlockSpec loopBlock;
     List<ExpressionSpec> updates = new ArrayList<>();
 
-    public ForLoopSpec(ForLoopTree node, CompilationUnitSpec compilationUnitSpec) {
+    public ForLoopSpec(ForLoopTree node, CompilationUnitSpec compilationUnitSpec, String labelName) {
+        this.labelName = labelName;
         node.getInitializer().forEach((initializer) -> {
             if (initializer instanceof VariableTree) {
                 initializers.add(new InitializerOrAssignmentSpec((VariableTree) initializer, compilationUnitSpec));
@@ -34,6 +37,10 @@ public class ForLoopSpec implements ControlFlow<Boolean> {
         node.getUpdate().forEach((update) -> updates.add(ExpressionSpec.toSpecificExpression(update.getExpression(), compilationUnitSpec))
         );
         this.loopBlock = new BlockSpec(node.getStatement(), compilationUnitSpec);
+    }
+
+    public ForLoopSpec(ForLoopTree node, CompilationUnitSpec compilationUnitSpec) {
+        this(node, compilationUnitSpec, null);
     }
 
     @Override
@@ -54,6 +61,16 @@ public class ForLoopSpec implements ControlFlow<Boolean> {
 
     @Override
     public Expression nextExpression() {
+        return null;
+    }
+
+    @Override
+    public boolean hasNextMethodInvocation() {
+        return false;
+    }
+
+    @Override
+    public MethodInvocationPosition nextMethodInvocation() {
         return null;
     }
 }

@@ -15,18 +15,22 @@ import static com.sun.source.tree.LambdaExpressionTree.BodyKind.STATEMENT;
  */
 public class ExpressionSpec implements Expression {
 
-    private static final ExpressionSpec USELESS_EXPRESSION = new ExpressionSpec();
+    String originalExpr;
+
+    public ExpressionSpec(String expr) {
+        this.originalExpr = expr;
+    }
 
     /**
      * Perform a depth-first search on expression to find the specific expression scanned first.
      */
     static ExpressionSpec toSpecificExpression(ExpressionTree node, CompilationUnitSpec compilationUnitSpec) {
-        ExpressionScanner expressionScanner = new ExpressionScanner();
+        ExpressionScanner expressionScanner = new ExpressionScanner(node.toString());
         expressionScanner.scan(node, compilationUnitSpec);
         if (expressionScanner.specificExpr != null) {
             return expressionScanner.specificExpr;
         }
-        return USELESS_EXPRESSION;
+        return new ExpressionSpec(node.toString());
     }
 
     @Override
@@ -48,10 +52,16 @@ public class ExpressionSpec implements Expression {
 
         ExpressionSpec specificExpr = null;
 
+        String scannedExpr;
+
+        public ExpressionScanner(String expr) {
+            this.scannedExpr = expr;
+        }
+
         @Override
         public Void visitLambdaExpression(LambdaExpressionTree node, CompilationUnitSpec compilationUnitSpec) {
             if (this.specificExpr == null && node.getBodyKind() == STATEMENT) {
-                this.specificExpr = new LambdaExpressionSpec(node, compilationUnitSpec);
+                this.specificExpr = new LambdaExpressionSpec(node, compilationUnitSpec, scannedExpr);
             }
             return null;
         }
@@ -59,7 +69,7 @@ public class ExpressionSpec implements Expression {
         @Override
         public Void visitConditionalExpression(ConditionalExpressionTree node, CompilationUnitSpec compilationUnitSpec) {
             if (this.specificExpr == null) {
-                this.specificExpr = new ConditionExpressionSpec(node, compilationUnitSpec);
+                this.specificExpr = new ConditionExpressionSpec(node, compilationUnitSpec, scannedExpr);
             }
             return null;
         }
@@ -67,7 +77,7 @@ public class ExpressionSpec implements Expression {
         @Override
         public Void visitBinary(BinaryTree node, CompilationUnitSpec compilationUnitSpec) {
             if (this.specificExpr == null) {
-                this.specificExpr = new BinaryExpressionSpec(node, compilationUnitSpec);
+                this.specificExpr = new BinaryExpressionSpec(node, compilationUnitSpec, scannedExpr);
             }
             return null;
         }
@@ -75,7 +85,7 @@ public class ExpressionSpec implements Expression {
         @Override
         public Void visitMethodInvocation(MethodInvocationTree node, CompilationUnitSpec compilationUnitSpec) {
             if (this.specificExpr == null) {
-                this.specificExpr = getFirstMethodInvocationOnChain(node, compilationUnitSpec);
+                this.specificExpr = getFirstMethodInvocationOnChain(node, compilationUnitSpec, scannedExpr);
             }
             return null;
         }
@@ -87,7 +97,7 @@ public class ExpressionSpec implements Expression {
         @Override
         public Void visitNewClass(NewClassTree node, CompilationUnitSpec compilationUnitSpec) {
             if (this.specificExpr == null) {
-                this.specificExpr = getFirstMethodInvocationOnChain(node, compilationUnitSpec);
+                this.specificExpr = getFirstMethodInvocationOnChain(node, compilationUnitSpec, scannedExpr);
             }
             return null;
         }

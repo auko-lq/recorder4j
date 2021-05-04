@@ -7,4 +7,6 @@ package com.aukocharlie.recorder4j.source.spec;
  */
 public interface Expression extends LambdaPlaceable, MethodInvocationPlaceable {
 
+
+
 }

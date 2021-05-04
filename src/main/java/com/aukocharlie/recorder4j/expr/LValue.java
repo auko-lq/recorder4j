@@ -518,6 +518,7 @@ abstract class LValue {
 
         @Override
         void invokeWith(List<Value> arguments) throws ParseException {
+            // TODO: return result directly
             if (matchingMethod != null) {
                 throw new ParseException("Invalid consecutive invocations");
             }

@@ -5,6 +5,7 @@ package com.aukocharlie.recorder4j.source.spec;
  */
 public interface MethodInvocationPlaceable {
 
+    // TODO: implement these method
     boolean hasNextMethodInvocation();
 
     MethodInvocationPosition nextMethodInvocation();

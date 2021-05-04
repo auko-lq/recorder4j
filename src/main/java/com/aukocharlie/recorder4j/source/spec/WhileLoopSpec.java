@@ -13,12 +13,19 @@ import java.util.Map;
  */
 public class WhileLoopSpec implements ControlFlow<Boolean> {
 
+    String labelName;
+
     ExpressionSpec condition;
     BlockSpec loopBlock;
 
-    public WhileLoopSpec(WhileLoopTree node, CompilationUnitSpec compilationUnitSpec) {
+    public WhileLoopSpec(WhileLoopTree node, CompilationUnitSpec compilationUnitSpec, String labelName) {
         this.condition = ExpressionSpec.toSpecificExpression(node.getCondition(), compilationUnitSpec);
         this.loopBlock = new BlockSpec(node.getStatement(), compilationUnitSpec);
+        this.labelName = labelName;
+    }
+
+    public WhileLoopSpec(WhileLoopTree node, CompilationUnitSpec compilationUnitSpec) {
+        this(node, compilationUnitSpec, null);
     }
 
     @Override
@@ -37,6 +44,16 @@ public class WhileLoopSpec implements ControlFlow<Boolean> {
 
     @Override
     public Expression nextExpression() {
+        return null;
+    }
+
+    @Override
+    public boolean hasNextMethodInvocation() {
+        return false;
+    }
+
+    @Override
+    public MethodInvocationPosition nextMethodInvocation() {
         return null;
     }
 }

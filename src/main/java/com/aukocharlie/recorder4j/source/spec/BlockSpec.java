@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * @author auko
  */
-public class BlockSpec implements LambdaPlaceable {
+public class BlockSpec implements LambdaPlaceable, MethodInvocationPlaceable {
 
     /**
      * There are three cases for the value:
@@ -66,6 +66,16 @@ public class BlockSpec implements LambdaPlaceable {
         return lambdaList;
     }
 
+    @Override
+    public boolean hasNextMethodInvocation() {
+        return false;
+    }
+
+    @Override
+    public MethodInvocationPosition nextMethodInvocation() {
+        return null;
+    }
+
     class StatementScanner extends SourceScanner {
 
         @Override
@@ -110,6 +120,11 @@ public class BlockSpec implements LambdaPlaceable {
             return null;
         }
 
+        @Override
+        public Void visitLabeledStatement(LabeledStatementTree node, CompilationUnitSpec compilationUnitSpec) {
+            statements.add(new LabeledStatementSpec(node, compilationUnitSpec));
+            return null;
+        }
     }
 
 }
@@ -128,7 +143,6 @@ class StaticBlockSpec extends BlockSpec implements StaticInitializer {
     public StaticBlockSpec(BlockTree node, CompilationUnitSpec compilationUnitSpec) {
         super(node, compilationUnitSpec, "static");
     }
-
 }
 
 class LambdaBlockSpec extends BlockSpec {

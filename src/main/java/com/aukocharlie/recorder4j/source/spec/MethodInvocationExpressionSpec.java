@@ -27,8 +27,8 @@ public class MethodInvocationExpressionSpec extends ExpressionSpec {
     /**
      * Think of <em>new class</em> as a <em>method invocation</em> (constructor method)
      */
-    public MethodInvocationExpressionSpec(ExpressionTree node, CompilationUnitSpec compilationUnitSpec) {
-        System.out.println(node);
+    public MethodInvocationExpressionSpec(ExpressionTree node, CompilationUnitSpec compilationUnitSpec, String originalExpr) {
+        super(originalExpr);
         this.methodInvocationPosition = new MethodInvocationPosition(compilationUnitSpec.getSourcePosition(node));
         this.compilationUnitSpec = compilationUnitSpec;
         if (node instanceof MethodInvocationTree) {
@@ -53,12 +53,12 @@ public class MethodInvocationExpressionSpec extends ExpressionSpec {
      * @param wholeChainNode In the example, node is <em>test.one().another()</em>
      * @return the first method invocation on the chain. In the example, it is <em>test.one()</em>
      */
-    static MethodInvocationExpressionSpec getFirstMethodInvocationOnChain(ExpressionTree wholeChainNode, CompilationUnitSpec compilationUnitSpec) {
-        return generateMethodInvocationChain(wholeChainNode, compilationUnitSpec, null);
+    static MethodInvocationExpressionSpec getFirstMethodInvocationOnChain(ExpressionTree wholeChainNode, CompilationUnitSpec compilationUnitSpec, String originalExpr) {
+        return generateMethodInvocationChain(wholeChainNode, compilationUnitSpec, null, originalExpr);
     }
 
-    static MethodInvocationExpressionSpec generateMethodInvocationChain(ExpressionTree currentMethodInvocationNode, CompilationUnitSpec compilationUnitSpec, MethodInvocationExpressionSpec nextMethodInvocation) {
-        MethodInvocationExpressionSpec currentMethodInvocation = new MethodInvocationExpressionSpec(currentMethodInvocationNode, compilationUnitSpec);
+    static MethodInvocationExpressionSpec generateMethodInvocationChain(ExpressionTree currentMethodInvocationNode, CompilationUnitSpec compilationUnitSpec, MethodInvocationExpressionSpec nextMethodInvocation, String originalExpr) {
+        MethodInvocationExpressionSpec currentMethodInvocation = new MethodInvocationExpressionSpec(currentMethodInvocationNode, compilationUnitSpec, originalExpr);
         if (nextMethodInvocation != null) {
             nextMethodInvocation.adjustSrcAndPosition(currentMethodInvocation);
         }
@@ -71,7 +71,7 @@ public class MethodInvocationExpressionSpec extends ExpressionSpec {
             if (methodSelect instanceof MemberSelectTree) {
                 ExpressionTree preExpression = ((MemberSelectTree) methodSelect).getExpression();
                 if (preExpression instanceof MethodInvocationTree || preExpression instanceof NewClassTree) {
-                    return generateMethodInvocationChain(preExpression, compilationUnitSpec, currentMethodInvocation);
+                    return generateMethodInvocationChain(preExpression, compilationUnitSpec, currentMethodInvocation, originalExpr);
                 }
             }
         }

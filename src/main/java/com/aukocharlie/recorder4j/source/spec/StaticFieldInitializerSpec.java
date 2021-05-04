@@ -32,4 +32,14 @@ public class StaticFieldInitializerSpec implements StaticInitializer {
         }
         return lambdaBlock;
     }
+
+    @Override
+    public boolean hasNextMethodInvocation() {
+        return false;
+    }
+
+    @Override
+    public MethodInvocationPosition nextMethodInvocation() {
+        return null;
+    }
 }

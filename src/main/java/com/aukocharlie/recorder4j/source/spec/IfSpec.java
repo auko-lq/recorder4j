@@ -41,4 +41,14 @@ public class IfSpec implements ControlFlow<Boolean> {
         lambdaList.addAll(elseBlock.getLambdaBlockList());
         return lambdaList;
     }
+
+    @Override
+    public boolean hasNextMethodInvocation() {
+        return false;
+    }
+
+    @Override
+    public MethodInvocationPosition nextMethodInvocation() {
+        return null;
+    }
 }

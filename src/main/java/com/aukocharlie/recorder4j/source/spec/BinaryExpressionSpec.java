@@ -16,7 +16,8 @@ public class BinaryExpressionSpec extends ExpressionSpec implements ControlFlow<
     Tree.Kind operator;
     ExpressionSpec rightOperand;
 
-    public BinaryExpressionSpec(BinaryTree node, CompilationUnitSpec compilationUnitSpec) {
+    public BinaryExpressionSpec(BinaryTree node, CompilationUnitSpec compilationUnitSpec, String originalExpr) {
+        super(originalExpr);
         this.leftOperand = toSpecificExpression(node.getLeftOperand(), compilationUnitSpec);
         this.operator = node.getKind();
         this.rightOperand = toSpecificExpression(node.getRightOperand(), compilationUnitSpec);

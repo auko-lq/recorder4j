@@ -15,8 +15,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.*;
 
-import static com.aukocharlie.recorder4j.constant.CommonConstants.UNKNOWN;
-
 /**
  * @author auko
  */
@@ -28,7 +26,7 @@ public class SourceManager {
 
     // Maven path is adopted by default
     private String srcRoot = CommonConstants.WORKING_DIR + "src/main/java";
-    private final Map<String, MethodInvocationIterator> classNameMethodInvocationsMap = new HashMap<>();
+//    private final Map<String, MethodInvocationIterator> classNameMethodInvocationsMap = new HashMap<>();
 
     public SourceManager() {
         init();
@@ -48,10 +46,11 @@ public class SourceManager {
         parseSourceCodeByClassName(convertResourcePathToClassName(srcRelativePath));
     }
 
+    // TODO: parse source code
     public void parseSourceCodeByClassName(String className) {
-        if (classNameMethodInvocationsMap.containsKey(className)) {
-            return;
-        }
+//        if (classNameMethodInvocationsMap.containsKey(className)) {
+//            return;
+//        }
         System.out.println("Ready to parse source code: " + className);
         File srcFile = new File(srcRoot, convertClassNameToPath(className));
         Iterable<? extends JavaFileObject> srcFileObjects = fileManager.getJavaFileObjects(srcFile);
@@ -65,20 +64,11 @@ public class SourceManager {
                 SourceScanner scanner = new SourceScanner();
                 tree.accept(scanner, null);
 //                List<MethodInvocationPosition> positions = scanner.generateMethodExecChain();
-                classNameMethodInvocationsMap.put(className, new MethodInvocationIterator(Collections.emptyList()));
+//                classNameMethodInvocationsMap.put(className, new MethodInvocationIterator(Collections.emptyList()));
             }
         } catch (IOException e) {
             throw new RecorderRuntimeException(String.format("IOException occurred while parsing %s: %s", srcFile.getAbsolutePath(), e.getMessage()));
         }
-    }
-
-    public SourcePosition nextPosition(String className) {
-        if (!classNameMethodInvocationsMap.containsKey(className)) {
-            return SourcePosition.unknownPosition(UNKNOWN);
-        }
-        MethodInvocationIterator methodInvocationIterator = classNameMethodInvocationsMap.get(className);
-        // TODO: If hasNext is false, check the reason or throw an exception
-        return methodInvocationIterator.hasNext() ? methodInvocationIterator.next() : SourcePosition.unknownPosition(UNKNOWN);
     }
 
     /**
@@ -100,47 +90,47 @@ public class SourceManager {
     }
 
 
-    static class MethodInvocationIterator implements Iterator<MethodInvocationPosition> {
-
-        private List<MethodInvocationPosition> positions = new ArrayList<>();
-
-        private int currentIndex = 0;
-
-        public MethodInvocationIterator(List<MethodInvocationPosition> positions) {
-            if (positions.size() > 0) {
-                for (MethodInvocationPosition position : positions) {
-                    spreadOut(position);
-                }
-            }
-        }
-
-
-        @Override
-        public boolean hasNext() {
-            return positions.size() > currentIndex;
-        }
-
-        @Override
-        public MethodInvocationPosition next() {
-            if (!hasNext()) {
-                throw new NoSuchElementException();
-            }
-            return positions.get(currentIndex++);
-        }
-
-        private void spreadOut(MethodInvocationPosition position) {
-            if (position == null) {
-                return;
-            }
-            for (MethodInvocationPosition argMethod : position.getArgMethodPosition()) {
-                spreadOut(argMethod);
-            }
-
-            positions.add(position);
-
-            if (position.nextMethod() != null) {
-                spreadOut(position.nextMethod());
-            }
-        }
-    }
+//    static class MethodInvocationIterator implements Iterator<MethodInvocationPosition> {
+//
+//        private List<MethodInvocationPosition> positions = new ArrayList<>();
+//
+//        private int currentIndex = 0;
+//
+//        public MethodInvocationIterator(List<MethodInvocationPosition> positions) {
+//            if (positions.size() > 0) {
+//                for (MethodInvocationPosition position : positions) {
+//                    spreadOut(position);
+//                }
+//            }
+//        }
+//
+//
+//        @Override
+//        public boolean hasNext() {
+//            return positions.size() > currentIndex;
+//        }
+//
+//        @Override
+//        public MethodInvocationPosition next() {
+//            if (!hasNext()) {
+//                throw new NoSuchElementException();
+//            }
+//            return positions.get(currentIndex++);
+//        }
+//
+//        private void spreadOut(MethodInvocationPosition position) {
+//            if (position == null) {
+//                return;
+//            }
+//            for (MethodInvocationPosition argMethod : position.getArgMethodPosition()) {
+//                spreadOut(argMethod);
+//            }
+//
+//            positions.add(position);
+//
+//            if (position.nextMethod() != null) {
+//                spreadOut(position.nextMethod());
+//            }
+//        }
+//    }
 }
