@@ -20,7 +20,7 @@ public class ForLoopSpec implements ControlFlow<Boolean> {
     BlockSpec loopBlock;
     List<ExpressionSpec> updates = new ArrayList<>();
 
-    public ForLoopSpec(ForLoopTree node, CompilationUnitSpec compilationUnitSpec, String labelName) {
+    public ForLoopSpec(ForLoopTree node, CompilationUnitSpec compilationUnitSpec, LoopBlockSpec outerLoop, String labelName) {
         this.labelName = labelName;
         node.getInitializer().forEach((initializer) -> {
             if (initializer instanceof VariableTree) {
@@ -36,11 +36,11 @@ public class ForLoopSpec implements ControlFlow<Boolean> {
         this.condition = ExpressionSpec.toSpecificExpression(node.getCondition(), compilationUnitSpec);
         node.getUpdate().forEach((update) -> updates.add(ExpressionSpec.toSpecificExpression(update.getExpression(), compilationUnitSpec))
         );
-        this.loopBlock = new BlockSpec(node.getStatement(), compilationUnitSpec);
+        this.loopBlock = new LoopBlockSpec(node.getStatement(), compilationUnitSpec, outerLoop, labelName);
     }
 
     public ForLoopSpec(ForLoopTree node, CompilationUnitSpec compilationUnitSpec) {
-        this(node, compilationUnitSpec, null);
+        this(node, compilationUnitSpec, null, null);
     }
 
     @Override

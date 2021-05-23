@@ -18,14 +18,14 @@ public class WhileLoopSpec implements ControlFlow<Boolean> {
     ExpressionSpec condition;
     BlockSpec loopBlock;
 
-    public WhileLoopSpec(WhileLoopTree node, CompilationUnitSpec compilationUnitSpec, String labelName) {
+    public WhileLoopSpec(WhileLoopTree node, CompilationUnitSpec compilationUnitSpec, LoopBlockSpec outerLoop, String labelName) {
         this.condition = ExpressionSpec.toSpecificExpression(node.getCondition(), compilationUnitSpec);
-        this.loopBlock = new BlockSpec(node.getStatement(), compilationUnitSpec);
+        this.loopBlock = new LoopBlockSpec(node.getStatement(), compilationUnitSpec, outerLoop, labelName);
         this.labelName = labelName;
     }
 
     public WhileLoopSpec(WhileLoopTree node, CompilationUnitSpec compilationUnitSpec) {
-        this(node, compilationUnitSpec, null);
+        this(node, compilationUnitSpec, null, null);
     }
 
     @Override

@@ -19,11 +19,11 @@ public class DoWhileLoopSpec implements ControlFlow<Boolean> {
     ExpressionSpec condition;
 
     public DoWhileLoopSpec(DoWhileLoopTree node, CompilationUnitSpec compilationUnitSpec) {
-        this(node, compilationUnitSpec, null);
+        this(node, compilationUnitSpec, null, null);
     }
 
-    public DoWhileLoopSpec(DoWhileLoopTree node, CompilationUnitSpec compilationUnitSpec, String labelName) {
-        this.loopBlock = new BlockSpec(node.getStatement(), compilationUnitSpec);
+    public DoWhileLoopSpec(DoWhileLoopTree node, CompilationUnitSpec compilationUnitSpec, LoopBlockSpec outerLoop, String labelName) {
+        this.loopBlock = new LoopBlockSpec(node.getStatement(), compilationUnitSpec, outerLoop, labelName);
         this.condition = ExpressionSpec.toSpecificExpression(node.getCondition(), compilationUnitSpec);
         this.labelName = labelName;
     }
