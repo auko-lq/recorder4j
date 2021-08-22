@@ -1,8 +1,11 @@
-package com.aukocharlie.recorder4j.source.spec;
+package com.aukocharlie.recorder4j.source.spec.expression;
 
 import com.aukocharlie.recorder4j.exception.RecorderRuntimeException;
 import com.aukocharlie.recorder4j.source.Position;
 import com.aukocharlie.recorder4j.source.SourcePosition;
+import com.aukocharlie.recorder4j.source.spec.CompilationUnitSpec;
+import com.aukocharlie.recorder4j.source.spec.MethodInvocationPosition;
+import com.aukocharlie.recorder4j.source.spec.block.BlockSpec;
 import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.MemberSelectTree;
 import com.sun.source.tree.MethodInvocationTree;
@@ -10,6 +13,7 @@ import com.sun.source.tree.NewClassTree;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * @author auko
@@ -23,6 +27,30 @@ public class MethodInvocationExpressionSpec extends ExpressionSpec {
     MethodInvocationPosition methodInvocationPosition;
 
     CompilationUnitSpec compilationUnitSpec;
+
+
+    @Override
+    public List<BlockSpec> getLambdaBlockList() {
+        List<BlockSpec> lambdaBlocks = new ArrayList<>();
+        expressionInArgs.forEach((expression) -> lambdaBlocks.addAll(expression.getLambdaBlockList()));
+        if (nextMethodInvocationOnChain != null) {
+            lambdaBlocks.addAll(nextMethodInvocationOnChain.getLambdaBlockList());
+        }
+        return lambdaBlocks;
+    }
+
+    @Override
+    public boolean hasNextMethodInvocation() {
+        return this.nextMethodInvocationOnChain != null;
+    }
+
+    @Override
+    public MethodInvocationExpressionSpec nextMethodInvocation() {
+        if (!hasNextMethodInvocation()) {
+            throw new NoSuchElementException("There isn't next method invocation on the chain: " + methodInvocationPosition);
+        }
+        return this.nextMethodInvocationOnChain;
+    }
 
     /**
      * Think of <em>new class</em> as a <em>method invocation</em> (constructor method)
@@ -57,7 +85,12 @@ public class MethodInvocationExpressionSpec extends ExpressionSpec {
         return generateMethodInvocationChain(wholeChainNode, compilationUnitSpec, null, originalExpr);
     }
 
-    static MethodInvocationExpressionSpec generateMethodInvocationChain(ExpressionTree currentMethodInvocationNode, CompilationUnitSpec compilationUnitSpec, MethodInvocationExpressionSpec nextMethodInvocation, String originalExpr) {
+    static MethodInvocationExpressionSpec generateMethodInvocationChain(
+            ExpressionTree currentMethodInvocationNode,
+            CompilationUnitSpec compilationUnitSpec,
+            MethodInvocationExpressionSpec nextMethodInvocation,
+            String originalExpr) {
+
         MethodInvocationExpressionSpec currentMethodInvocation = new MethodInvocationExpressionSpec(currentMethodInvocationNode, compilationUnitSpec, originalExpr);
         if (nextMethodInvocation != null) {
             nextMethodInvocation.adjustSrcAndPosition(currentMethodInvocation);
@@ -79,17 +112,6 @@ public class MethodInvocationExpressionSpec extends ExpressionSpec {
         return currentMethodInvocation;
     }
 
-    @Override
-    public List<BlockSpec> getLambdaBlockList() {
-        List<BlockSpec> lambdaBlocks = new ArrayList<>();
-        expressionInArgs.forEach((expression) -> lambdaBlocks.addAll(expression.getLambdaBlockList()));
-        if (nextMethodInvocationOnChain != null) {
-            lambdaBlocks.addAll(nextMethodInvocationOnChain.getLambdaBlockList());
-        }
-        return lambdaBlocks;
-    }
-
-
     /**
      * Adjust the method invocation source code and position for displaying better.
      * <p>
@@ -110,14 +132,6 @@ public class MethodInvocationExpressionSpec extends ExpressionSpec {
                 break;
             }
         }
-    }
-
-}
-
-class MethodInvocationPosition extends SourcePosition {
-
-    public MethodInvocationPosition(SourcePosition sourcePosition) {
-        super(sourcePosition.startPosition, sourcePosition.endPosition, sourcePosition.source);
     }
 
 }

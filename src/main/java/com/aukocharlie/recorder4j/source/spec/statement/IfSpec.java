@@ -1,6 +1,11 @@
-package com.aukocharlie.recorder4j.source.spec;
+package com.aukocharlie.recorder4j.source.spec.statement;
 
 import com.aukocharlie.recorder4j.source.UniqueMethod;
+import com.aukocharlie.recorder4j.source.spec.CompilationUnitSpec;
+import com.aukocharlie.recorder4j.source.spec.expression.Expression;
+import com.aukocharlie.recorder4j.source.spec.expression.ExpressionSpec;
+import com.aukocharlie.recorder4j.source.spec.block.BlockSpec;
+import com.aukocharlie.recorder4j.source.spec.expression.MethodInvocationExpressionSpec;
 import com.sun.jdi.Value;
 import com.sun.source.tree.IfTree;
 
@@ -21,6 +26,18 @@ public class IfSpec implements ControlFlow<Boolean> {
         this.condition = ExpressionSpec.toSpecificExpression(node.getCondition(), compilationUnitSpec);
         this.thenBlock = new BlockSpec(node.getThenStatement(), compilationUnitSpec);
         this.elseBlock = new BlockSpec(node.getElseStatement(), compilationUnitSpec);
+
+        a:
+        while(true){
+            if(true){
+                break a;
+            }
+            try{
+                break a;
+            }finally {
+                break a;
+            }
+        }
     }
 
     @Override
@@ -48,7 +65,7 @@ public class IfSpec implements ControlFlow<Boolean> {
     }
 
     @Override
-    public MethodInvocationPosition nextMethodInvocation() {
+    public MethodInvocationExpressionSpec nextMethodInvocation() {
         return null;
     }
 }

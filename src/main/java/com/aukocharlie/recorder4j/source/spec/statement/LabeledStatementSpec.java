@@ -1,6 +1,14 @@
-package com.aukocharlie.recorder4j.source.spec;
+package com.aukocharlie.recorder4j.source.spec.statement;
 
 import com.aukocharlie.recorder4j.source.SourceScanner;
+import com.aukocharlie.recorder4j.source.spec.*;
+import com.aukocharlie.recorder4j.source.spec.block.BlockSpec;
+import com.aukocharlie.recorder4j.source.spec.block.LoopBlockSpec;
+import com.aukocharlie.recorder4j.source.spec.expression.Expression;
+import com.aukocharlie.recorder4j.source.spec.expression.MethodInvocationExpressionSpec;
+import com.aukocharlie.recorder4j.source.spec.statement.loop.DoWhileLoopSpec;
+import com.aukocharlie.recorder4j.source.spec.statement.loop.ForLoopSpec;
+import com.aukocharlie.recorder4j.source.spec.statement.loop.WhileLoopSpec;
 import com.sun.source.tree.*;
 
 import java.util.List;
@@ -62,7 +70,7 @@ public class LabeledStatementSpec implements Statement {
     }
 
     @Override
-    public MethodInvocationPosition nextMethodInvocation() {
+    public MethodInvocationExpressionSpec nextMethodInvocation() {
         return null;
     }
 }

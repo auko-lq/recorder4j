@@ -1,6 +1,13 @@
-package com.aukocharlie.recorder4j.source.spec;
+package com.aukocharlie.recorder4j.source.spec.statement.loop;
 
 import com.aukocharlie.recorder4j.source.UniqueMethod;
+import com.aukocharlie.recorder4j.source.spec.*;
+import com.aukocharlie.recorder4j.source.spec.block.BlockSpec;
+import com.aukocharlie.recorder4j.source.spec.block.LoopBlockSpec;
+import com.aukocharlie.recorder4j.source.spec.expression.Expression;
+import com.aukocharlie.recorder4j.source.spec.expression.ExpressionSpec;
+import com.aukocharlie.recorder4j.source.spec.expression.MethodInvocationExpressionSpec;
+import com.aukocharlie.recorder4j.source.spec.statement.ControlFlow;
 import com.sun.jdi.Value;
 import com.sun.source.tree.WhileLoopTree;
 
@@ -53,7 +60,7 @@ public class WhileLoopSpec implements ControlFlow<Boolean> {
     }
 
     @Override
-    public MethodInvocationPosition nextMethodInvocation() {
+    public MethodInvocationExpressionSpec nextMethodInvocation() {
         return null;
     }
 }

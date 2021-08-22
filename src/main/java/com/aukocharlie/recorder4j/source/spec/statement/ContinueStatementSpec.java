@@ -1,5 +1,9 @@
-package com.aukocharlie.recorder4j.source.spec;
+package com.aukocharlie.recorder4j.source.spec.statement;
 
+import com.aukocharlie.recorder4j.source.spec.expression.Expression;
+import com.aukocharlie.recorder4j.source.spec.block.LoopBlockSpec;
+import com.aukocharlie.recorder4j.source.spec.block.BlockSpec;
+import com.aukocharlie.recorder4j.source.spec.expression.MethodInvocationExpressionSpec;
 import com.sun.source.tree.ContinueTree;
 
 import java.util.List;
@@ -29,7 +33,7 @@ public class ContinueStatementSpec implements Statement {
     }
 
     @Override
-    public MethodInvocationPosition nextMethodInvocation() {
+    public MethodInvocationExpressionSpec nextMethodInvocation() {
         return null;
     }
 }

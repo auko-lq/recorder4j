@@ -1,7 +1,9 @@
-package com.aukocharlie.recorder4j.source.spec;
+package com.aukocharlie.recorder4j.source.spec.statement;
 
+import com.aukocharlie.recorder4j.source.spec.CompilationUnitSpec;
+import com.aukocharlie.recorder4j.source.spec.block.BlockSpec;
+import com.aukocharlie.recorder4j.source.spec.expression.MethodInvocationExpressionSpec;
 import com.sun.source.tree.VariableTree;
-import com.sun.source.util.TreeScanner;
 
 import java.util.List;
 
@@ -39,7 +41,7 @@ public class StaticFieldInitializerSpec implements StaticInitializer {
     }
 
     @Override
-    public MethodInvocationPosition nextMethodInvocation() {
+    public MethodInvocationExpressionSpec nextMethodInvocation() {
         return null;
     }
 }

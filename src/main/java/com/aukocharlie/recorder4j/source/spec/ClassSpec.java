@@ -2,6 +2,11 @@ package com.aukocharlie.recorder4j.source.spec;
 
 import com.aukocharlie.recorder4j.source.SourceScanner;
 import com.aukocharlie.recorder4j.source.UniqueMethod;
+import com.aukocharlie.recorder4j.source.spec.block.BlockSpec;
+import com.aukocharlie.recorder4j.source.spec.block.MethodBlockSpec;
+import com.aukocharlie.recorder4j.source.spec.block.StaticBlockSpec;
+import com.aukocharlie.recorder4j.source.spec.statement.StaticFieldInitializerSpec;
+import com.aukocharlie.recorder4j.source.spec.statement.StaticInitializer;
 import com.sun.source.tree.BlockTree;
 import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.MethodTree;

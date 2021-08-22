@@ -83,10 +83,9 @@ public class ThreadTrace {
                 sourcePosition.setSource(MAIN_METHOD);
             } else {
 //                System.out.println("callerFrame.location().declaringType().name(): " + callerFrame.location().declaringType().name());
-                sourcePosition = context.getSourceManager
-                        ().nextPosition(callerFrame.location().declaringType().name());
+//                sourcePosition = context.getSourceManager().nextPosition(callerFrame.location().declaringType().name());
             }
-            println("METHOD_ENTRY: line: %d  \"thread=%s\", %s, %s, %s", callerLocation.lineNumber(), event.thread().name(), event.method(), sourcePosition.getSource(), sourcePosition.toString());
+//            println("METHOD_ENTRY: line: %d  \"thread=%s\", %s, %s, %s", callerLocation.lineNumber(), event.thread().name(), event.method(), sourcePosition.getSource(), sourcePosition.toString());
         } catch (IncompatibleThreadStateException e) {
             e.printStackTrace();
         }

@@ -1,10 +1,17 @@
-package com.aukocharlie.recorder4j.source.spec;
+package com.aukocharlie.recorder4j.source.spec.block;
 
 import com.aukocharlie.recorder4j.source.SourceScanner;
+import com.aukocharlie.recorder4j.source.spec.*;
+import com.aukocharlie.recorder4j.source.spec.expression.MethodInvocationExpressionSpec;
+import com.aukocharlie.recorder4j.source.spec.statement.*;
+import com.aukocharlie.recorder4j.source.spec.statement.loop.DoWhileLoopSpec;
+import com.aukocharlie.recorder4j.source.spec.statement.loop.ForLoopSpec;
+import com.aukocharlie.recorder4j.source.spec.statement.loop.WhileLoopSpec;
 import com.sun.source.tree.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * @author auko
@@ -17,10 +24,10 @@ public class BlockSpec implements LambdaPlaceable, MethodInvocationPlaceable {
      * <p>2. When the block is located in a method block, the value is the method name.
      * <p>3. When the block is located in a lambda block, the value is <em>null</em>.
      */
-    String name;
+    public String name;
 
     List<Statement> statements = new ArrayList<>();
-    int currentStatement = 0;
+    int currentStatementIndex = 0;
 
     public BlockSpec(StatementTree node, CompilationUnitSpec compilationUnitSpec, String name) {
         this.name = name;
@@ -57,13 +64,28 @@ public class BlockSpec implements LambdaPlaceable, MethodInvocationPlaceable {
     }
 
     protected void reset() {
-        this.currentStatement = 0;
+        this.currentStatementIndex = 0;
     }
 
     protected void fastEnd() {
-        this.currentStatement = this.statements.size();
+        this.currentStatementIndex = this.statements.size();
     }
 
+    protected boolean blockIsExecuted() {
+        return this.currentStatementIndex == this.statements.size();
+    }
+
+    protected void doReturn() {
+        BlockSpec temp = this;
+        while (temp != null) {
+            if (temp instanceof LoopBlockSpec) {
+                temp.reset();
+                temp = ((LoopBlockSpec) temp).outerBlock;
+            } else if (temp instanceof MethodBlockSpec || temp instanceof LambdaBlockSpec) {
+                return;
+            }
+        }
+    }
 
     @Override
     public List<BlockSpec> getLambdaBlockList() {
@@ -82,11 +104,32 @@ public class BlockSpec implements LambdaPlaceable, MethodInvocationPlaceable {
 
     @Override
     public boolean hasNextMethodInvocation() {
+        if (blockIsExecuted()) {
+            this.reset();
+            return false;
+        }
+
+        for (int i = currentStatementIndex; i < statements.size(); i++) {
+            if (statements.get(i).hasNextMethodInvocation()) {
+                return true;
+            }
+        }
         return false;
     }
 
     @Override
-    public MethodInvocationPosition nextMethodInvocation() {
+    public MethodInvocationExpressionSpec nextMethodInvocation() {
+        // TODO: try to delete the pre-check here?
+        if (!hasNextMethodInvocation()) {
+            throw new NoSuchElementException("There isn't next method invocation");
+        }
+
+        while (currentStatementIndex < statements.size()) {
+            if (statements.get(currentStatementIndex).hasNextMethodInvocation()) {
+                return statements.get(currentStatementIndex).nextMethodInvocation();
+            }
+            currentStatementIndex++;
+        }
         return null;
     }
 
@@ -141,127 +184,4 @@ public class BlockSpec implements LambdaPlaceable, MethodInvocationPlaceable {
         }
     }
 
-}
-
-class MethodBlockSpec extends BlockSpec {
-
-    public MethodBlockSpec(BlockTree node, CompilationUnitSpec compilationUnitSpec, String methodName) {
-        super(node, compilationUnitSpec, methodName);
-    }
-
-}
-
-
-class StaticBlockSpec extends BlockSpec implements StaticInitializer {
-
-    public StaticBlockSpec(BlockTree node, CompilationUnitSpec compilationUnitSpec) {
-        super(node, compilationUnitSpec, "static");
-    }
-}
-
-class LambdaBlockSpec extends BlockSpec {
-    public LambdaBlockSpec(BlockTree node, CompilationUnitSpec compilationUnitSpec) {
-        super(node, compilationUnitSpec, null);
-    }
-
-
-    @Override
-    public List<BlockSpec> getLambdaBlockList() {
-        List<BlockSpec> lambdaBlocks = super.getLambdaBlockList();
-        lambdaBlocks.forEach((blockSpec -> blockSpec.name = "null"));
-        return lambdaBlocks;
-    }
-}
-
-class LoopBlockSpec extends BlockSpec {
-
-    LoopBlockSpec outerLoop;
-    String labelName;
-
-    public LoopBlockSpec(StatementTree node, CompilationUnitSpec compilationUnitSpec, LoopBlockSpec outerLoop, String labelName) {
-        super(node, compilationUnitSpec);
-        this.outerLoop = outerLoop;
-        this.labelName = labelName;
-    }
-
-    public void doBreak(String labelForBreaking) {
-        if (labelForBreaking == null) {
-            this.fastEnd();
-        }
-        LoopBlockSpec temp = this;
-        while (temp != null) {
-            if (temp.labelName != null && temp.labelName.equals(labelForBreaking)) {
-                temp.fastEnd();
-                return;
-            } else {
-                this.reset();
-            }
-            temp = temp.outerLoop;
-        }
-    }
-
-    public void doContinue(String labelForContinue) {
-        if (labelForContinue == null) {
-            this.reset();
-        }
-        LoopBlockSpec temp = this;
-        while (temp != null) {
-            temp.reset();
-            if (temp.labelName != null && temp.labelName.equals(labelForContinue)) {
-                return;
-            }
-            temp = temp.outerLoop;
-        }
-    }
-
-
-    @Override
-    protected StatementScanner getScanner() {
-        return new LoopStatementScanner(this);
-    }
-
-    class LoopStatementScanner extends StatementScanner {
-
-        LoopBlockSpec outerLoop;
-
-        public LoopStatementScanner(LoopBlockSpec outerLoop) {
-            this.outerLoop = outerLoop;
-        }
-
-        @Override
-        public Void visitDoWhileLoop(DoWhileLoopTree node, CompilationUnitSpec compilationUnitSpec) {
-            statements.add(new DoWhileLoopSpec(node, compilationUnitSpec, outerLoop, null));
-            return null;
-        }
-
-        @Override
-        public Void visitWhileLoop(WhileLoopTree node, CompilationUnitSpec compilationUnitSpec) {
-            statements.add(new WhileLoopSpec(node, compilationUnitSpec, outerLoop, null));
-            return null;
-        }
-
-        @Override
-        public Void visitForLoop(ForLoopTree node, CompilationUnitSpec compilationUnitSpec) {
-            statements.add(new ForLoopSpec(node, compilationUnitSpec, outerLoop, null));
-            return null;
-        }
-
-        @Override
-        public Void visitLabeledStatement(LabeledStatementTree node, CompilationUnitSpec compilationUnitSpec) {
-            statements.add(new LabeledStatementSpec(node, compilationUnitSpec, outerLoop));
-            return null;
-        }
-
-        @Override
-        public Void visitBreak(BreakTree node, CompilationUnitSpec compilationUnitSpec) {
-            statements.add(new BreakStatementSpec(node, outerLoop));
-            return null;
-        }
-
-        @Override
-        public Void visitContinue(ContinueTree node, CompilationUnitSpec compilationUnitSpec) {
-            statements.add(new ContinueStatementSpec(node, outerLoop));
-            return null;
-        }
-    }
 }

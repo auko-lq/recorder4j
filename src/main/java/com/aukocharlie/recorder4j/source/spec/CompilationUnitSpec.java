@@ -18,10 +18,10 @@ import java.util.Map;
  */
 public class CompilationUnitSpec {
 
-    CompilationUnitTree compilationUnitTree;
-    String sourceCode;
-    LineMap lineMap;
-    String packageName;
+    public CompilationUnitTree compilationUnitTree;
+    public String sourceCode;
+    public LineMap lineMap;
+    public String packageName;
 
     Map<String, ClassSpec> nameToClassMap = new HashMap<>();
 
@@ -37,15 +37,15 @@ public class CompilationUnitSpec {
         new ClassScanner().visitCompilationUnit(node, this);
     }
 
-    protected SourcePosition getSourcePosition(Tree node) {
+    public SourcePosition getSourcePosition(Tree node) {
         return SourcePosition.getSourcePosition(compilationUnitTree, node, lineMap);
     }
 
-    protected Position getStartPosition(Tree node) {
+    public Position getStartPosition(Tree node) {
         return SourcePosition.getStartPosition(compilationUnitTree, node, lineMap);
     }
 
-    protected Position getEndPosition(Tree node) {
+    public Position getEndPosition(Tree node) {
         return SourcePosition.getEndPosition(compilationUnitTree, node, lineMap);
     }
 

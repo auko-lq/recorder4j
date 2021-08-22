@@ -1,7 +1,11 @@
-package com.aukocharlie.recorder4j.source.spec;
+package com.aukocharlie.recorder4j.source.spec.statement;
 
+import com.aukocharlie.recorder4j.source.spec.CompilationUnitSpec;
+import com.aukocharlie.recorder4j.source.spec.expression.Expression;
+import com.aukocharlie.recorder4j.source.spec.block.BlockSpec;
+import com.aukocharlie.recorder4j.source.spec.expression.ExpressionSpec;
+import com.aukocharlie.recorder4j.source.spec.expression.MethodInvocationExpressionSpec;
 import com.sun.source.tree.AssignmentTree;
-import com.sun.source.tree.StatementTree;
 import com.sun.source.tree.VariableTree;
 
 import java.util.List;
@@ -14,6 +18,7 @@ public class InitializerOrAssignmentSpec implements Statement {
     ExpressionSpec valueExpr;
 
     public InitializerOrAssignmentSpec(VariableTree node, CompilationUnitSpec compilationUnitSpec) {
+        System.out.println("[debug] " + node);
         this.valueExpr = ExpressionSpec.toSpecificExpression(node.getInitializer(), compilationUnitSpec);
     }
 
@@ -37,7 +42,7 @@ public class InitializerOrAssignmentSpec implements Statement {
     }
 
     @Override
-    public MethodInvocationPosition nextMethodInvocation() {
+    public MethodInvocationExpressionSpec nextMethodInvocation() {
         return null;
     }
 }

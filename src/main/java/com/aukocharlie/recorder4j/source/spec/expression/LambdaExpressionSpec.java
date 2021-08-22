@@ -1,5 +1,9 @@
-package com.aukocharlie.recorder4j.source.spec;
+package com.aukocharlie.recorder4j.source.spec.expression;
 
+import com.aukocharlie.recorder4j.source.spec.CompilationUnitSpec;
+import com.aukocharlie.recorder4j.source.spec.block.BlockSpec;
+import com.aukocharlie.recorder4j.source.spec.block.LambdaBlockSpec;
+import com.aukocharlie.recorder4j.source.spec.expression.ExpressionSpec;
 import com.sun.source.tree.BlockTree;
 import com.sun.source.tree.LambdaExpressionTree;
 

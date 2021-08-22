@@ -1,13 +1,16 @@
-package com.aukocharlie.recorder4j.source.spec;
+package com.aukocharlie.recorder4j.source.spec.expression;
 
 import com.aukocharlie.recorder4j.exception.RecorderRuntimeException;
 import com.aukocharlie.recorder4j.source.SourceScanner;
+import com.aukocharlie.recorder4j.source.spec.CompilationUnitSpec;
+import com.aukocharlie.recorder4j.source.spec.block.BlockSpec;
 import com.sun.source.tree.*;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
-import static com.aukocharlie.recorder4j.source.spec.MethodInvocationExpressionSpec.getFirstMethodInvocationOnChain;
+import static com.aukocharlie.recorder4j.source.spec.expression.MethodInvocationExpressionSpec.getFirstMethodInvocationOnChain;
 import static com.sun.source.tree.LambdaExpressionTree.BodyKind.STATEMENT;
 
 /**
@@ -24,7 +27,11 @@ public class ExpressionSpec implements Expression {
     /**
      * Perform a depth-first search on expression to find the specific expression scanned first.
      */
-    static ExpressionSpec toSpecificExpression(ExpressionTree node, CompilationUnitSpec compilationUnitSpec) {
+    public static ExpressionSpec toSpecificExpression(ExpressionTree node, CompilationUnitSpec compilationUnitSpec) {
+        if (Objects.isNull(node)) {
+            return new ExpressionSpec(null);
+        }
+
         ExpressionScanner expressionScanner = new ExpressionScanner(node.toString());
         expressionScanner.scan(node, compilationUnitSpec);
         if (expressionScanner.specificExpr != null) {
@@ -44,7 +51,7 @@ public class ExpressionSpec implements Expression {
     }
 
     @Override
-    public MethodInvocationPosition nextMethodInvocation() {
+    public MethodInvocationExpressionSpec nextMethodInvocation() {
         throw new RecorderRuntimeException("Useless expression has not next method invocation");
     }
 

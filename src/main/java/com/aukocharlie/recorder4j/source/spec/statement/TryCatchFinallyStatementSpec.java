@@ -1,6 +1,10 @@
-package com.aukocharlie.recorder4j.source.spec;
+package com.aukocharlie.recorder4j.source.spec.statement;
 
 import com.aukocharlie.recorder4j.exception.RecorderRuntimeException;
+import com.aukocharlie.recorder4j.source.spec.*;
+import com.aukocharlie.recorder4j.source.spec.block.BlockSpec;
+import com.aukocharlie.recorder4j.source.spec.expression.Expression;
+import com.aukocharlie.recorder4j.source.spec.expression.MethodInvocationExpressionSpec;
 import com.sun.source.tree.*;
 
 import java.util.ArrayList;
@@ -55,7 +59,7 @@ public class TryCatchFinallyStatementSpec implements Statement {
     }
 
     @Override
-    public MethodInvocationPosition nextMethodInvocation() {
+    public MethodInvocationExpressionSpec nextMethodInvocation() {
         return null;
     }
 }

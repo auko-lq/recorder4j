@@ -1,6 +1,9 @@
-package com.aukocharlie.recorder4j.source.spec;
+package com.aukocharlie.recorder4j.source.spec.statement;
 
 import com.aukocharlie.recorder4j.source.UniqueMethod;
+import com.aukocharlie.recorder4j.source.spec.expression.Expression;
+import com.aukocharlie.recorder4j.source.spec.expression.MethodInvocationExpressionSpec;
+import com.aukocharlie.recorder4j.source.spec.block.BlockSpec;
 import com.sun.jdi.Value;
 
 import java.util.List;
@@ -24,23 +27,6 @@ class ControlFlowStatementSpec implements Statement{
 
     @Override
     public List<BlockSpec> getLambdaBlockList() {
-        temp:
-        System.out.println("");
-        outer:
-        for(int i = 0; i < 10; i++){
-            for(int j = 0; j < 10; j++){
-                continue outer;
-            }
-            inner1:
-            do{
-
-            }while ("".length() == 0);
-
-            inner1:
-            do{
-                break inner1;
-            }while (true);
-        }
         return null;
     }
 
@@ -50,7 +36,7 @@ class ControlFlowStatementSpec implements Statement{
     }
 
     @Override
-    public MethodInvocationPosition nextMethodInvocation() {
+    public MethodInvocationExpressionSpec nextMethodInvocation() {
         return null;
     }
 }
