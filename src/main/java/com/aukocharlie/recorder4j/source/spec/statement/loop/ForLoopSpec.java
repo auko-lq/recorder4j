@@ -20,13 +20,9 @@ import java.util.Map;
 /**
  * @author auko
  */
-public class ForLoopSpec implements ControlFlow<Boolean> {
-
-    String labelName;
+public class ForLoopSpec extends LoopSpec{
 
     List<Statement> initializers = new ArrayList<>();
-    ExpressionSpec condition;
-    BlockSpec loopBlock;
     List<ExpressionSpec> updates = new ArrayList<>();
 
     public ForLoopSpec(ForLoopTree node, CompilationUnitSpec compilationUnitSpec, LoopBlockSpec outerLoop, String labelName) {

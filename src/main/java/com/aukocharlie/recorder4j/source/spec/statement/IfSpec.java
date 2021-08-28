@@ -25,19 +25,8 @@ public class IfSpec implements ControlFlow<Boolean> {
     public IfSpec(IfTree node, CompilationUnitSpec compilationUnitSpec) {
         this.condition = ExpressionSpec.toSpecificExpression(node.getCondition(), compilationUnitSpec);
         this.thenBlock = new BlockSpec(node.getThenStatement(), compilationUnitSpec);
+        // TODO：else if ？
         this.elseBlock = new BlockSpec(node.getElseStatement(), compilationUnitSpec);
-
-        a:
-        while(true){
-            if(true){
-                break a;
-            }
-            try{
-                break a;
-            }finally {
-                break a;
-            }
-        }
     }
 
     @Override

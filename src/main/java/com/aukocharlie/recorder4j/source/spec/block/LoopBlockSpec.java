@@ -17,6 +17,11 @@ public class LoopBlockSpec extends BlockSpec {
     BlockSpec outerBlock;
     String labelName;
 
+    /**
+     * Mark whether the break statement is executed in the loop block.
+     */
+    boolean broken = false;
+
     public LoopBlockSpec(StatementTree node, CompilationUnitSpec compilationUnitSpec, BlockSpec outerBlock, String labelName) {
         super(node, compilationUnitSpec);
         this.outerBlock = outerBlock;
@@ -24,6 +29,7 @@ public class LoopBlockSpec extends BlockSpec {
     }
 
     public void doBreak(String labelForBreaking) {
+        this.broken = true;
         if (labelForBreaking == null) {
             this.fastEnd();
         }

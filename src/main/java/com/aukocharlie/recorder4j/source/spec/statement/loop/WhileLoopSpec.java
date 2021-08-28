@@ -18,12 +18,7 @@ import java.util.Map;
 /**
  * @author auko
  */
-public class WhileLoopSpec implements ControlFlow<Boolean> {
-
-    String labelName;
-
-    ExpressionSpec condition;
-    BlockSpec loopBlock;
+public class WhileLoopSpec extends LoopSpec {
 
     public WhileLoopSpec(WhileLoopTree node, CompilationUnitSpec compilationUnitSpec, LoopBlockSpec outerLoop, String labelName) {
         this.condition = ExpressionSpec.toSpecificExpression(node.getCondition(), compilationUnitSpec);

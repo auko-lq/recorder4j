@@ -19,13 +19,7 @@ import java.util.Map;
 /**
  * @author auko
  */
-public class DoWhileLoopSpec implements ControlFlow<Boolean> {
-
-    String labelName;
-
-    BlockSpec loopBlock;
-    ExpressionSpec condition;
-    MethodBlockSpec loopLocatedMethod;
+public class DoWhileLoopSpec extends LoopSpec {
 
     public DoWhileLoopSpec(DoWhileLoopTree node, CompilationUnitSpec compilationUnitSpec) {
         this(node, compilationUnitSpec, null, null);
