@@ -37,11 +37,11 @@ public class StaticFieldInitializerSpec implements StaticInitializer {
 
     @Override
     public boolean hasNextMethodInvocation() {
-        return false;
+        return initializer.hasNextMethodInvocation();
     }
 
     @Override
     public MethodInvocationExpressionSpec nextMethodInvocation() {
-        return null;
+        return initializer.nextMethodInvocation();
     }
 }

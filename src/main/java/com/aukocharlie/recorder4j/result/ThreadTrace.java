@@ -5,6 +5,7 @@ import com.aukocharlie.recorder4j.constant.ThreadConstants;
 import com.aukocharlie.recorder4j.launch.Context;
 import com.aukocharlie.recorder4j.launch.EventRegistrar;
 import com.aukocharlie.recorder4j.source.SourcePosition;
+import com.aukocharlie.recorder4j.util.LambdaUtils;
 import com.sun.jdi.*;
 import com.sun.jdi.event.*;
 import com.sun.tools.jdi.ArrayReferenceImpl;
@@ -60,7 +61,7 @@ public class ThreadTrace {
 
     public void handleMethodEntryEvent(MethodEntryEvent event) {
         try {
-            if (event.method().isConstructor() && Utils.isLambdaClassName(event.method().declaringType().name())) {
+            if (event.method().isConstructor() && LambdaUtils.isLambdaClassName(event.method().declaringType().name())) {
                 // Skip lambda's constructor
                 return;
             }
@@ -93,7 +94,7 @@ public class ThreadTrace {
     }
 
     public void handleMethodExitEvent(MethodExitEvent event) {
-        if (event.method().isConstructor() && Utils.isLambdaClassName(event.method().declaringType().name())) {
+        if (event.method().isConstructor() && LambdaUtils.isLambdaClassName(event.method().declaringType().name())) {
             // Skip lambda's constructor
             return;
         }

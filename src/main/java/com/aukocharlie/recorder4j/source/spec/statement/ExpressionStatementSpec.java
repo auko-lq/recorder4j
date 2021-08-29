@@ -32,11 +32,11 @@ public class ExpressionStatementSpec implements Statement {
 
     @Override
     public boolean hasNextMethodInvocation() {
-        return false;
+        return expression.hasNextMethodInvocation();
     }
 
     @Override
     public MethodInvocationExpressionSpec nextMethodInvocation() {
-        return null;
+        return expression.nextMethodInvocation();
     }
 }

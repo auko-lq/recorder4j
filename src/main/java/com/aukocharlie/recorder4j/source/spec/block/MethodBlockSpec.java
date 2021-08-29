@@ -26,34 +26,16 @@ public class MethodBlockSpec extends BlockSpec {
     }
 
     @Override
-    public boolean hasNextMethodInvocation() {
-        return super.hasNextMethodInvocation();
-    }
-
-    @Override
     public MethodInvocationExpressionSpec nextMethodInvocation() {
         return super.nextMethodInvocation();
     }
 
     class MethodStatementScanner extends StatementScanner {
 
-        MethodBlockSpec methodBlockSpec;
-
         public MethodStatementScanner(MethodBlockSpec methodBlockSpec) {
-            this.methodBlockSpec = methodBlockSpec;
+            super(methodBlockSpec);
         }
 
-        @Override
-        public Void visitDoWhileLoop(DoWhileLoopTree node, CompilationUnitSpec compilationUnitSpec) {
-            statements.add(new DoWhileLoopSpec(node, compilationUnitSpec, methodBlockSpec));
-            return null;
-        }
-
-        @Override
-        public Void visitReturn(ReturnTree node, CompilationUnitSpec compilationUnitSpec) {
-            statements.add(new ReturnStatementSpec(node, compilationUnitSpec, methodBlockSpec));
-            return null;
-        }
     }
 
 }

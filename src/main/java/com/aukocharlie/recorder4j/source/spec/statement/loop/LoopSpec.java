@@ -25,7 +25,6 @@ public class LoopSpec implements ControlFlow<Boolean> {
 
     MethodBlockSpec loopLocatedMethod;
 
-
     protected LoopSpec(){}
 
     @Override

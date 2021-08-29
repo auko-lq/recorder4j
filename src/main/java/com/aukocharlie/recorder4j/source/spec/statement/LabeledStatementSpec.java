@@ -34,6 +34,7 @@ public class LabeledStatementSpec implements Statement {
     }
 
     class LabeledStatementScanner extends SourceScanner {
+
         @Override
         public Void visitDoWhileLoop(DoWhileLoopTree node, CompilationUnitSpec compilationUnitSpec) {
             statement = new DoWhileLoopSpec(node, compilationUnitSpec, outerLoop, labelName);
@@ -61,16 +62,16 @@ public class LabeledStatementSpec implements Statement {
 
     @Override
     public List<BlockSpec> getLambdaBlockList() {
-        return null;
+        return statement.getLambdaBlockList();
     }
 
     @Override
     public boolean hasNextMethodInvocation() {
-        return false;
+        return statement.hasNextMethodInvocation();
     }
 
     @Override
     public MethodInvocationExpressionSpec nextMethodInvocation() {
-        return null;
+        return statement.nextMethodInvocation();
     }
 }

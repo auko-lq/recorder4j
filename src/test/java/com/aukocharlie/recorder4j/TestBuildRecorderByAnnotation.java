@@ -1,5 +1,6 @@
 package com.aukocharlie.recorder4j;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 /**

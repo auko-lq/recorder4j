@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * TODO: support switch statement
  * @author auko
  */
 public class SwitchSpec implements ControlFlow<Integer> {

@@ -18,9 +18,10 @@ public class LoopBlockSpec extends BlockSpec {
     String labelName;
 
     /**
-     * Mark whether the break statement is executed in the loop block.
+     * Mark whether the break/continue statement is executed in the loop block.
      */
     boolean broken = false;
+    boolean continued = false;
 
     public LoopBlockSpec(StatementTree node, CompilationUnitSpec compilationUnitSpec, BlockSpec outerBlock, String labelName) {
         super(node, compilationUnitSpec);
@@ -29,18 +30,12 @@ public class LoopBlockSpec extends BlockSpec {
     }
 
     public void doBreak(String labelForBreaking) {
-        this.broken = true;
-        if (labelForBreaking == null) {
-            this.fastEnd();
-        }
-        BlockSpec temp = this;
-        while (temp != null) {
+        for (BlockSpec temp = this; temp != null; ) {
             if (temp instanceof LoopBlockSpec) {
-                if (((LoopBlockSpec) temp).labelName != null && ((LoopBlockSpec) temp).labelName.equals(labelForBreaking)) {
-                    temp.fastEnd();
+                ((LoopBlockSpec) temp).broken = true;
+                if (labelForBreaking == null
+                        || (((LoopBlockSpec) temp).labelName != null && ((LoopBlockSpec) temp).labelName.equals(labelForBreaking))) {
                     return;
-                } else {
-                    temp.reset();
                 }
                 temp = ((LoopBlockSpec) temp).outerBlock;
             } else {
@@ -49,15 +44,12 @@ public class LoopBlockSpec extends BlockSpec {
         }
     }
 
-    public void doContinue(String labelForContinue) {
-        if (labelForContinue == null) {
-            this.reset();
-        }
-        BlockSpec temp = this;
-        while (temp != null) {
+    public void doContinue(String labelForContinuing) {
+        for (BlockSpec temp = this; temp != null; ) {
             if (temp instanceof LoopBlockSpec) {
-                temp.reset();
-                if (((LoopBlockSpec) temp).labelName != null && ((LoopBlockSpec) temp).labelName.equals(labelForContinue)) {
+                ((LoopBlockSpec) temp).continued = true;
+                if (labelForContinuing == null
+                        || (((LoopBlockSpec) temp).labelName != null && ((LoopBlockSpec) temp).labelName.equals(labelForContinuing))) {
                     return;
                 }
                 temp = ((LoopBlockSpec) temp).outerBlock;
@@ -70,7 +62,12 @@ public class LoopBlockSpec extends BlockSpec {
 
     @Override
     public boolean hasNextMethodInvocation() {
-        return super.hasNextMethodInvocation();
+        for (int i = currentStatementIndex; blockReturned() || blockBrokenOrContinued(); i++) {
+            if (statements.get(i).hasNextMethodInvocation()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -78,47 +75,55 @@ public class LoopBlockSpec extends BlockSpec {
         return new LoopStatementScanner(this);
     }
 
+    @Override
+    protected void reset() {
+        this.currentStatementIndex = 0;
+        this.broken = false;
+    }
+
+    private boolean blockBrokenOrContinued() {
+        return broken || continued;
+    }
+
     class LoopStatementScanner extends StatementScanner {
 
-        LoopBlockSpec outerLoop;
-
-        public LoopStatementScanner(LoopBlockSpec outerLoop) {
-            this.outerLoop = outerLoop;
+        public LoopStatementScanner(LoopBlockSpec statementLocatedBlock) {
+            super(statementLocatedBlock);
         }
 
         @Override
         public Void visitDoWhileLoop(DoWhileLoopTree node, CompilationUnitSpec compilationUnitSpec) {
-            statements.add(new DoWhileLoopSpec(node, compilationUnitSpec, outerLoop, null));
+            statements.add(new DoWhileLoopSpec(node, compilationUnitSpec, (LoopBlockSpec) statementLocatedBlock, null));
             return null;
         }
 
         @Override
         public Void visitWhileLoop(WhileLoopTree node, CompilationUnitSpec compilationUnitSpec) {
-            statements.add(new WhileLoopSpec(node, compilationUnitSpec, outerLoop, null));
+            statements.add(new WhileLoopSpec(node, compilationUnitSpec, (LoopBlockSpec) statementLocatedBlock, null));
             return null;
         }
 
         @Override
         public Void visitForLoop(ForLoopTree node, CompilationUnitSpec compilationUnitSpec) {
-            statements.add(new ForLoopSpec(node, compilationUnitSpec, outerLoop, null));
+            statements.add(new ForLoopSpec(node, compilationUnitSpec, (LoopBlockSpec) statementLocatedBlock, null));
             return null;
         }
 
         @Override
         public Void visitLabeledStatement(LabeledStatementTree node, CompilationUnitSpec compilationUnitSpec) {
-            statements.add(new LabeledStatementSpec(node, compilationUnitSpec, outerLoop));
+            statements.add(new LabeledStatementSpec(node, compilationUnitSpec, (LoopBlockSpec) statementLocatedBlock));
             return null;
         }
 
         @Override
         public Void visitBreak(BreakTree node, CompilationUnitSpec compilationUnitSpec) {
-            statements.add(new BreakStatementSpec(node, outerLoop));
+            statements.add(new BreakStatementSpec(node, (LoopBlockSpec) statementLocatedBlock));
             return null;
         }
 
         @Override
         public Void visitContinue(ContinueTree node, CompilationUnitSpec compilationUnitSpec) {
-            statements.add(new ContinueStatementSpec(node, outerLoop));
+            statements.add(new ContinueStatementSpec(node, (LoopBlockSpec) statementLocatedBlock));
             return null;
         }
     }

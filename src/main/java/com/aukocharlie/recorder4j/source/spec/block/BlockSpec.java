@@ -7,6 +7,7 @@ import com.aukocharlie.recorder4j.source.spec.statement.*;
 import com.aukocharlie.recorder4j.source.spec.statement.loop.DoWhileLoopSpec;
 import com.aukocharlie.recorder4j.source.spec.statement.loop.ForLoopSpec;
 import com.aukocharlie.recorder4j.source.spec.statement.loop.WhileLoopSpec;
+import com.aukocharlie.recorder4j.util.Assert;
 import com.sun.source.tree.*;
 
 import java.util.ArrayList;
@@ -28,6 +29,8 @@ public class BlockSpec implements LambdaPlaceable, MethodInvocationPlaceable {
 
     List<Statement> statements = new ArrayList<>();
     int currentStatementIndex = 0;
+
+    boolean returned = false;
 
     public BlockSpec(StatementTree node, CompilationUnitSpec compilationUnitSpec, String name) {
         this.name = name;
@@ -59,34 +62,6 @@ public class BlockSpec implements LambdaPlaceable, MethodInvocationPlaceable {
         this(nodes, compilationUnitSpec, null);
     }
 
-    protected StatementScanner getScanner() {
-        return new StatementScanner();
-    }
-
-    protected void reset() {
-        this.currentStatementIndex = 0;
-    }
-
-    protected void fastEnd() {
-        this.currentStatementIndex = this.statements.size();
-    }
-
-    protected boolean blockIsExecuted() {
-        return this.currentStatementIndex == this.statements.size();
-    }
-
-    protected void doReturn() {
-        BlockSpec temp = this;
-        while (temp != null) {
-            if (temp instanceof LoopBlockSpec) {
-                temp.reset();
-                temp = ((LoopBlockSpec) temp).outerBlock;
-            } else if (temp instanceof MethodBlockSpec || temp instanceof LambdaBlockSpec) {
-                return;
-            }
-        }
-    }
-
     @Override
     public List<BlockSpec> getLambdaBlockList() {
         List<BlockSpec> lambdaList = new ArrayList<>();
@@ -104,12 +79,7 @@ public class BlockSpec implements LambdaPlaceable, MethodInvocationPlaceable {
 
     @Override
     public boolean hasNextMethodInvocation() {
-        if (blockIsExecuted()) {
-            this.reset();
-            return false;
-        }
-
-        for (int i = currentStatementIndex; i < statements.size(); i++) {
+        for (int i = currentStatementIndex; blockReturned(); i++) {
             if (statements.get(i).hasNextMethodInvocation()) {
                 return true;
             }
@@ -133,7 +103,44 @@ public class BlockSpec implements LambdaPlaceable, MethodInvocationPlaceable {
         return null;
     }
 
+
+    protected StatementScanner getScanner() {
+        return new StatementScanner();
+    }
+
+    /**
+     * Reset to prepare to check again
+     */
+    public void reset() {
+        this.currentStatementIndex = 0;
+        this.returned = false;
+    }
+
+    protected boolean blockReturned() {
+        return this.returned || this.currentStatementIndex == this.statements.size();
+    }
+
+    public void doReturn() {
+        for (BlockSpec temp = this; temp != null; ) {
+            temp.returned = true;
+            if (temp instanceof LoopBlockSpec) {
+                temp = ((LoopBlockSpec) temp).outerBlock;
+            } else if (temp instanceof MethodBlockSpec) {
+                return;
+            }
+        }
+    }
+
     class StatementScanner extends SourceScanner {
+
+        BlockSpec statementLocatedBlock;
+
+        public StatementScanner() {
+        }
+
+        public StatementScanner(BlockSpec statementLocatedBlock) {
+            this.statementLocatedBlock = statementLocatedBlock;
+        }
 
         @Override
         public Void visitVariable(VariableTree node, CompilationUnitSpec compilationUnitSpec) {
@@ -180,6 +187,18 @@ public class BlockSpec implements LambdaPlaceable, MethodInvocationPlaceable {
         @Override
         public Void visitLabeledStatement(LabeledStatementTree node, CompilationUnitSpec compilationUnitSpec) {
             statements.add(new LabeledStatementSpec(node, compilationUnitSpec));
+            return null;
+        }
+
+        /**
+         * Only {@link MethodBlockSpec} and {@link LoopBlockSpec} will have {@link ReturnStatementSpec}
+         */
+        @Override
+        public Void visitReturn(ReturnTree node, CompilationUnitSpec compilationUnitSpec) {
+            Assert.assertTrue(statementLocatedBlock instanceof MethodBlockSpec
+                            || statementLocatedBlock instanceof LoopBlockSpec,
+                    "Unsupported statementLocatedBlock class: " + statementLocatedBlock.getClass());
+            statements.add(new ReturnStatementSpec(node, compilationUnitSpec, statementLocatedBlock));
             return null;
         }
     }

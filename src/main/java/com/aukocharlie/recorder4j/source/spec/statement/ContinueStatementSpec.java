@@ -6,15 +6,22 @@ import com.aukocharlie.recorder4j.source.spec.block.BlockSpec;
 import com.aukocharlie.recorder4j.source.spec.expression.MethodInvocationExpressionSpec;
 import com.sun.source.tree.ContinueTree;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * @author auko
  */
 public class ContinueStatementSpec implements Statement {
 
+    private final LoopBlockSpec nodeLocatedLoop;
+
+    private final String continueToLabelName;
+
     public ContinueStatementSpec(ContinueTree node, LoopBlockSpec nodeLocatedBlock) {
-        nodeLocatedBlock.doContinue(node.getLabel().toString());
+        this.nodeLocatedLoop = nodeLocatedBlock;
+        this.continueToLabelName = node.getLabel() == null ? null : node.getLabel().toString();
     }
 
     @Override
@@ -24,16 +31,17 @@ public class ContinueStatementSpec implements Statement {
 
     @Override
     public List<BlockSpec> getLambdaBlockList() {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
     public boolean hasNextMethodInvocation() {
+        nodeLocatedLoop.doContinue(continueToLabelName);
         return false;
     }
 
     @Override
     public MethodInvocationExpressionSpec nextMethodInvocation() {
-        return null;
+        throw new NoSuchElementException("There isn't next method invocation");
     }
 }

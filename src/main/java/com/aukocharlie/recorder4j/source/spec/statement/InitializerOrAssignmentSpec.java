@@ -38,11 +38,11 @@ public class InitializerOrAssignmentSpec implements Statement {
 
     @Override
     public boolean hasNextMethodInvocation() {
-        return false;
+        return valueExpr.hasNextMethodInvocation();
     }
 
     @Override
     public MethodInvocationExpressionSpec nextMethodInvocation() {
-        return null;
+        return valueExpr.nextMethodInvocation();
     }
 }

@@ -1,4 +1,4 @@
-package com.aukocharlie.recorder4j.result;
+package com.aukocharlie.recorder4j.util;
 
 import com.aukocharlie.recorder4j.exception.RecorderRuntimeException;
 import com.sun.jdi.event.ClassPrepareEvent;
@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 /**
  * @author auko
  */
-public class Utils {
+public class LambdaUtils {
 
 
     public static final Pattern LAMBDA_CLASS_NAME_PATTERN = Pattern.compile("\\$\\$Lambda\\$[0-9]+[.]+[0-9]+$");

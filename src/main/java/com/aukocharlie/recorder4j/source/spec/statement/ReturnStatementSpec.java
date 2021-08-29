@@ -2,15 +2,11 @@ package com.aukocharlie.recorder4j.source.spec.statement;
 
 import com.aukocharlie.recorder4j.source.spec.CompilationUnitSpec;
 import com.aukocharlie.recorder4j.source.spec.block.BlockSpec;
-import com.aukocharlie.recorder4j.source.spec.block.LoopBlockSpec;
-import com.aukocharlie.recorder4j.source.spec.block.MethodBlockSpec;
 import com.aukocharlie.recorder4j.source.spec.expression.Expression;
 import com.aukocharlie.recorder4j.source.spec.expression.ExpressionSpec;
 import com.aukocharlie.recorder4j.source.spec.expression.MethodInvocationExpressionSpec;
-import com.sun.source.tree.BreakTree;
 import com.sun.source.tree.ReturnTree;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -19,13 +15,13 @@ import java.util.NoSuchElementException;
  */
 public class ReturnStatementSpec implements Statement {
 
-    private ExpressionSpec returnValueExpr;
+    private final ExpressionSpec returnValueExpr;
 
-    private final MethodBlockSpec nodeLocatedMethod;
+    private final BlockSpec nodeLocatedBlock;
 
-    public ReturnStatementSpec(ReturnTree node, CompilationUnitSpec compilationUnitSpec, MethodBlockSpec nodeLocatedMethod) {
+    public ReturnStatementSpec(ReturnTree node, CompilationUnitSpec compilationUnitSpec, BlockSpec nodeLocatedBlock) {
         this.returnValueExpr = ExpressionSpec.toSpecificExpression(node.getExpression(), compilationUnitSpec);
-        this.nodeLocatedMethod = nodeLocatedMethod;
+        this.nodeLocatedBlock = nodeLocatedBlock;
     }
 
     @Override
@@ -40,11 +36,20 @@ public class ReturnStatementSpec implements Statement {
 
     @Override
     public boolean hasNextMethodInvocation() {
-        return false;
+        if (returnValueExpr.hasNextMethodInvocation()) {
+            return true;
+        } else {
+            nodeLocatedBlock.doReturn();
+            return false;
+        }
     }
 
     @Override
     public MethodInvocationExpressionSpec nextMethodInvocation() {
-        throw new NoSuchElementException("There isn't next method invocation");
+        if (!this.hasNextMethodInvocation()) {
+            throw new NoSuchElementException("There isn't next method invocation");
+        } else {
+            return returnValueExpr.nextMethodInvocation();
+        }
     }
 }

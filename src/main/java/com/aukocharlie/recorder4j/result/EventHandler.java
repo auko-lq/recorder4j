@@ -9,8 +9,8 @@ import com.sun.jdi.event.*;
 
 import java.util.List;
 
-import static com.aukocharlie.recorder4j.result.Utils.isLambda;
-import static com.aukocharlie.recorder4j.result.Utils.truncateLambdaClassName;
+import static com.aukocharlie.recorder4j.util.LambdaUtils.isLambda;
+import static com.aukocharlie.recorder4j.util.LambdaUtils.truncateLambdaClassName;
 
 /**
  * @author auko
