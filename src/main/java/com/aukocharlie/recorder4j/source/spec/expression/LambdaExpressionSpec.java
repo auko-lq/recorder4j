@@ -1,9 +1,8 @@
 package com.aukocharlie.recorder4j.source.spec.expression;
 
 import com.aukocharlie.recorder4j.source.spec.CompilationUnitSpec;
-import com.aukocharlie.recorder4j.source.spec.block.BlockSpec;
+import com.aukocharlie.recorder4j.source.spec.block.AbstractBlockSpec;
 import com.aukocharlie.recorder4j.source.spec.block.LambdaBlockSpec;
-import com.aukocharlie.recorder4j.source.spec.expression.ExpressionSpec;
 import com.sun.source.tree.BlockTree;
 import com.sun.source.tree.LambdaExpressionTree;
 
@@ -15,9 +14,9 @@ import static com.sun.source.tree.LambdaExpressionTree.BodyKind.STATEMENT;
 /**
  * @author auko
  */
-public class LambdaExpressionSpec extends ExpressionSpec {
+public class LambdaExpressionSpec extends AbstractExpressionSpec {
 
-    BlockSpec lambdaBlock;
+    AbstractBlockSpec lambdaBlock;
 
     public LambdaExpressionSpec(LambdaExpressionTree node, CompilationUnitSpec compilationUnitSpec, String originalExpr) {
         super(originalExpr);
@@ -27,13 +26,23 @@ public class LambdaExpressionSpec extends ExpressionSpec {
     }
 
     @Override
-    public List<BlockSpec> getLambdaBlockList() {
+    public List<AbstractBlockSpec> getLambdaBlockList() {
         if (lambdaBlock == null) {
             return new ArrayList<>();
         }
         // First add lambda blocks in the lambda block, then add itself.
-        List<BlockSpec> innerLambdaBlocks = lambdaBlock.getLambdaBlockList();
+        List<AbstractBlockSpec> innerLambdaBlocks = lambdaBlock.getLambdaBlockList();
         innerLambdaBlocks.add(this.lambdaBlock);
         return innerLambdaBlocks;
+    }
+
+    @Override
+    protected void setExecutionOrder() {
+        nodeInExecutionOrder.add(lambdaBlock);
+    }
+
+    @Override
+    public void reset() {
+        lambdaBlock.reset();
     }
 }

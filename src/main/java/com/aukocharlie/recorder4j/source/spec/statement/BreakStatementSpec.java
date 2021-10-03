@@ -1,6 +1,6 @@
 package com.aukocharlie.recorder4j.source.spec.statement;
 
-import com.aukocharlie.recorder4j.source.spec.block.BlockSpec;
+import com.aukocharlie.recorder4j.source.spec.block.AbstractBlockSpec;
 import com.aukocharlie.recorder4j.source.spec.block.LoopBlockSpec;
 import com.aukocharlie.recorder4j.source.spec.expression.Expression;
 import com.aukocharlie.recorder4j.source.spec.expression.MethodInvocationExpressionSpec;
@@ -13,7 +13,7 @@ import java.util.NoSuchElementException;
 /**
  * @author auko
  */
-public class BreakStatementSpec implements Statement {
+public class BreakStatementSpec extends AbstractStatementSpec implements Statement {
 
     private final LoopBlockSpec nodeLocatedLoop;
 
@@ -30,8 +30,12 @@ public class BreakStatementSpec implements Statement {
     }
 
     @Override
-    public List<BlockSpec> getLambdaBlockList() {
+    public List<AbstractBlockSpec> getLambdaBlockList() {
         return Collections.emptyList();
+    }
+
+    @Override
+    protected void setExecutionOrder() {
     }
 
     @Override
@@ -43,5 +47,10 @@ public class BreakStatementSpec implements Statement {
     @Override
     public MethodInvocationExpressionSpec nextMethodInvocation() {
         throw new NoSuchElementException("There isn't next method invocation");
+    }
+
+    @Override
+    public void reset() {
+
     }
 }

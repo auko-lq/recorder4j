@@ -2,12 +2,14 @@ package com.aukocharlie.recorder4j.source.spec.expression;
 
 import com.aukocharlie.recorder4j.exception.RecorderRuntimeException;
 import com.aukocharlie.recorder4j.source.SourceScanner;
+import com.aukocharlie.recorder4j.source.spec.AbstractMethodInvocationIterator;
 import com.aukocharlie.recorder4j.source.spec.CompilationUnitSpec;
-import com.aukocharlie.recorder4j.source.spec.block.BlockSpec;
+import com.aukocharlie.recorder4j.source.spec.block.AbstractBlockSpec;
 import com.sun.source.tree.*;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 import static com.aukocharlie.recorder4j.source.spec.expression.MethodInvocationExpressionSpec.getFirstMethodInvocationOnChain;
@@ -16,20 +18,20 @@ import static com.sun.source.tree.LambdaExpressionTree.BodyKind.STATEMENT;
 /**
  * @author auko
  */
-public class ExpressionSpec implements Expression {
+public abstract class AbstractExpressionSpec extends AbstractMethodInvocationIterator implements Expression {
 
     String originalExpr;
 
-    public ExpressionSpec(String expr) {
+    public AbstractExpressionSpec(String expr) {
         this.originalExpr = expr;
     }
 
     /**
      * Perform a depth-first search on expression to find the specific expression scanned first.
      */
-    public static ExpressionSpec toSpecificExpression(ExpressionTree node, CompilationUnitSpec compilationUnitSpec) {
+    public static AbstractExpressionSpec toSpecificExpression(ExpressionTree node, CompilationUnitSpec compilationUnitSpec) {
         if (Objects.isNull(node)) {
-            return new ExpressionSpec(null);
+            return new BlankExpressionSpec(null);
         }
 
         ExpressionScanner expressionScanner = new ExpressionScanner(node.toString());
@@ -37,27 +39,12 @@ public class ExpressionSpec implements Expression {
         if (expressionScanner.specificExpr != null) {
             return expressionScanner.specificExpr;
         }
-        return new ExpressionSpec(node.toString());
-    }
-
-    @Override
-    public List<BlockSpec> getLambdaBlockList() {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public boolean hasNextMethodInvocation() {
-        return false;
-    }
-
-    @Override
-    public MethodInvocationExpressionSpec nextMethodInvocation() {
-        throw new RecorderRuntimeException("Useless expression has not next method invocation");
+        return new BlankExpressionSpec(node.toString());
     }
 
     static class ExpressionScanner extends SourceScanner {
 
-        ExpressionSpec specificExpr = null;
+        AbstractExpressionSpec specificExpr = null;
 
         String scannedExpr;
 
@@ -109,4 +96,35 @@ public class ExpressionSpec implements Expression {
             return null;
         }
     }
+
+    static class BlankExpressionSpec extends AbstractExpressionSpec {
+
+        public BlankExpressionSpec(String expr) {
+            super(expr);
+        }
+
+        @Override
+        public List<AbstractBlockSpec> getLambdaBlockList() {
+            return Collections.emptyList();
+        }
+
+        @Override
+        public boolean hasNextMethodInvocation() {
+            return false;
+        }
+
+        @Override
+        public MethodInvocationExpressionSpec nextMethodInvocation() {
+            throw new NoSuchElementException();
+        }
+
+        @Override
+        public void reset() {
+        }
+
+        @Override
+        protected void setExecutionOrder() {
+        }
+    }
+
 }

@@ -1,8 +1,8 @@
 package com.aukocharlie.recorder4j.source.spec;
 
 import com.aukocharlie.recorder4j.source.SourceScanner;
-import com.aukocharlie.recorder4j.source.UniqueMethod;
-import com.aukocharlie.recorder4j.source.spec.block.BlockSpec;
+import com.aukocharlie.recorder4j.source.MethodMetadata;
+import com.aukocharlie.recorder4j.source.spec.block.AbstractBlockSpec;
 import com.aukocharlie.recorder4j.source.spec.block.MethodBlockSpec;
 import com.aukocharlie.recorder4j.source.spec.block.StaticBlockSpec;
 import com.aukocharlie.recorder4j.source.spec.statement.StaticFieldInitializerSpec;
@@ -30,9 +30,9 @@ public class ClassSpec {
      * methodName will be <em>static</em>. The last number 0 indicates
      * the index of the lambda block in the class.
      */
-    Map<UniqueMethod, BlockSpec> lambdaBlocks = new HashMap<>();
+    Map<MethodMetadata, AbstractBlockSpec> lambdaBlocks = new HashMap<>();
 
-    Map<UniqueMethod, BlockSpec> methodBlocks = new HashMap<>();
+    Map<MethodMetadata, AbstractBlockSpec> methodBlocks = new HashMap<>();
 
     public ClassSpec(ClassTree node, String className, CompilationUnitSpec compilationUnit) {
         this.className = className;
@@ -57,7 +57,7 @@ public class ClassSpec {
         public Void visitVariable(VariableTree node, CompilationUnitSpec compilationUnitSpec) {
             StaticFieldInitializerSpec staticFieldinItializerSpec = new StaticFieldInitializerSpec(node, compilationUnitSpec);
             staticInitializers.add(staticFieldinItializerSpec);
-            for (BlockSpec lambdaBlock : staticFieldinItializerSpec.getLambdaBlockList()) {
+            for (AbstractBlockSpec lambdaBlock : staticFieldinItializerSpec.getLambdaBlockList()) {
                 addLambdaBlock(String.format("lambda$%s$%s", lambdaBlock.name, lambdaBlocks.size()), lambdaBlock);
             }
             return null;
@@ -65,13 +65,13 @@ public class ClassSpec {
 
         public Void visitMethod(MethodTree node, CompilationUnitSpec compilationUnitSpec) {
             List<String> parameterTypes = node.getTypeParameters().stream().map(Object::toString).collect(Collectors.toList());
-            BlockSpec methodBlock = new MethodBlockSpec(node.getBody(), compilationUnitSpec, node.getName().toString());
+            AbstractBlockSpec methodBlock = new MethodBlockSpec(node.getBody(), compilationUnitSpec, node.getName().toString());
 
-            for (BlockSpec lambdaBlock : methodBlock.getLambdaBlockList()) {
+            for (AbstractBlockSpec lambdaBlock : methodBlock.getLambdaBlockList()) {
                 addLambdaBlock(String.format("lambda$%s$%s", lambdaBlock.name, lambdaBlocks.size()), lambdaBlock);
             }
 
-            UniqueMethod method = new UniqueMethod(className, node.getName().toString(), parameterTypes);
+            MethodMetadata method = new MethodMetadata(className, node.getName().toString(), parameterTypes);
             methodBlocks.put(method, methodBlock);
             return null;
         }
@@ -81,15 +81,15 @@ public class ClassSpec {
             if (node.isStatic()) {
                 StaticBlockSpec staticBlockSpec = new StaticBlockSpec(node, compilationUnitSpec);
                 staticInitializers.add(staticBlockSpec);
-                for (BlockSpec lambdaBlock : staticBlockSpec.getLambdaBlockList()) {
+                for (AbstractBlockSpec lambdaBlock : staticBlockSpec.getLambdaBlockList()) {
                     addLambdaBlock(String.format("lambda$%s$%s", lambdaBlock.name, lambdaBlocks.size()), lambdaBlock);
                 }
             }
             return null;
         }
 
-        private void addLambdaBlock(String methodName, BlockSpec BlockSpec) {
-            UniqueMethod method = new UniqueMethod(className, methodName, Collections.emptyList());
+        private void addLambdaBlock(String methodName, AbstractBlockSpec BlockSpec) {
+            MethodMetadata method = new MethodMetadata(className, methodName, Collections.emptyList());
             lambdaBlocks.put(method, BlockSpec);
         }
 

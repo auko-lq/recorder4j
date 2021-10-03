@@ -12,9 +12,9 @@ import com.sun.source.tree.*;
 /**
  * @author auko
  */
-public class LoopBlockSpec extends BlockSpec {
+public class LoopBlockSpec extends AbstractBlockSpec {
 
-    BlockSpec outerBlock;
+    AbstractBlockSpec outerBlock;
     String labelName;
 
     /**
@@ -23,14 +23,14 @@ public class LoopBlockSpec extends BlockSpec {
     boolean broken = false;
     boolean continued = false;
 
-    public LoopBlockSpec(StatementTree node, CompilationUnitSpec compilationUnitSpec, BlockSpec outerBlock, String labelName) {
+    public LoopBlockSpec(StatementTree node, CompilationUnitSpec compilationUnitSpec, AbstractBlockSpec outerBlock, String labelName) {
         super(node, compilationUnitSpec);
         this.outerBlock = outerBlock;
         this.labelName = labelName;
     }
 
     public void doBreak(String labelForBreaking) {
-        for (BlockSpec temp = this; temp != null; ) {
+        for (AbstractBlockSpec temp = this; temp != null; ) {
             if (temp instanceof LoopBlockSpec) {
                 ((LoopBlockSpec) temp).broken = true;
                 if (labelForBreaking == null
@@ -45,7 +45,7 @@ public class LoopBlockSpec extends BlockSpec {
     }
 
     public void doContinue(String labelForContinuing) {
-        for (BlockSpec temp = this; temp != null; ) {
+        for (AbstractBlockSpec temp = this; temp != null; ) {
             if (temp instanceof LoopBlockSpec) {
                 ((LoopBlockSpec) temp).continued = true;
                 if (labelForContinuing == null
@@ -59,30 +59,9 @@ public class LoopBlockSpec extends BlockSpec {
         }
     }
 
-
-    @Override
-    public boolean hasNextMethodInvocation() {
-        for (int i = currentStatementIndex; blockReturned() || blockBrokenOrContinued(); i++) {
-            if (statements.get(i).hasNextMethodInvocation()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     @Override
     protected StatementScanner getScanner() {
         return new LoopStatementScanner(this);
-    }
-
-    @Override
-    protected void reset() {
-        this.currentStatementIndex = 0;
-        this.broken = false;
-    }
-
-    private boolean blockBrokenOrContinued() {
-        return broken || continued;
     }
 
     class LoopStatementScanner extends StatementScanner {

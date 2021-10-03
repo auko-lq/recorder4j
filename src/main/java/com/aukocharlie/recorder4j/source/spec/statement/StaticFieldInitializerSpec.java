@@ -1,7 +1,7 @@
 package com.aukocharlie.recorder4j.source.spec.statement;
 
 import com.aukocharlie.recorder4j.source.spec.CompilationUnitSpec;
-import com.aukocharlie.recorder4j.source.spec.block.BlockSpec;
+import com.aukocharlie.recorder4j.source.spec.block.AbstractBlockSpec;
 import com.aukocharlie.recorder4j.source.spec.expression.MethodInvocationExpressionSpec;
 import com.sun.source.tree.VariableTree;
 
@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * @author auko
  */
-public class StaticFieldInitializerSpec implements StaticInitializer {
+public class StaticFieldInitializerSpec extends AbstractStatementSpec implements StaticInitializer {
 
     /**
      * For example:
@@ -25,9 +25,9 @@ public class StaticFieldInitializerSpec implements StaticInitializer {
     }
 
     @Override
-    public List<BlockSpec> getLambdaBlockList() {
-        List<BlockSpec> lambdaBlock = initializer.getLambdaBlockList();
-        for (BlockSpec blockSpec : lambdaBlock) {
+    public List<AbstractBlockSpec> getLambdaBlockList() {
+        List<AbstractBlockSpec> lambdaBlock = initializer.getLambdaBlockList();
+        for (AbstractBlockSpec blockSpec : lambdaBlock) {
             if (blockSpec.name == null) {
                 blockSpec.name = "static";
             }
@@ -43,5 +43,10 @@ public class StaticFieldInitializerSpec implements StaticInitializer {
     @Override
     public MethodInvocationExpressionSpec nextMethodInvocation() {
         return initializer.nextMethodInvocation();
+    }
+
+    @Override
+    public void reset() {
+
     }
 }

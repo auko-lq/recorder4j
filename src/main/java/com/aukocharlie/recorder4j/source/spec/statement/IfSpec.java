@@ -1,10 +1,10 @@
 package com.aukocharlie.recorder4j.source.spec.statement;
 
-import com.aukocharlie.recorder4j.source.UniqueMethod;
+import com.aukocharlie.recorder4j.source.MethodMetadata;
 import com.aukocharlie.recorder4j.source.spec.CompilationUnitSpec;
 import com.aukocharlie.recorder4j.source.spec.expression.Expression;
-import com.aukocharlie.recorder4j.source.spec.expression.ExpressionSpec;
-import com.aukocharlie.recorder4j.source.spec.block.BlockSpec;
+import com.aukocharlie.recorder4j.source.spec.expression.AbstractExpressionSpec;
+import com.aukocharlie.recorder4j.source.spec.block.AbstractBlockSpec;
 import com.aukocharlie.recorder4j.source.spec.expression.MethodInvocationExpressionSpec;
 import com.sun.jdi.Value;
 import com.sun.source.tree.IfTree;
@@ -16,21 +16,21 @@ import java.util.Map;
 /**
  * @author auko
  */
-public class IfSpec implements ControlFlow<Boolean> {
+public class IfSpec  extends AbstractStatementSpec implements ControlFlow<Boolean> {
 
-    ExpressionSpec condition;
-    BlockSpec thenBlock;
-    BlockSpec elseBlock;
+    AbstractExpressionSpec condition;
+    AbstractBlockSpec thenBlock;
+    AbstractBlockSpec elseBlock;
 
     public IfSpec(IfTree node, CompilationUnitSpec compilationUnitSpec) {
-        this.condition = ExpressionSpec.toSpecificExpression(node.getCondition(), compilationUnitSpec);
-        this.thenBlock = new BlockSpec(node.getThenStatement(), compilationUnitSpec);
+        this.condition = AbstractExpressionSpec.toSpecificExpression(node.getCondition(), compilationUnitSpec);
+        this.thenBlock = new AbstractBlockSpec(node.getThenStatement(), compilationUnitSpec);
         // TODO：else if ？
-        this.elseBlock = new BlockSpec(node.getElseStatement(), compilationUnitSpec);
+        this.elseBlock = new AbstractBlockSpec(node.getElseStatement(), compilationUnitSpec);
     }
 
     @Override
-    public Boolean evaluateCondition(Map<UniqueMethod, Value> callResults) {
+    public Boolean evaluateCondition(Map<MethodMetadata, Value> callResults) {
         return null;
     }
 
@@ -40,8 +40,8 @@ public class IfSpec implements ControlFlow<Boolean> {
     }
 
     @Override
-    public List<BlockSpec> getLambdaBlockList() {
-        List<BlockSpec> lambdaList = new ArrayList<>();
+    public List<AbstractBlockSpec> getLambdaBlockList() {
+        List<AbstractBlockSpec> lambdaList = new ArrayList<>();
         lambdaList.addAll(condition.getLambdaBlockList());
         lambdaList.addAll(thenBlock.getLambdaBlockList());
         lambdaList.addAll(elseBlock.getLambdaBlockList());
@@ -56,5 +56,10 @@ public class IfSpec implements ControlFlow<Boolean> {
     @Override
     public MethodInvocationExpressionSpec nextMethodInvocation() {
         return null;
+    }
+
+    @Override
+    public void reset() {
+
     }
 }

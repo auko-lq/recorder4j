@@ -1,10 +1,10 @@
 package com.aukocharlie.recorder4j.source.spec.statement;
 
-import com.aukocharlie.recorder4j.source.UniqueMethod;
+import com.aukocharlie.recorder4j.source.MethodMetadata;
 import com.aukocharlie.recorder4j.source.spec.CompilationUnitSpec;
 import com.aukocharlie.recorder4j.source.spec.expression.Expression;
-import com.aukocharlie.recorder4j.source.spec.expression.ExpressionSpec;
-import com.aukocharlie.recorder4j.source.spec.block.BlockSpec;
+import com.aukocharlie.recorder4j.source.spec.expression.AbstractExpressionSpec;
+import com.aukocharlie.recorder4j.source.spec.block.AbstractBlockSpec;
 import com.aukocharlie.recorder4j.source.spec.expression.MethodInvocationExpressionSpec;
 import com.sun.jdi.Value;
 import com.sun.source.tree.CaseTree;
@@ -19,35 +19,35 @@ import java.util.Map;
  * TODO: support switch statement
  * @author auko
  */
-public class SwitchSpec implements ControlFlow<Integer> {
+public class SwitchSpec extends AbstractStatementSpec implements ControlFlow<Integer> {
 
-    ExpressionSpec condition;
+    AbstractExpressionSpec condition;
 
     /**
      * Use LinkedHashMap to ensure the order between cases
      */
-    Map<ExpressionSpec, BlockSpec> cases = new LinkedHashMap<>();
+    Map<AbstractExpressionSpec, AbstractBlockSpec> cases = new LinkedHashMap<>();
 
     public SwitchSpec(SwitchTree node, CompilationUnitSpec compilationUnitSpec) {
-        this.condition = ExpressionSpec.toSpecificExpression(node.getExpression(), compilationUnitSpec);
+        this.condition = AbstractExpressionSpec.toSpecificExpression(node.getExpression(), compilationUnitSpec);
         List<? extends CaseTree> cases = node.getCases();
         if (cases != null) {
             for (CaseTree caseItem : cases) {
                 this.cases.put(
-                        ExpressionSpec.toSpecificExpression(node.getExpression(), compilationUnitSpec),
-                        new BlockSpec(caseItem.getStatements(), compilationUnitSpec));
+                        AbstractExpressionSpec.toSpecificExpression(node.getExpression(), compilationUnitSpec),
+                        new AbstractBlockSpec(caseItem.getStatements(), compilationUnitSpec));
             }
         }
     }
 
     @Override
-    public Integer evaluateCondition(Map<UniqueMethod, Value> callResults) {
+    public Integer evaluateCondition(Map<MethodMetadata, Value> callResults) {
         return null;
     }
 
     @Override
-    public List<BlockSpec> getLambdaBlockList() {
-        List<BlockSpec> lambdaList = new ArrayList<>();
+    public List<AbstractBlockSpec> getLambdaBlockList() {
+        List<AbstractBlockSpec> lambdaList = new ArrayList<>();
         lambdaList.addAll(condition.getLambdaBlockList());
         cases.values().forEach((caseItem) -> lambdaList.addAll(caseItem.getLambdaBlockList()));
         return lambdaList;
@@ -66,5 +66,10 @@ public class SwitchSpec implements ControlFlow<Integer> {
     @Override
     public MethodInvocationExpressionSpec nextMethodInvocation() {
         return null;
+    }
+
+    @Override
+    public void reset() {
+
     }
 }

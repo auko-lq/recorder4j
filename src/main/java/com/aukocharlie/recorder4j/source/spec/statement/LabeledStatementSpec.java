@@ -2,7 +2,7 @@ package com.aukocharlie.recorder4j.source.spec.statement;
 
 import com.aukocharlie.recorder4j.source.SourceScanner;
 import com.aukocharlie.recorder4j.source.spec.*;
-import com.aukocharlie.recorder4j.source.spec.block.BlockSpec;
+import com.aukocharlie.recorder4j.source.spec.block.AbstractBlockSpec;
 import com.aukocharlie.recorder4j.source.spec.block.LoopBlockSpec;
 import com.aukocharlie.recorder4j.source.spec.expression.Expression;
 import com.aukocharlie.recorder4j.source.spec.expression.MethodInvocationExpressionSpec;
@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * @author auko
  */
-public class LabeledStatementSpec implements Statement {
+public class LabeledStatementSpec extends AbstractStatementSpec implements Statement {
 
     LoopBlockSpec outerLoop;
     String labelName;
@@ -61,7 +61,7 @@ public class LabeledStatementSpec implements Statement {
     }
 
     @Override
-    public List<BlockSpec> getLambdaBlockList() {
+    public List<AbstractBlockSpec> getLambdaBlockList() {
         return statement.getLambdaBlockList();
     }
 
@@ -73,5 +73,10 @@ public class LabeledStatementSpec implements Statement {
     @Override
     public MethodInvocationExpressionSpec nextMethodInvocation() {
         return statement.nextMethodInvocation();
+    }
+
+    @Override
+    public void reset() {
+
     }
 }

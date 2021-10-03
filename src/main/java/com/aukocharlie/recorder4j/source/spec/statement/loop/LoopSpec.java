@@ -1,11 +1,12 @@
 package com.aukocharlie.recorder4j.source.spec.statement.loop;
 
-import com.aukocharlie.recorder4j.source.UniqueMethod;
-import com.aukocharlie.recorder4j.source.spec.block.BlockSpec;
+import com.aukocharlie.recorder4j.source.MethodMetadata;
+import com.aukocharlie.recorder4j.source.spec.AbstractMethodInvocationIterator;
+import com.aukocharlie.recorder4j.source.spec.MethodInvocationPlaceableNode;
+import com.aukocharlie.recorder4j.source.spec.block.AbstractBlockSpec;
 import com.aukocharlie.recorder4j.source.spec.block.MethodBlockSpec;
 import com.aukocharlie.recorder4j.source.spec.expression.Expression;
-import com.aukocharlie.recorder4j.source.spec.expression.ExpressionSpec;
-import com.aukocharlie.recorder4j.source.spec.expression.MethodInvocationExpressionSpec;
+import com.aukocharlie.recorder4j.source.spec.expression.AbstractExpressionSpec;
 import com.aukocharlie.recorder4j.source.spec.statement.ControlFlow;
 import com.sun.jdi.Value;
 
@@ -15,20 +16,25 @@ import java.util.Map;
 /**
  * @author auko
  */
-public class LoopSpec implements ControlFlow<Boolean> {
+public class LoopSpec extends AbstractMethodInvocationIterator implements ControlFlow<Boolean> {
 
     String labelName;
 
-    BlockSpec loopBlock;
+    AbstractBlockSpec loopBlock;
 
-    ExpressionSpec condition;
+    AbstractExpressionSpec condition;
 
     MethodBlockSpec loopLocatedMethod;
 
     protected LoopSpec(){}
 
     @Override
-    public Boolean evaluateCondition(Map<UniqueMethod, Value> callResults) {
+    public Boolean evaluateCondition(Map<MethodMetadata, Value> callResults) {
+        return null;
+    }
+
+    @Override
+    public MethodInvocationPlaceableNode nextControlFlowNode() {
         return null;
     }
 
@@ -38,17 +44,17 @@ public class LoopSpec implements ControlFlow<Boolean> {
     }
 
     @Override
-    public List<BlockSpec> getLambdaBlockList() {
+    public List<AbstractBlockSpec> getLambdaBlockList() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean hasNextMethodInvocation() {
-        throw new UnsupportedOperationException();
+    public void reset() {
+
     }
 
     @Override
-    public MethodInvocationExpressionSpec nextMethodInvocation() {
-        throw new UnsupportedOperationException();
+    protected void setExecutionOrder() {
+
     }
 }

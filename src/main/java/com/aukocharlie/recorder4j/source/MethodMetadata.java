@@ -6,13 +6,13 @@ import java.util.List;
 /**
  * @author auko
  */
-public class UniqueMethod {
+public class MethodMetadata {
 
-    private String className;
-    private String methodName;
+    private final String className;
+    private final String methodName;
     private List<String> parameterTypeList;
 
-    public UniqueMethod(String className, String methodName, List<String> parameterList) {
+    public MethodMetadata(String className, String methodName, List<String> parameterList) {
         this.className = className;
         this.methodName = methodName;
         this.parameterTypeList = parameterList;
@@ -29,8 +29,8 @@ public class UniqueMethod {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof UniqueMethod) {
-            UniqueMethod method = (UniqueMethod) obj;
+        if (obj instanceof MethodMetadata) {
+            MethodMetadata method = (MethodMetadata) obj;
             return this.equals(method.className, method.methodName, method.parameterTypeList);
         }
         return false;

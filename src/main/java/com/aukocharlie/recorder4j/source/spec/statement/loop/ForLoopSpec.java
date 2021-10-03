@@ -1,13 +1,12 @@
 package com.aukocharlie.recorder4j.source.spec.statement.loop;
 
-import com.aukocharlie.recorder4j.source.UniqueMethod;
+import com.aukocharlie.recorder4j.source.MethodMetadata;
 import com.aukocharlie.recorder4j.source.spec.*;
-import com.aukocharlie.recorder4j.source.spec.block.BlockSpec;
+import com.aukocharlie.recorder4j.source.spec.block.AbstractBlockSpec;
 import com.aukocharlie.recorder4j.source.spec.block.LoopBlockSpec;
 import com.aukocharlie.recorder4j.source.spec.expression.Expression;
-import com.aukocharlie.recorder4j.source.spec.expression.ExpressionSpec;
+import com.aukocharlie.recorder4j.source.spec.expression.AbstractExpressionSpec;
 import com.aukocharlie.recorder4j.source.spec.expression.MethodInvocationExpressionSpec;
-import com.aukocharlie.recorder4j.source.spec.statement.ControlFlow;
 import com.aukocharlie.recorder4j.source.spec.statement.InitializerOrAssignmentSpec;
 import com.aukocharlie.recorder4j.source.spec.statement.Statement;
 import com.sun.jdi.Value;
@@ -20,10 +19,10 @@ import java.util.Map;
 /**
  * @author auko
  */
-public class ForLoopSpec extends LoopSpec{
+public class ForLoopSpec extends LoopSpec {
 
     List<Statement> initializers = new ArrayList<>();
-    List<ExpressionSpec> updates = new ArrayList<>();
+    List<AbstractExpressionSpec> updates = new ArrayList<>();
 
     public ForLoopSpec(ForLoopTree node, CompilationUnitSpec compilationUnitSpec, LoopBlockSpec outerLoop, String labelName) {
         this.labelName = labelName;
@@ -38,8 +37,8 @@ public class ForLoopSpec extends LoopSpec{
             }
         });
 
-        this.condition = ExpressionSpec.toSpecificExpression(node.getCondition(), compilationUnitSpec);
-        node.getUpdate().forEach((update) -> updates.add(ExpressionSpec.toSpecificExpression(update.getExpression(), compilationUnitSpec))
+        this.condition = AbstractExpressionSpec.toSpecificExpression(node.getCondition(), compilationUnitSpec);
+        node.getUpdate().forEach((update) -> updates.add(AbstractExpressionSpec.toSpecificExpression(update.getExpression(), compilationUnitSpec))
         );
         this.loopBlock = new LoopBlockSpec(node.getStatement(), compilationUnitSpec, outerLoop, labelName);
     }
@@ -49,14 +48,14 @@ public class ForLoopSpec extends LoopSpec{
     }
 
     @Override
-    public Boolean evaluateCondition(Map<UniqueMethod, Value> callResults) {
+    public Boolean evaluateCondition(Map<MethodMetadata, Value> callResults) {
         return null;
     }
 
 
     @Override
-    public List<BlockSpec> getLambdaBlockList() {
-        List<BlockSpec> lambdaList = new ArrayList<>();
+    public List<AbstractBlockSpec> getLambdaBlockList() {
+        List<AbstractBlockSpec> lambdaList = new ArrayList<>();
         initializers.stream().map(Statement::getLambdaBlockList).forEach(lambdaList::addAll);
         lambdaList.addAll(condition.getLambdaBlockList());
         updates.stream().map(LambdaPlaceable::getLambdaBlockList).forEach(lambdaList::addAll);
@@ -71,6 +70,27 @@ public class ForLoopSpec extends LoopSpec{
 
     @Override
     public boolean hasNextMethodInvocation() {
+        for (Statement initializerStatement : initializers) {
+            if (initializerStatement.hasNextMethodInvocation()) {
+                return true;
+            }
+        }
+
+        if (condition.hasNextMethodInvocation()) {
+            return true;
+        }
+
+        if (loopBlock.hasNextMethodInvocation()) {
+            return true;
+        }
+        loopBlock.reset();
+
+        for (AbstractExpressionSpec updateExpression : updates) {
+            if (updateExpression.hasNextMethodInvocation()) {
+                return true;
+            }
+        }
+
         return false;
     }
 
