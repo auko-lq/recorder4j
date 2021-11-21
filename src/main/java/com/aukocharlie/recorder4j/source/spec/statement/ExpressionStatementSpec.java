@@ -1,9 +1,9 @@
 package com.aukocharlie.recorder4j.source.spec.statement;
 
 import com.aukocharlie.recorder4j.source.spec.*;
-import com.aukocharlie.recorder4j.source.spec.block.BlockSpec;
+import com.aukocharlie.recorder4j.source.spec.block.AbstractBlockSpec;
 import com.aukocharlie.recorder4j.source.spec.expression.Expression;
-import com.aukocharlie.recorder4j.source.spec.expression.ExpressionSpec;
+import com.aukocharlie.recorder4j.source.spec.expression.AbstractExpressionSpec;
 import com.aukocharlie.recorder4j.source.spec.expression.MethodInvocationExpressionSpec;
 import com.sun.source.tree.ExpressionStatementTree;
 
@@ -12,12 +12,12 @@ import java.util.List;
 /**
  * @author auko
  */
-public class ExpressionStatementSpec implements Statement {
+public class ExpressionStatementSpec extends AbstractStatementSpec implements Statement {
 
-    ExpressionSpec expression;
+    AbstractExpressionSpec expression;
 
     public ExpressionStatementSpec(ExpressionStatementTree node, CompilationUnitSpec compilationUnitSpec) {
-        this.expression = ExpressionSpec.toSpecificExpression(node.getExpression(), compilationUnitSpec);
+        this.expression = AbstractExpressionSpec.toSpecificExpression(node.getExpression(), compilationUnitSpec);
     }
 
     @Override
@@ -26,7 +26,7 @@ public class ExpressionStatementSpec implements Statement {
     }
 
     @Override
-    public List<BlockSpec> getLambdaBlockList() {
+    public List<AbstractBlockSpec> getLambdaBlockList() {
         return expression.getLambdaBlockList();
     }
 
@@ -38,5 +38,10 @@ public class ExpressionStatementSpec implements Statement {
     @Override
     public MethodInvocationExpressionSpec nextMethodInvocation() {
         return expression.nextMethodInvocation();
+    }
+
+    @Override
+    public void reset() {
+
     }
 }

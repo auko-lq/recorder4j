@@ -2,7 +2,6 @@ package com.aukocharlie.recorder4j.source.spec.block;
 
 import com.aukocharlie.recorder4j.source.SourceScanner;
 import com.aukocharlie.recorder4j.source.spec.*;
-import com.aukocharlie.recorder4j.source.spec.expression.MethodInvocationExpressionSpec;
 import com.aukocharlie.recorder4j.source.spec.statement.*;
 import com.aukocharlie.recorder4j.source.spec.statement.loop.DoWhileLoopSpec;
 import com.aukocharlie.recorder4j.source.spec.statement.loop.ForLoopSpec;
@@ -12,12 +11,11 @@ import com.sun.source.tree.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 /**
  * @author auko
  */
-public class BlockSpec implements LambdaPlaceable, MethodInvocationPlaceable {
+public abstract class AbstractBlockSpec extends AbstractMethodInvocationIterator implements LambdaPlaceable {
 
     /**
      * There are three cases for the value:
@@ -32,7 +30,7 @@ public class BlockSpec implements LambdaPlaceable, MethodInvocationPlaceable {
 
     boolean returned = false;
 
-    public BlockSpec(StatementTree node, CompilationUnitSpec compilationUnitSpec, String name) {
+    public AbstractBlockSpec(StatementTree node, CompilationUnitSpec compilationUnitSpec, String name) {
         this.name = name;
         if (node == null) {
             return;
@@ -46,11 +44,11 @@ public class BlockSpec implements LambdaPlaceable, MethodInvocationPlaceable {
         }
     }
 
-    public BlockSpec(StatementTree node, CompilationUnitSpec compilationUnitSpec) {
+    public AbstractBlockSpec(StatementTree node, CompilationUnitSpec compilationUnitSpec) {
         this(node, compilationUnitSpec, null);
     }
 
-    public BlockSpec(List<? extends StatementTree> nodes, CompilationUnitSpec compilationUnitSpec, String name) {
+    public AbstractBlockSpec(List<? extends StatementTree> nodes, CompilationUnitSpec compilationUnitSpec, String name) {
         this.name = name;
         if (nodes == null) {
             return;
@@ -58,15 +56,15 @@ public class BlockSpec implements LambdaPlaceable, MethodInvocationPlaceable {
         getScanner().scan(nodes, compilationUnitSpec);
     }
 
-    public BlockSpec(List<? extends StatementTree> nodes, CompilationUnitSpec compilationUnitSpec) {
+    public AbstractBlockSpec(List<? extends StatementTree> nodes, CompilationUnitSpec compilationUnitSpec) {
         this(nodes, compilationUnitSpec, null);
     }
 
     @Override
-    public List<BlockSpec> getLambdaBlockList() {
-        List<BlockSpec> lambdaList = new ArrayList<>();
+    public List<AbstractBlockSpec> getLambdaBlockList() {
+        List<AbstractBlockSpec> lambdaList = new ArrayList<>();
         for (Statement statement : statements) {
-            for (BlockSpec blockSpec : statement.getLambdaBlockList()) {
+            for (AbstractBlockSpec blockSpec : statement.getLambdaBlockList()) {
                 if (blockSpec.name == null) {
                     // Usually just set the method name to the name of the outermost lambda block in the method block.
                     blockSpec.name = this.name;
@@ -78,31 +76,9 @@ public class BlockSpec implements LambdaPlaceable, MethodInvocationPlaceable {
     }
 
     @Override
-    public boolean hasNextMethodInvocation() {
-        for (int i = currentStatementIndex; blockReturned(); i++) {
-            if (statements.get(i).hasNextMethodInvocation()) {
-                return true;
-            }
-        }
-        return false;
+    protected void setExecutionOrder() {
+        nodeInExecutionOrder.addAll(statements);
     }
-
-    @Override
-    public MethodInvocationExpressionSpec nextMethodInvocation() {
-        // TODO: try to delete the pre-check here?
-        if (!hasNextMethodInvocation()) {
-            throw new NoSuchElementException("There isn't next method invocation");
-        }
-
-        while (currentStatementIndex < statements.size()) {
-            if (statements.get(currentStatementIndex).hasNextMethodInvocation()) {
-                return statements.get(currentStatementIndex).nextMethodInvocation();
-            }
-            currentStatementIndex++;
-        }
-        return null;
-    }
-
 
     protected StatementScanner getScanner() {
         return new StatementScanner();
@@ -111,6 +87,7 @@ public class BlockSpec implements LambdaPlaceable, MethodInvocationPlaceable {
     /**
      * Reset to prepare to check again
      */
+    @Override
     public void reset() {
         this.currentStatementIndex = 0;
         this.returned = false;
@@ -121,7 +98,7 @@ public class BlockSpec implements LambdaPlaceable, MethodInvocationPlaceable {
     }
 
     public void doReturn() {
-        for (BlockSpec temp = this; temp != null; ) {
+        for (AbstractBlockSpec temp = this; temp != null; ) {
             temp.returned = true;
             if (temp instanceof LoopBlockSpec) {
                 temp = ((LoopBlockSpec) temp).outerBlock;
@@ -133,12 +110,12 @@ public class BlockSpec implements LambdaPlaceable, MethodInvocationPlaceable {
 
     class StatementScanner extends SourceScanner {
 
-        BlockSpec statementLocatedBlock;
+        AbstractBlockSpec statementLocatedBlock;
 
         public StatementScanner() {
         }
 
-        public StatementScanner(BlockSpec statementLocatedBlock) {
+        public StatementScanner(AbstractBlockSpec statementLocatedBlock) {
             this.statementLocatedBlock = statementLocatedBlock;
         }
 

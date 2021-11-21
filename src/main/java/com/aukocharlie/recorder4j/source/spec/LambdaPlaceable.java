@@ -1,6 +1,6 @@
 package com.aukocharlie.recorder4j.source.spec;
 
-import com.aukocharlie.recorder4j.source.spec.block.BlockSpec;
+import com.aukocharlie.recorder4j.source.spec.block.AbstractBlockSpec;
 
 import java.util.List;
 
@@ -9,6 +9,6 @@ import java.util.List;
  */
 public interface LambdaPlaceable {
 
-    List<BlockSpec> getLambdaBlockList();
+    List<AbstractBlockSpec> getLambdaBlockList();
 
 }

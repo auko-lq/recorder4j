@@ -5,7 +5,7 @@ import com.aukocharlie.recorder4j.source.Position;
 import com.aukocharlie.recorder4j.source.SourcePosition;
 import com.aukocharlie.recorder4j.source.spec.CompilationUnitSpec;
 import com.aukocharlie.recorder4j.source.spec.MethodInvocationPosition;
-import com.aukocharlie.recorder4j.source.spec.block.BlockSpec;
+import com.aukocharlie.recorder4j.source.spec.block.AbstractBlockSpec;
 import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.MemberSelectTree;
 import com.sun.source.tree.MethodInvocationTree;
@@ -18,11 +18,11 @@ import java.util.NoSuchElementException;
 /**
  * @author auko
  */
-public class MethodInvocationExpressionSpec extends ExpressionSpec {
+public class MethodInvocationExpressionSpec extends AbstractExpressionSpec {
 
     MethodInvocationExpressionSpec nextMethodInvocationOnChain;
 
-    List<ExpressionSpec> expressionInArgs = new ArrayList<>();
+    List<AbstractExpressionSpec> expressionInArgs = new ArrayList<>();
 
     MethodInvocationPosition methodInvocationPosition;
 
@@ -30,13 +30,18 @@ public class MethodInvocationExpressionSpec extends ExpressionSpec {
 
 
     @Override
-    public List<BlockSpec> getLambdaBlockList() {
-        List<BlockSpec> lambdaBlocks = new ArrayList<>();
+    public List<AbstractBlockSpec> getLambdaBlockList() {
+        List<AbstractBlockSpec> lambdaBlocks = new ArrayList<>();
         expressionInArgs.forEach((expression) -> lambdaBlocks.addAll(expression.getLambdaBlockList()));
         if (nextMethodInvocationOnChain != null) {
             lambdaBlocks.addAll(nextMethodInvocationOnChain.getLambdaBlockList());
         }
         return lambdaBlocks;
+    }
+
+    @Override
+    protected void setExecutionOrder() {
+
     }
 
     @Override
@@ -50,6 +55,11 @@ public class MethodInvocationExpressionSpec extends ExpressionSpec {
             throw new NoSuchElementException("There isn't next method invocation on the chain: " + methodInvocationPosition);
         }
         return this.nextMethodInvocationOnChain;
+    }
+
+    @Override
+    public void reset() {
+
     }
 
     /**

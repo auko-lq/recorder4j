@@ -1,8 +1,9 @@
 package com.aukocharlie.recorder4j.source.spec.expression;
 
-import com.aukocharlie.recorder4j.source.UniqueMethod;
+import com.aukocharlie.recorder4j.source.MethodMetadata;
 import com.aukocharlie.recorder4j.source.spec.CompilationUnitSpec;
-import com.aukocharlie.recorder4j.source.spec.block.BlockSpec;
+import com.aukocharlie.recorder4j.source.spec.MethodInvocationPlaceableNode;
+import com.aukocharlie.recorder4j.source.spec.block.AbstractBlockSpec;
 import com.aukocharlie.recorder4j.source.spec.statement.ControlFlow;
 import com.sun.jdi.Value;
 import com.sun.source.tree.ConditionalExpressionTree;
@@ -14,11 +15,11 @@ import java.util.Map;
 /**
  * @author auko
  */
-public class ConditionExpressionSpec extends ExpressionSpec implements ControlFlow<Boolean> {
+public class ConditionExpressionSpec extends AbstractExpressionSpec implements ControlFlow<Boolean> {
 
-    ExpressionSpec condition;
-    ExpressionSpec trueExpression;
-    ExpressionSpec falseExpression;
+    AbstractExpressionSpec condition;
+    AbstractExpressionSpec trueExpression;
+    AbstractExpressionSpec falseExpression;
 
     public ConditionExpressionSpec(ConditionalExpressionTree node, CompilationUnitSpec compilationUnitSpec, String originalExpr) {
         super(originalExpr);
@@ -28,13 +29,18 @@ public class ConditionExpressionSpec extends ExpressionSpec implements ControlFl
     }
 
     @Override
-    public Boolean evaluateCondition(Map<UniqueMethod, Value> callResults) {
+    public Boolean evaluateCondition(Map<MethodMetadata, Value> callResults) {
         return null;
     }
 
     @Override
-    public List<BlockSpec> getLambdaBlockList() {
-        List<BlockSpec> lambdaList = new ArrayList<>();
+    public MethodInvocationPlaceableNode nextControlFlowNode() {
+        return null;
+    }
+
+    @Override
+    public List<AbstractBlockSpec> getLambdaBlockList() {
+        List<AbstractBlockSpec> lambdaList = new ArrayList<>();
         lambdaList.addAll(condition.getLambdaBlockList());
         lambdaList.addAll(trueExpression.getLambdaBlockList());
         lambdaList.addAll(falseExpression.getLambdaBlockList());
@@ -44,5 +50,15 @@ public class ConditionExpressionSpec extends ExpressionSpec implements ControlFl
     @Override
     public Expression nextExpression() {
         return null;
+    }
+
+    @Override
+    protected void setExecutionOrder() {
+
+    }
+
+    @Override
+    public void reset() {
+
     }
 }

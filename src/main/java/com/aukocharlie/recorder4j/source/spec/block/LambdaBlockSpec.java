@@ -15,8 +15,8 @@ public class LambdaBlockSpec extends MethodBlockSpec {
 
 
     @Override
-    public List<BlockSpec> getLambdaBlockList() {
-        List<BlockSpec> lambdaBlocks = super.getLambdaBlockList();
+    public List<AbstractBlockSpec> getLambdaBlockList() {
+        List<AbstractBlockSpec> lambdaBlocks = super.getLambdaBlockList();
         lambdaBlocks.forEach((blockSpec -> blockSpec.name = "null"));
         return lambdaBlocks;
     }

@@ -1,6 +1,6 @@
 package com.aukocharlie.recorder4j.source.spec.statement;
 
-import com.aukocharlie.recorder4j.source.spec.block.BlockSpec;
+import com.aukocharlie.recorder4j.source.spec.block.AbstractBlockSpec;
 import com.aukocharlie.recorder4j.source.spec.expression.Expression;
 import com.aukocharlie.recorder4j.source.spec.expression.MethodInvocationExpressionSpec;
 import com.sun.source.tree.Tree;
@@ -20,7 +20,7 @@ import java.util.NoSuchElementException;
  *
  * @author auko
  */
-public class UninitializedDeclarationStatementSpec implements Statement {
+public class UninitializedDeclarationStatementSpec extends AbstractStatementSpec implements Statement {
 
     Tree variableType;
 
@@ -34,7 +34,7 @@ public class UninitializedDeclarationStatementSpec implements Statement {
     }
 
     @Override
-    public List<BlockSpec> getLambdaBlockList() {
+    public List<AbstractBlockSpec> getLambdaBlockList() {
         return Collections.emptyList();
     }
 
@@ -46,5 +46,10 @@ public class UninitializedDeclarationStatementSpec implements Statement {
     @Override
     public MethodInvocationExpressionSpec nextMethodInvocation() {
         throw new NoSuchElementException("There isn't next method invocation");
+    }
+
+    @Override
+    public void reset() {
+
     }
 }

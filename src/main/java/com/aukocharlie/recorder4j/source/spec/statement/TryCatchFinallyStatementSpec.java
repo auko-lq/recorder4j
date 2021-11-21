@@ -2,7 +2,7 @@ package com.aukocharlie.recorder4j.source.spec.statement;
 
 import com.aukocharlie.recorder4j.exception.RecorderRuntimeException;
 import com.aukocharlie.recorder4j.source.spec.*;
-import com.aukocharlie.recorder4j.source.spec.block.BlockSpec;
+import com.aukocharlie.recorder4j.source.spec.block.AbstractBlockSpec;
 import com.aukocharlie.recorder4j.source.spec.expression.Expression;
 import com.aukocharlie.recorder4j.source.spec.expression.MethodInvocationExpressionSpec;
 import com.sun.source.tree.*;
@@ -12,12 +12,12 @@ import java.util.*;
 /**
  * @author auko
  */
-public class TryCatchFinallyStatementSpec implements Statement {
+public class TryCatchFinallyStatementSpec extends AbstractStatementSpec implements Statement {
 
-    BlockSpec resourceBlock;
-    BlockSpec tryBlock;
-    LinkedHashMap<UninitializedDeclarationStatementSpec, BlockSpec> catchBlocks;
-    BlockSpec finallyBlock;
+    AbstractBlockSpec resourceBlock;
+    AbstractBlockSpec tryBlock;
+    LinkedHashMap<UninitializedDeclarationStatementSpec, AbstractBlockSpec> catchBlocks;
+    AbstractBlockSpec finallyBlock;
 
     public TryCatchFinallyStatementSpec(TryTree node, CompilationUnitSpec compilationUnitSpec) {
         List<? extends Tree> resources = Optional.ofNullable(node.getResources()).orElse(Collections.emptyList());
@@ -28,16 +28,16 @@ public class TryCatchFinallyStatementSpec implements Statement {
             }
             resourceStatements.add((StatementTree) (resource));
         }
-        this.resourceBlock = new BlockSpec(resourceStatements, compilationUnitSpec);
-        this.tryBlock = new BlockSpec(node.getBlock(), compilationUnitSpec);
+        this.resourceBlock = new AbstractBlockSpec(resourceStatements, compilationUnitSpec);
+        this.tryBlock = new AbstractBlockSpec(node.getBlock(), compilationUnitSpec);
         if (!Objects.isNull(node.getCatches())) {
             this.catchBlocks = new LinkedHashMap<>();
             for (CatchTree catchItem : node.getCatches()) {
                 this.catchBlocks.put(new UninitializedDeclarationStatementSpec(catchItem.getParameter().getType()),
-                        new BlockSpec(catchItem.getBlock(), compilationUnitSpec));
+                        new AbstractBlockSpec(catchItem.getBlock(), compilationUnitSpec));
             }
         }
-        this.finallyBlock = new BlockSpec(node.getFinallyBlock(), compilationUnitSpec);
+        this.finallyBlock = new AbstractBlockSpec(node.getFinallyBlock(), compilationUnitSpec);
     }
 
     @Override
@@ -46,11 +46,11 @@ public class TryCatchFinallyStatementSpec implements Statement {
     }
 
     @Override
-    public List<BlockSpec> getLambdaBlockList() {
-        List<BlockSpec> lambdaList = new ArrayList<>();
+    public List<AbstractBlockSpec> getLambdaBlockList() {
+        List<AbstractBlockSpec> lambdaList = new ArrayList<>();
         lambdaList.addAll(resourceBlock.getLambdaBlockList());
         lambdaList.addAll(tryBlock.getLambdaBlockList());
-        catchBlocks.values().stream().distinct().map(BlockSpec::getLambdaBlockList).forEach(lambdaList::addAll);
+        catchBlocks.values().stream().distinct().map(AbstractBlockSpec::getLambdaBlockList).forEach(lambdaList::addAll);
         lambdaList.addAll(finallyBlock.getLambdaBlockList());
         return lambdaList;
     }
@@ -76,15 +76,11 @@ public class TryCatchFinallyStatementSpec implements Statement {
 
     @Override
     public MethodInvocationExpressionSpec nextMethodInvocation() {
-        if (resourceBlock.hasNextMethodInvocation()) {
-            return resourceBlock.nextMethodInvocation();
-        }
-        if (tryBlock.hasNextMethodInvocation()) {
-            return tryBlock.nextMethodInvocation();
-        }
-        if (finallyBlock.hasNextMethodInvocation()) {
-            return finallyBlock.nextMethodInvocation();
-        }
-        throw new NoSuchElementException("There isn't next method invocation");
+        return null;
+    }
+
+    @Override
+    public void reset() {
+
     }
 }
