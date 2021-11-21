@@ -18,7 +18,7 @@ public abstract class AbstractMethodInvocationIterator implements MethodInvocati
     protected abstract void setExecutionOrder();
 
     /**
-     * Check whether nodes has next invocation in order.
+     * Check whether nodes have next invocation in order.
      * <p>
      * Pay attention to idempotence.
      */
