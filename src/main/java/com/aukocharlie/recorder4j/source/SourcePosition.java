@@ -1,6 +1,5 @@
 package com.aukocharlie.recorder4j.source;
 
-import com.aukocharlie.recorder4j.exception.TooMuchFileContentException;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.LineMap;
 import com.sun.source.tree.Tree;

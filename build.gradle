@@ -30,6 +30,7 @@ compileTestJava {
 
 compileJava {
     doFirst {
+        // Export necessary package
         options.compilerArgs = [
                 '--add-exports', 'jdk.compiler/com.sun.tools.javac.api=recorder4j.main',
                 '--add-exports', 'jdk.compiler/com.sun.tools.javac.util=recorder4j.main',
@@ -40,6 +41,7 @@ compileJava {
     }
 }
 java {
+    // Solve: module 'lombok' not found.
     modularity.inferModulePath.set(true)
 }
 

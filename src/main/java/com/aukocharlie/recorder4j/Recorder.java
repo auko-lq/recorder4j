@@ -4,9 +4,9 @@ package com.aukocharlie.recorder4j;
 import com.aukocharlie.recorder4j.constant.CommonConstants;
 import com.aukocharlie.recorder4j.exception.BadLaunchingConnectorException;
 import com.aukocharlie.recorder4j.exception.InvalidRecorderArgumentException;
+import com.aukocharlie.recorder4j.launch.Context;
 import com.aukocharlie.recorder4j.launch.EventRegistrar;
 import com.aukocharlie.recorder4j.launch.Launcher;
-import com.aukocharlie.recorder4j.launch.Context;
 import com.aukocharlie.recorder4j.result.EventHandler;
 import com.aukocharlie.recorder4j.result.OutputManager;
 import com.aukocharlie.recorder4j.source.SourceManager;
@@ -17,8 +17,8 @@ import com.sun.jdi.connect.VMStartException;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
-import java.lang.reflect.*;
-import java.net.URL;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.regex.Pattern;
 
 /**

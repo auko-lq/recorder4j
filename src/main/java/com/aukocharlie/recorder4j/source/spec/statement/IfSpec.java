@@ -2,6 +2,7 @@ package com.aukocharlie.recorder4j.source.spec.statement;
 
 import com.aukocharlie.recorder4j.source.MethodMetadata;
 import com.aukocharlie.recorder4j.source.spec.CompilationUnitSpec;
+import com.aukocharlie.recorder4j.source.spec.MethodInvocationPlaceableNode;
 import com.aukocharlie.recorder4j.source.spec.expression.Expression;
 import com.aukocharlie.recorder4j.source.spec.expression.AbstractExpressionSpec;
 import com.aukocharlie.recorder4j.source.spec.block.AbstractBlockSpec;
@@ -34,6 +35,10 @@ public class IfSpec  extends AbstractStatementSpec implements ControlFlow<Boolea
         return null;
     }
 
+    public MethodInvocationPlaceableNode nextControlFlowNode() {
+        return null;
+    }
+
     @Override
     public Expression nextExpression() {
         return null;
@@ -46,6 +51,11 @@ public class IfSpec  extends AbstractStatementSpec implements ControlFlow<Boolea
         lambdaList.addAll(thenBlock.getLambdaBlockList());
         lambdaList.addAll(elseBlock.getLambdaBlockList());
         return lambdaList;
+    }
+
+    @Override
+    protected void setExecutionOrder() {
+
     }
 
     @Override
