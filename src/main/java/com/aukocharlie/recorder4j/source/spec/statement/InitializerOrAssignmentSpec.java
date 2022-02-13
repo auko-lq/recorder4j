@@ -37,6 +37,11 @@ public class InitializerOrAssignmentSpec extends AbstractStatementSpec implement
     }
 
     @Override
+    protected void setExecutionOrder() {
+
+    }
+
+    @Override
     public boolean hasNextMethodInvocation() {
         return valueExpr.hasNextMethodInvocation();
     }

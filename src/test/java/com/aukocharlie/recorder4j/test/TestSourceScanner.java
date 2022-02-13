@@ -1,12 +1,13 @@
-package com.aukocharlie.recorder4j.source;
+package com.aukocharlie.recorder4j.test;
 
 import com.aukocharlie.recorder4j.constant.CommonConstants;
+import com.aukocharlie.recorder4j.source.CompilationUnitScanner;
+import com.aukocharlie.recorder4j.source.SourceScanner;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.util.JavacTask;
 import com.sun.tools.javac.api.JavacTool;
 import com.sun.tools.javac.file.JavacFileManager;
 import com.sun.tools.javac.util.Context;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -14,7 +15,6 @@ import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.List;
 
 /**
  * @author auko

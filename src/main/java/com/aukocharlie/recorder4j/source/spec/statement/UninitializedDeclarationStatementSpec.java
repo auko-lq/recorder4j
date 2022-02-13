@@ -39,6 +39,11 @@ public class UninitializedDeclarationStatementSpec extends AbstractStatementSpec
     }
 
     @Override
+    protected void setExecutionOrder() {
+
+    }
+
+    @Override
     public boolean hasNextMethodInvocation() {
         return false;
     }

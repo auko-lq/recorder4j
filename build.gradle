@@ -10,7 +10,7 @@ repositories {
 }
 
 dependencies {
-    testImplementation group: 'junit', name: 'junit', version: '4.12'
+    implementation group: 'junit', name: 'junit', version: '4.13.2'
     implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.22'
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.22'
 }
@@ -25,7 +25,15 @@ jar {
 
 compileTestJava {
     // Show parameter names
-    options.compilerArgs << "-parameters"
+//    options.compilerArgs << "-parameters"
+    // Export necessary package
+    options.compilerArgs = [
+            '--add-exports', 'jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED',
+            '--add-exports', 'jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED',
+            '--add-exports', 'jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED',
+            '--add-exports', 'jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED',
+            '--add-exports', 'jdk.jdi/com.sun.tools.jdi=ALL-UNNAMED'
+    ]
 }
 
 compileJava {

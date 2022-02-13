@@ -31,6 +31,11 @@ public class ExpressionStatementSpec extends AbstractStatementSpec implements St
     }
 
     @Override
+    protected void setExecutionOrder() {
+
+    }
+
+    @Override
     public boolean hasNextMethodInvocation() {
         return expression.hasNextMethodInvocation();
     }

@@ -2,7 +2,7 @@ package com.aukocharlie.recorder4j.launch;
 
 import com.aukocharlie.recorder4j.exception.BadLaunchingConnectorException;
 import com.aukocharlie.recorder4j.exception.MissingLaunchingConnectorException;
-import com.aukocharlie.recorder4j.exception.UnsupportVMOperationException;
+import com.aukocharlie.recorder4j.exception.UnsupportedVMOperationException;
 import com.sun.jdi.Bootstrap;
 import com.sun.jdi.VirtualMachine;
 import com.sun.jdi.connect.Connector;
@@ -85,7 +85,7 @@ public class Launcher {
 
     private void doAssert(boolean condition, String message) {
         if (!condition) {
-            throw new UnsupportVMOperationException(message);
+            throw new UnsupportedVMOperationException(message);
         }
     }
 

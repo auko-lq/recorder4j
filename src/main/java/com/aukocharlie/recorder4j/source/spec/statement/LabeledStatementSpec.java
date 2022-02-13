@@ -66,6 +66,11 @@ public class LabeledStatementSpec extends AbstractStatementSpec implements State
     }
 
     @Override
+    protected void setExecutionOrder() {
+
+    }
+
+    @Override
     public boolean hasNextMethodInvocation() {
         return statement.hasNextMethodInvocation();
     }

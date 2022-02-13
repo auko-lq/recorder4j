@@ -36,10 +36,7 @@ public abstract class AbstractExpressionSpec extends AbstractMethodInvocationIte
 
         ExpressionScanner expressionScanner = new ExpressionScanner(node.toString());
         expressionScanner.scan(node, compilationUnitSpec);
-        if (expressionScanner.specificExpr != null) {
-            return expressionScanner.specificExpr;
-        }
-        return new BlankExpressionSpec(node.toString());
+        return Objects.requireNonNullElseGet(expressionScanner.specificExpr, () -> new BlankExpressionSpec(node.toString()));
     }
 
     static class ExpressionScanner extends SourceScanner {

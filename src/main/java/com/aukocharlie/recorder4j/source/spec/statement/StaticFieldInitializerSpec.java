@@ -36,6 +36,11 @@ public class StaticFieldInitializerSpec extends AbstractStatementSpec implements
     }
 
     @Override
+    protected void setExecutionOrder() {
+
+    }
+
+    @Override
     public boolean hasNextMethodInvocation() {
         return initializer.hasNextMethodInvocation();
     }

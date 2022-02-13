@@ -10,6 +10,10 @@ import java.util.List;
 public class ControlFlowConditionExpressionSpec extends AbstractExpressionSpec{
 
 
+    public ControlFlowConditionExpressionSpec(String expr) {
+        super(expr);
+    }
+
     @Override
     protected void setExecutionOrder() {
 

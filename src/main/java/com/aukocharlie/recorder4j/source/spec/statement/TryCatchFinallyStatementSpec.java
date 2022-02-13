@@ -1,6 +1,7 @@
 package com.aukocharlie.recorder4j.source.spec.statement;
 
 import com.aukocharlie.recorder4j.exception.RecorderRuntimeException;
+import com.aukocharlie.recorder4j.exception.UnsupportedStatementException;
 import com.aukocharlie.recorder4j.source.spec.*;
 import com.aukocharlie.recorder4j.source.spec.block.AbstractBlockSpec;
 import com.aukocharlie.recorder4j.source.spec.expression.Expression;
@@ -20,24 +21,25 @@ public class TryCatchFinallyStatementSpec extends AbstractStatementSpec implemen
     AbstractBlockSpec finallyBlock;
 
     public TryCatchFinallyStatementSpec(TryTree node, CompilationUnitSpec compilationUnitSpec) {
-        List<? extends Tree> resources = Optional.ofNullable(node.getResources()).orElse(Collections.emptyList());
-        List<StatementTree> resourceStatements = new ArrayList<>();
-        for (Tree resource : resources) {
-            if (!(resource instanceof StatementTree)) {
-                throw new RecorderRuntimeException("Illegal resource type: " + resource.getClass());
-            }
-            resourceStatements.add((StatementTree) (resource));
-        }
-        this.resourceBlock = new AbstractBlockSpec(resourceStatements, compilationUnitSpec);
-        this.tryBlock = new AbstractBlockSpec(node.getBlock(), compilationUnitSpec);
-        if (!Objects.isNull(node.getCatches())) {
-            this.catchBlocks = new LinkedHashMap<>();
-            for (CatchTree catchItem : node.getCatches()) {
-                this.catchBlocks.put(new UninitializedDeclarationStatementSpec(catchItem.getParameter().getType()),
-                        new AbstractBlockSpec(catchItem.getBlock(), compilationUnitSpec));
-            }
-        }
-        this.finallyBlock = new AbstractBlockSpec(node.getFinallyBlock(), compilationUnitSpec);
+        throw new UnsupportedStatementException("Try-catch statement is not supported now");
+//        List<? extends Tree> resources = Optional.ofNullable(node.getResources()).orElse(Collections.emptyList());
+//        List<StatementTree> resourceStatements = new ArrayList<>();
+//        for (Tree resource : resources) {
+//            if (!(resource instanceof StatementTree)) {
+//                throw new RecorderRuntimeException("Illegal resource type: " + resource.getClass());
+//            }
+//            resourceStatements.add((StatementTree) (resource));
+//        }
+//        this.resourceBlock = new AbstractBlockSpec(resourceStatements, compilationUnitSpec);
+//        this.tryBlock = new AbstractBlockSpec(node.getBlock(), compilationUnitSpec);
+//        if (!Objects.isNull(node.getCatches())) {
+//            this.catchBlocks = new LinkedHashMap<>();
+//            for (CatchTree catchItem : node.getCatches()) {
+//                this.catchBlocks.put(new UninitializedDeclarationStatementSpec(catchItem.getParameter().getType()),
+//                        new AbstractBlockSpec(catchItem.getBlock(), compilationUnitSpec));
+//            }
+//        }
+//        this.finallyBlock = new AbstractBlockSpec(node.getFinallyBlock(), compilationUnitSpec);
     }
 
     @Override
@@ -53,6 +55,11 @@ public class TryCatchFinallyStatementSpec extends AbstractStatementSpec implemen
         catchBlocks.values().stream().distinct().map(AbstractBlockSpec::getLambdaBlockList).forEach(lambdaList::addAll);
         lambdaList.addAll(finallyBlock.getLambdaBlockList());
         return lambdaList;
+    }
+
+    @Override
+    protected void setExecutionOrder() {
+
     }
 
     @Override

@@ -35,6 +35,11 @@ public class ReturnStatementSpec extends AbstractStatementSpec implements Statem
     }
 
     @Override
+    protected void setExecutionOrder() {
+
+    }
+
+    @Override
     public boolean hasNextMethodInvocation() {
         if (returnValueExpr.hasNextMethodInvocation()) {
             return true;

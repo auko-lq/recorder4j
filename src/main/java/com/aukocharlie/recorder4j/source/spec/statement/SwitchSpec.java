@@ -1,7 +1,9 @@
 package com.aukocharlie.recorder4j.source.spec.statement;
 
+import com.aukocharlie.recorder4j.exception.UnsupportedStatementException;
 import com.aukocharlie.recorder4j.source.MethodMetadata;
 import com.aukocharlie.recorder4j.source.spec.CompilationUnitSpec;
+import com.aukocharlie.recorder4j.source.spec.MethodInvocationPlaceableNode;
 import com.aukocharlie.recorder4j.source.spec.expression.Expression;
 import com.aukocharlie.recorder4j.source.spec.expression.AbstractExpressionSpec;
 import com.aukocharlie.recorder4j.source.spec.block.AbstractBlockSpec;
@@ -29,19 +31,25 @@ public class SwitchSpec extends AbstractStatementSpec implements ControlFlow<Int
     Map<AbstractExpressionSpec, AbstractBlockSpec> cases = new LinkedHashMap<>();
 
     public SwitchSpec(SwitchTree node, CompilationUnitSpec compilationUnitSpec) {
-        this.condition = AbstractExpressionSpec.toSpecificExpression(node.getExpression(), compilationUnitSpec);
-        List<? extends CaseTree> cases = node.getCases();
-        if (cases != null) {
-            for (CaseTree caseItem : cases) {
-                this.cases.put(
-                        AbstractExpressionSpec.toSpecificExpression(node.getExpression(), compilationUnitSpec),
-                        new AbstractBlockSpec(caseItem.getStatements(), compilationUnitSpec));
-            }
-        }
+        throw new UnsupportedStatementException("Switch statement is not supported now");
+//        this.condition = AbstractExpressionSpec.toSpecificExpression(node.getExpression(), compilationUnitSpec);
+//        List<? extends CaseTree> cases = node.getCases();
+//        if (cases != null) {
+//            for (CaseTree caseItem : cases) {
+//                this.cases.put(
+//                        AbstractExpressionSpec.toSpecificExpression(node.getExpression(), compilationUnitSpec),
+//                        new AbstractBlockSpec(caseItem.getStatements(), compilationUnitSpec));
+//            }
+//        }
     }
 
     @Override
     public Integer evaluateCondition(Map<MethodMetadata, Value> callResults) {
+        return null;
+    }
+
+    @Override
+    public MethodInvocationPlaceableNode nextControlFlowNode() {
         return null;
     }
 
@@ -56,6 +64,11 @@ public class SwitchSpec extends AbstractStatementSpec implements ControlFlow<Int
     @Override
     public Expression nextExpression() {
         return null;
+    }
+
+    @Override
+    protected void setExecutionOrder() {
+
     }
 
     @Override

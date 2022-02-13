@@ -1,5 +1,6 @@
 package com.aukocharlie.recorder4j.source.spec.statement;
 
+import com.aukocharlie.recorder4j.exception.UnsupportedStatementException;
 import com.aukocharlie.recorder4j.source.MethodMetadata;
 import com.aukocharlie.recorder4j.source.spec.CompilationUnitSpec;
 import com.aukocharlie.recorder4j.source.spec.MethodInvocationPlaceableNode;
@@ -24,10 +25,11 @@ public class IfSpec  extends AbstractStatementSpec implements ControlFlow<Boolea
     AbstractBlockSpec elseBlock;
 
     public IfSpec(IfTree node, CompilationUnitSpec compilationUnitSpec) {
-        this.condition = AbstractExpressionSpec.toSpecificExpression(node.getCondition(), compilationUnitSpec);
-        this.thenBlock = new AbstractBlockSpec(node.getThenStatement(), compilationUnitSpec);
-        // TODO：else if ？
-        this.elseBlock = new AbstractBlockSpec(node.getElseStatement(), compilationUnitSpec);
+        throw new UnsupportedStatementException("IF statement is not supported now");
+//        this.condition = AbstractExpressionSpec.toSpecificExpression(node.getCondition(), compilationUnitSpec);
+//        this.thenBlock = new AbstractBlockSpec(node.getThenStatement(), compilationUnitSpec);
+//        // TODO：else if ？
+//        this.elseBlock = new AbstractBlockSpec(node.getElseStatement(), compilationUnitSpec);
     }
 
     @Override
