@@ -4,6 +4,7 @@ import com.aukocharlie.recorder4j.constant.CommonConstants;
 import com.aukocharlie.recorder4j.constant.ThreadConstants;
 import com.aukocharlie.recorder4j.launch.Context;
 import com.aukocharlie.recorder4j.launch.EventRegistrar;
+import com.aukocharlie.recorder4j.source.MethodMetadata;
 import com.aukocharlie.recorder4j.source.SourcePosition;
 import com.aukocharlie.recorder4j.util.LambdaUtils;
 import com.sun.jdi.*;
@@ -81,12 +82,17 @@ public class ThreadTrace {
 
             if (MAIN_METHOD.equals(event.method().name())) {
                 sourcePosition = SourcePosition.unknownPosition(MAIN_METHOD);
-                sourcePosition.setSource(MAIN_METHOD);
             } else {
-//                System.out.println("callerFrame.location().declaringType().name(): " + callerFrame.location().declaringType().name());
-//                sourcePosition = context.getSourceManager().nextPosition(callerFrame.location().declaringType().name());
+                String methodName  = callerFrame.location().method().name();
+                if(methodName.equals("<init>")){
+                    methodName = callerFrame.location().declaringType().name();
+                    methodName = methodName.substring(methodName.lastIndexOf('.') + 1);
+                }
+                MethodMetadata methodMetadata = new MethodMetadata(callerFrame.location().declaringType().name(), methodName, callerFrame.location().method().argumentTypeNames());
+
+                sourcePosition = context.getSourceManager().nextMethodInvocationPosition(methodMetadata);
             }
-//            println("METHOD_ENTRY: line: %d  \"thread=%s\", %s, %s, %s", callerLocation.lineNumber(), event.thread().name(), event.method(), sourcePosition.getSource(), sourcePosition.toString());
+            println("METHOD_ENTRY: line: %d  \"thread=%s\", %s, %s, %s", callerLocation.lineNumber(), event.thread().name(), event.method(), sourcePosition.getSource(), sourcePosition.toString());
         } catch (IncompatibleThreadStateException e) {
             e.printStackTrace();
         }

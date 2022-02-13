@@ -10,6 +10,7 @@ import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.MemberSelectTree;
 import com.sun.source.tree.MethodInvocationTree;
 import com.sun.source.tree.NewClassTree;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,7 @@ public class MethodInvocationExpressionSpec extends AbstractExpressionSpec {
 
     List<AbstractExpressionSpec> expressionInArgs = new ArrayList<>();
 
+    @Getter
     MethodInvocationPosition methodInvocationPosition;
 
     CompilationUnitSpec compilationUnitSpec;

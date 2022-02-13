@@ -36,10 +36,9 @@ public class TestSourceScanner {
         String[] path = new String[]{CommonConstants.WORKING_DIR + "src\\test\\java\\com\\aukocharlie\\recorder4j\\ChainCase.java"};
         Iterable<? extends JavaFileObject> files = fileManager.getJavaFileObjects(path);
 
-        JavaCompiler.CompilationTask compilationTask = javacTool.getTask(null, fileManager, null, null, null, files);
-        JavacTask javacTask = (JavacTask) compilationTask;
+        JavacTask compilationTask = javacTool.getTask(null, fileManager, null, null, null, files);
         try {
-            Iterable<? extends CompilationUnitTree> result = javacTask.parse();
+            Iterable<? extends CompilationUnitTree> result = compilationTask.parse();
             for (CompilationUnitTree tree : result) {
                 CompilationUnitScanner scanner = new CompilationUnitScanner();
                 tree.accept(scanner, null);

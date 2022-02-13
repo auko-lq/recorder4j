@@ -1,11 +1,14 @@
 package com.aukocharlie.recorder4j.source;
 
+import lombok.Data;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author auko
  */
+@Data
 public class MethodMetadata {
 
     private final String className;

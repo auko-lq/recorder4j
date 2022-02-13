@@ -17,7 +17,7 @@ public class SourcePosition {
     public Position startPosition;
     public Position endPosition;
 
-    protected SourcePosition(Position startPosition, Position endPosition, String source) {
+    public SourcePosition(Position startPosition, Position endPosition, String source) {
         this.startPosition = startPosition;
         this.endPosition = endPosition;
         this.source = source;
