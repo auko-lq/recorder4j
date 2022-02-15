@@ -30,7 +30,12 @@ public abstract class AbstractMethodInvocationIterator implements MethodInvocati
             setOrder = true;
         }
         for (int i = currentNodeIndex; i < nodeInExecutionOrder.size(); i++) {
-            if (nodeInExecutionOrder.get(i).hasNextMethodInvocation()) {
+            MethodInvocationPlaceableNode node = nodeInExecutionOrder.get(i);
+            if (node == this && node instanceof MethodInvocationExpressionSpec) {
+                if (!((MethodInvocationExpressionSpec) node).isScanned()) {
+                    return true;
+                }
+            } else if (node.hasNextMethodInvocation()) {
                 return true;
             }
         }
@@ -44,10 +49,17 @@ public abstract class AbstractMethodInvocationIterator implements MethodInvocati
      */
     public MethodInvocationExpressionSpec nextMethodInvocation() {
         for (; currentNodeIndex < nodeInExecutionOrder.size(); currentNodeIndex++) {
-            if (nodeInExecutionOrder.get(currentNodeIndex).hasNextMethodInvocation()) {
-                return nodeInExecutionOrder.get(currentNodeIndex).nextMethodInvocation();
+            MethodInvocationPlaceableNode node = nodeInExecutionOrder.get(currentNodeIndex);
+            if (node == this && node instanceof MethodInvocationExpressionSpec) {
+                MethodInvocationExpressionSpec castedNode = (MethodInvocationExpressionSpec) node;
+                if (!castedNode.isScanned()) {
+                    castedNode.setScanned(true);
+                    return castedNode;
+                }
+            } else if (node.hasNextMethodInvocation()) {
+                return node.nextMethodInvocation();
             } else {
-                nodeInExecutionOrder.get(currentNodeIndex).reset();
+                node.reset();
             }
         }
         throw new NoSuchElementException("There isn't next method invocation");

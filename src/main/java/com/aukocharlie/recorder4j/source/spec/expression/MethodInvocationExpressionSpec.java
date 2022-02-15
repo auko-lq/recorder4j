@@ -10,7 +10,9 @@ import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.MemberSelectTree;
 import com.sun.source.tree.MethodInvocationTree;
 import com.sun.source.tree.NewClassTree;
+import lombok.Data;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,9 +32,9 @@ public class MethodInvocationExpressionSpec extends AbstractExpressionSpec {
 
     CompilationUnitSpec compilationUnitSpec;
 
+    @Getter
+    @Setter
     private boolean scanned = false;
-
-    private int argsScanIndex = 0;
 
     @Override
     public List<AbstractBlockSpec> getLambdaBlockList() {
@@ -46,41 +48,10 @@ public class MethodInvocationExpressionSpec extends AbstractExpressionSpec {
 
     @Override
     protected void setExecutionOrder() {
-
-    }
-
-    @Override
-    public boolean hasNextMethodInvocation() {
-        for (; argsScanIndex < expressionInArgs.size(); argsScanIndex++) {
-            if (expressionInArgs.get(argsScanIndex).hasNextMethodInvocation()) {
-                return true;
-            }
-        }
-
-        if (!scanned) {
-            return true;
-        } else {
-            return this.nextMethodInvocationOnChain != null && this.nextMethodInvocationOnChain.hasNextMethodInvocation();
-        }
-    }
-
-    @Override
-    public MethodInvocationExpressionSpec nextMethodInvocation() {
-        if (!hasNextMethodInvocation()) {
-            throw new NoSuchElementException("There isn't next method invocation on the chain: " + methodInvocationPosition);
-        }
-
-        for (; argsScanIndex < expressionInArgs.size(); argsScanIndex++) {
-            if (expressionInArgs.get(argsScanIndex).hasNextMethodInvocation()) {
-                return expressionInArgs.get(argsScanIndex).nextMethodInvocation();
-            }
-        }
-
-        if (!scanned) {
-            scanned = true;
-            return this;
-        } else {
-            return this.nextMethodInvocationOnChain.nextMethodInvocation();
+        this.nodeInExecutionOrder.addAll(expressionInArgs);
+        this.nodeInExecutionOrder.add(this);
+        if (nextMethodInvocationOnChain != null) {
+            this.nodeInExecutionOrder.add(nextMethodInvocationOnChain);
         }
     }
 
