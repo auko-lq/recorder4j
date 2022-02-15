@@ -77,7 +77,9 @@ public abstract class AbstractBlockSpec extends AbstractMethodInvocationIterator
 
     @Override
     protected void setExecutionOrder() {
-        nodeInExecutionOrder.addAll(statements);
+        if (statements != null) {
+            nodeInExecutionOrder.addAll(statements);
+        }
     }
 
     protected StatementScanner getScanner() {

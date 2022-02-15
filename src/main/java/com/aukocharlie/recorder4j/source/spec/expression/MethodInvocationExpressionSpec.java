@@ -30,6 +30,9 @@ public class MethodInvocationExpressionSpec extends AbstractExpressionSpec {
 
     CompilationUnitSpec compilationUnitSpec;
 
+    private boolean scanned = false;
+
+    private int argsScanIndex = 0;
 
     @Override
     public List<AbstractBlockSpec> getLambdaBlockList() {
@@ -48,7 +51,17 @@ public class MethodInvocationExpressionSpec extends AbstractExpressionSpec {
 
     @Override
     public boolean hasNextMethodInvocation() {
-        return this.nextMethodInvocationOnChain != null;
+        for (; argsScanIndex < expressionInArgs.size(); argsScanIndex++) {
+            if (expressionInArgs.get(argsScanIndex).hasNextMethodInvocation()) {
+                return true;
+            }
+        }
+
+        if (!scanned) {
+            return true;
+        } else {
+            return this.nextMethodInvocationOnChain != null && this.nextMethodInvocationOnChain.hasNextMethodInvocation();
+        }
     }
 
     @Override
@@ -56,7 +69,19 @@ public class MethodInvocationExpressionSpec extends AbstractExpressionSpec {
         if (!hasNextMethodInvocation()) {
             throw new NoSuchElementException("There isn't next method invocation on the chain: " + methodInvocationPosition);
         }
-        return this.nextMethodInvocationOnChain;
+
+        for (; argsScanIndex < expressionInArgs.size(); argsScanIndex++) {
+            if (expressionInArgs.get(argsScanIndex).hasNextMethodInvocation()) {
+                return expressionInArgs.get(argsScanIndex).nextMethodInvocation();
+            }
+        }
+
+        if (!scanned) {
+            scanned = true;
+            return this;
+        } else {
+            return this.nextMethodInvocationOnChain.nextMethodInvocation();
+        }
     }
 
     @Override

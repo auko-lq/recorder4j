@@ -17,12 +17,18 @@ public abstract class AbstractMethodInvocationIterator implements MethodInvocati
 
     protected abstract void setExecutionOrder();
 
+    private boolean setOrder = false;
+
     /**
      * Check whether nodes have next invocation in order.
      * <p>
      * Pay attention to idempotence.
      */
     public boolean hasNextMethodInvocation() {
+        if (!setOrder) {
+            setExecutionOrder();
+            setOrder = true;
+        }
         for (int i = currentNodeIndex; i < nodeInExecutionOrder.size(); i++) {
             if (nodeInExecutionOrder.get(i).hasNextMethodInvocation()) {
                 return true;
