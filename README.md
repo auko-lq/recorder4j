@@ -97,12 +97,12 @@ METHOD_EXIT: "thread=main", return=<void value>
 ```
 
 ## TODO
-[x] method chaining
-[] Lambda function
-[] condition expression
-[] if/else statement
-[] loop statement
-[] try/catch statement
-[] exception
-[] multi thread
-[] refactor, use javaParser
+- [x] method chaining
+- [ ] Lambda function
+- [ ] condition expression
+- [ ] if/else statement
+- [ ] loop statement
+- [ ] try/catch statement
+- [ ] exception
+- [ ] multi thread
+- [ ] refactor, use javaParser
