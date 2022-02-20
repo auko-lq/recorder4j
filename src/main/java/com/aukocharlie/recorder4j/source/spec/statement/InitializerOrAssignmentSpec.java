@@ -18,7 +18,6 @@ public class InitializerOrAssignmentSpec extends AbstractStatementSpec implement
     AbstractExpressionSpec valueExpr;
 
     public InitializerOrAssignmentSpec(VariableTree node, CompilationUnitSpec compilationUnitSpec) {
-        System.out.println("[debug] " + node);
         this.valueExpr = AbstractExpressionSpec.toSpecificExpression(node.getInitializer(), compilationUnitSpec);
     }
 
@@ -38,17 +37,7 @@ public class InitializerOrAssignmentSpec extends AbstractStatementSpec implement
 
     @Override
     protected void setExecutionOrder() {
-
-    }
-
-    @Override
-    public boolean hasNextMethodInvocation() {
-        return valueExpr.hasNextMethodInvocation();
-    }
-
-    @Override
-    public MethodInvocationExpressionSpec nextMethodInvocation() {
-        return valueExpr.nextMethodInvocation();
+        this.nodeInExecutionOrder.add(valueExpr);
     }
 
     @Override
