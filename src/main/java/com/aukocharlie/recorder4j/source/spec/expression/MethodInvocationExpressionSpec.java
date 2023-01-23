@@ -89,7 +89,7 @@ public class MethodInvocationExpressionSpec extends AbstractExpressionSpec {
      * @param wholeChainNode In the example, node is <em>test.one().another()</em>
      * @return the first method invocation on the chain. In the example, it is <em>test.one()</em>
      */
-    static MethodInvocationExpressionSpec getFirstMethodInvocationOnChain(ExpressionTree wholeChainNode, CompilationUnitSpec compilationUnitSpec, String originalExpr) {
+    public static MethodInvocationExpressionSpec getFirstMethodInvocationOnChain(ExpressionTree wholeChainNode, CompilationUnitSpec compilationUnitSpec, String originalExpr) {
         return generateMethodInvocationChain(wholeChainNode, compilationUnitSpec, null, originalExpr);
     }
 
@@ -126,17 +126,17 @@ public class MethodInvocationExpressionSpec extends AbstractExpressionSpec {
      * example: chainCase.chain("1").chain("2") -> chain("2")
      */
     private void adjustSrcAndPosition(MethodInvocationExpressionSpec preMethodInvocation) {
-        char[] sourceCodeChars = this.compilationUnitSpec.sourceCode.toCharArray();
+        char[] sourceCodeChars = this.compilationUnitSpec.getSourceCode().toCharArray();
         SourcePosition preSourcePosition = preMethodInvocation.methodInvocationPosition;
         for (int i = preSourcePosition.endPosition.getPosition(); i < sourceCodeChars.length; i++) {
             if (sourceCodeChars[i] == '.') {
                 Position newStartPosition = new Position(
-                        compilationUnitSpec.lineMap.getLineNumber(i + 1),
-                        compilationUnitSpec.lineMap.getColumnNumber(i + 1),
+                        compilationUnitSpec.getLineMap().getLineNumber(i + 1),
+                        compilationUnitSpec.getLineMap().getColumnNumber(i + 1),
                         i + 1);
                 this.methodInvocationPosition.startPosition = newStartPosition;
                 this.methodInvocationPosition.source = compilationUnitSpec
-                        .sourceCode.substring(newStartPosition.getPosition(), this.methodInvocationPosition.endPosition.getPosition());
+                        .getSourceCode().substring(newStartPosition.getPosition(), this.methodInvocationPosition.endPosition.getPosition());
                 break;
             }
         }

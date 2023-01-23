@@ -1,7 +1,8 @@
 package com.aukocharlie.recorder4j.source.spec.block;
 
+import com.aukocharlie.recorder4j.source.scanner.MethodStatementScanner;
+import com.aukocharlie.recorder4j.source.scanner.StatementScanner;
 import com.aukocharlie.recorder4j.source.spec.CompilationUnitSpec;
-import com.aukocharlie.recorder4j.source.spec.expression.MethodInvocationExpressionSpec;
 import com.sun.source.tree.*;
 
 /**
@@ -17,13 +18,4 @@ public class MethodBlockSpec extends AbstractBlockSpec {
     protected StatementScanner getScanner() {
         return new MethodStatementScanner(this);
     }
-
-    class MethodStatementScanner extends StatementScanner {
-
-        public MethodStatementScanner(MethodBlockSpec methodBlockSpec) {
-            super(methodBlockSpec);
-        }
-
-    }
-
 }

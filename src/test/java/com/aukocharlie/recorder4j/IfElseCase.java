@@ -17,8 +17,10 @@ public class IfElseCase {
         String temp = test("local");
         if (condition()) {
             test(1);
-        } else {
+        } else if(!condition()){
             test(0);
+        }else{
+            test(3);
         }
     }
 

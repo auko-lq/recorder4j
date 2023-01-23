@@ -3,6 +3,7 @@ package com.aukocharlie.recorder4j.source.spec;
 import com.aukocharlie.recorder4j.exception.RecorderRuntimeException;
 import com.aukocharlie.recorder4j.source.SourcePosition;
 import com.aukocharlie.recorder4j.source.SourceScanner;
+import com.aukocharlie.recorder4j.source.scanner.ClassScanner;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseResult;
 import com.github.javaparser.ast.CompilationUnit;
@@ -21,11 +22,11 @@ import java.util.Map;
 @Data
 public class CompilationUnitSpec {
 
-    public CompilationUnitTree compilationUnitTree;
-    public String sourceCode;
-    public LineMap lineMap;
-    public String packageName;
-    public JavaParser javaParser;
+    private CompilationUnitTree compilationUnitTree;
+    private String sourceCode;
+    private LineMap lineMap;
+    private String packageName;
+    private JavaParser javaParser;
     private ParseResult<CompilationUnit> parseResult;
 
     /**
@@ -34,9 +35,9 @@ public class CompilationUnitSpec {
      * key: CompilationUnitSpec
      * value: com.aukocharlie.recorder4j.source.spec.CompilationUnitSpec
      */
-    public Map<String, String> classNameToImportMap;
+    private Map<String, String> classNameToImportMap;
 
-    Map<String, ClassSpec> nameToClassMap = new HashMap<>();
+    private Map<String, ClassSpec> nameToClassMap = new HashMap<>();
 
     public CompilationUnitSpec(CompilationUnitTree node, JavaParser javaParser) {
         compilationUnitTree = node;
@@ -58,23 +59,5 @@ public class CompilationUnitSpec {
 
     public SourcePosition getSourcePosition(Tree node) {
         return SourcePosition.getSourcePosition(compilationUnitTree, node, lineMap);
-    }
-
-    class ClassScanner extends SourceScanner {
-
-        @Override
-        public Void visitCompilationUnit(CompilationUnitTree node, CompilationUnitSpec c) {
-            return super.visitCompilationUnit(node, c);
-        }
-
-        @Override
-        public Void visitClass(ClassTree node, CompilationUnitSpec c) {
-            String classFullName = (packageName != null && packageName.length() > 0)
-                    ? packageName + "." + node.getSimpleName()
-                    : node.getSimpleName().toString();
-            ClassSpec classSpec = new ClassSpec(node, classFullName, c);
-            nameToClassMap.put(classFullName, classSpec);
-            return null;
-        }
     }
 }
