@@ -83,8 +83,8 @@ public class ThreadTrace {
             if (MAIN_METHOD.equals(event.method().name())) {
                 sourcePosition = SourcePosition.unknownPosition(MAIN_METHOD);
             } else {
-                String methodName  = callerFrame.location().method().name();
-                if(methodName.equals("<init>")){
+                String methodName = callerFrame.location().method().name();
+                if (methodName.equals("<init>")) {
                     methodName = callerFrame.location().declaringType().name();
                     methodName = methodName.substring(methodName.lastIndexOf('.') + 1);
                 }
@@ -92,7 +92,7 @@ public class ThreadTrace {
 
                 sourcePosition = context.getSourceManager().nextMethodInvocationPosition(methodMetadata);
             }
-            println("METHOD_ENTRY: line: %d  \"thread=%s\", %s, %s, %s", callerLocation.lineNumber(), event.thread().name(), event.method(), sourcePosition.getSource(), sourcePosition.toString());
+            println("METHOD_ENTRY: line: %d  \"thread=%s\", %s", callerLocation.lineNumber(), event.thread().name(), sourcePosition.toString());
         } catch (IncompatibleThreadStateException e) {
             e.printStackTrace();
         }
@@ -243,12 +243,28 @@ public class ThreadTrace {
 
     private String objValueToString(ObjectReferenceImpl value) {
         if (!objectValues.containsKey(value)) {
-            List<Field> fields = value.referenceType().visibleFields();
-            fields = fields.stream().filter((field -> !field.isStatic())).collect(Collectors.toList());
-            Map<Field, Value> fieldValueMap = value.getValues(fields);
+            List<Field> allFields = value.referenceType().visibleFields();
+            List<Field> nonStaticFields = new ArrayList<>(allFields.size());
+            List<Field> staticFields = new ArrayList<>(allFields.size());
+
+            for (Field field : allFields) {
+                if (field.isStatic()) {
+                    staticFields.add(field);
+                } else {
+                    nonStaticFields.add(field);
+                }
+            }
+
+            // Recording non-static field's value
+            Map<Field, Value> nonStaticFieldValueMap = value.getValues(nonStaticFields);
             FieldValuePairs fieldValuePairs = new FieldValuePairs();
-            fieldValuePairs.putAll(fieldValueMap);
+            fieldValuePairs.putAll(nonStaticFieldValueMap);
             objectValues.put(value, fieldValuePairs);
+
+            // Recording static field's value
+            Map<Field, Value> staticFieldValueMap = value.getValues(staticFields);
+            staticFieldValues.putAll(staticFieldValueMap);
+
             return fieldValuePairs.toString();
         } else {
             return objectValues.get(value).toString();

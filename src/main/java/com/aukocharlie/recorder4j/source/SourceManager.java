@@ -38,7 +38,7 @@ public class SourceManager {
     // Maven path is adopted by default
     private String srcRoot = CommonConstants.WORKING_DIR + "src/main/java";
 
-    private Map<String, ClassSpec> classNameToSpecMap = new HashMap<>();
+    private final Map<String, ClassSpec> classNameToSpecMap = new HashMap<>();
 
     public SourceManager() {
         init();
@@ -68,9 +68,9 @@ public class SourceManager {
 
     // TODO: parse source code
     public void parseSourceCodeByClassName(String className) {
-//        if (classNameMethodInvocationsMap.containsKey(className)) {
-//            return;
-//        }
+        if (classNameToSpecMap.containsKey(className)) {
+            return;
+        }
 
         System.out.println("Ready to parse source code: " + className);
         File srcFile = new File(srcRoot, convertClassNameToPath(className));
