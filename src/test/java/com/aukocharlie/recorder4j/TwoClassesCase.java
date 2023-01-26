@@ -11,8 +11,13 @@ public class TwoClassesCase {
 
     public static void main(String[] args) {
         TwoClassesCase twoClassesCase = new TwoClassesCase();
-        OneClass one = new OneClass();
-        OneClass two = new OneClass();
+
+        class InnerClass extends OneClass {
+
+        }
+
+        InnerClass one = new InnerClass();
+        InnerClass two = new InnerClass();
         AnotherClass another = new AnotherClass();
 
         System.out.println(twoClassesCase.test(0, one, two, another));

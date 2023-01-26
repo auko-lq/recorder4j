@@ -15,13 +15,13 @@ public class IfElseCase {
         System.out.println(condition() ? test("true") : test("false"));
 
         String temp = test("local");
-        if (condition()) {
+        if (condition())
             test(1);
-        } else if(!condition()){
+        else if (!condition()) {
             test(0);
-        }else{
+        } else
             test(3);
-        }
+
     }
 
     public static boolean condition() {

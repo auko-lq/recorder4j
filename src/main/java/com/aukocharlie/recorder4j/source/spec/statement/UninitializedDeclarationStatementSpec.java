@@ -20,7 +20,7 @@ import java.util.NoSuchElementException;
  *
  * @author auko
  */
-public class UninitializedDeclarationStatementSpec extends AbstractStatementSpec implements Statement {
+public class UninitializedDeclarationStatementSpec extends AbstractStatementSpec {
 
     Tree variableType;
 

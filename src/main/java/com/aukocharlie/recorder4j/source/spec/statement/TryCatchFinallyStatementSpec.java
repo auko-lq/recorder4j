@@ -13,7 +13,7 @@ import java.util.*;
 /**
  * @author auko
  */
-public class TryCatchFinallyStatementSpec extends AbstractStatementSpec implements Statement {
+public class TryCatchFinallyStatementSpec extends AbstractStatementSpec {
 
     AbstractBlockSpec resourceBlock;
     AbstractBlockSpec tryBlock;

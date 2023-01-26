@@ -1,7 +1,7 @@
 package com.aukocharlie.recorder4j.source.scanner;
 
 import com.aukocharlie.recorder4j.source.SourceScanner;
-import com.aukocharlie.recorder4j.source.spec.ClassSpec;
+import com.aukocharlie.recorder4j.source.spec.clazz.ClassSpec;
 import com.aukocharlie.recorder4j.source.spec.CompilationUnitSpec;
 import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.CompilationUnitTree;

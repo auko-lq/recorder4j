@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * @author auko
  */
-public class LabeledStatementSpec extends AbstractStatementSpec implements Statement {
+public class LabeledStatementSpec extends AbstractStatementSpec {
 
     LoopBlockSpec outerLoop;
     String labelName;

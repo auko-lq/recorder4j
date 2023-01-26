@@ -30,7 +30,7 @@ public class LambdaExpressionSpec extends AbstractExpressionSpec {
         if (lambdaBlock == null) {
             return new ArrayList<>();
         }
-        // First add lambda blocks in the lambda block, then add itself.
+        // Adding lambda blocks inside the lambda block firstly, then add itself.
         List<AbstractBlockSpec> innerLambdaBlocks = lambdaBlock.getLambdaBlockList();
         innerLambdaBlocks.add(this.lambdaBlock);
         return innerLambdaBlocks;

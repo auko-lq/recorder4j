@@ -10,45 +10,45 @@ import com.aukocharlie.recorder4j.source.spec.statement.loop.ForLoopSpec;
 import com.aukocharlie.recorder4j.source.spec.statement.loop.WhileLoopSpec;
 import com.sun.source.tree.*;
 
-public class LoopStatementScanner extends StatementScanner {
+public class LoopBlockScanner extends BlockScanner {
 
-    public LoopStatementScanner(LoopBlockSpec statementLocatedBlock) {
+    public LoopBlockScanner(LoopBlockSpec statementLocatedBlock) {
         super(statementLocatedBlock);
     }
 
     @Override
     public Void visitDoWhileLoop(DoWhileLoopTree node, CompilationUnitSpec compilationUnitSpec) {
-        statements.add(new DoWhileLoopSpec(node, compilationUnitSpec, (LoopBlockSpec) statementLocatedBlock, null));
+        blockStatements.add(new DoWhileLoopSpec(node, compilationUnitSpec, (LoopBlockSpec) statementLocatedBlock, null));
         return null;
     }
 
     @Override
     public Void visitWhileLoop(WhileLoopTree node, CompilationUnitSpec compilationUnitSpec) {
-        statements.add(new WhileLoopSpec(node, compilationUnitSpec, (LoopBlockSpec) statementLocatedBlock, null));
+        blockStatements.add(new WhileLoopSpec(node, compilationUnitSpec, (LoopBlockSpec) statementLocatedBlock, null));
         return null;
     }
 
     @Override
     public Void visitForLoop(ForLoopTree node, CompilationUnitSpec compilationUnitSpec) {
-        statements.add(new ForLoopSpec(node, compilationUnitSpec, (LoopBlockSpec) statementLocatedBlock, null));
+        blockStatements.add(new ForLoopSpec(node, compilationUnitSpec, (LoopBlockSpec) statementLocatedBlock, null));
         return null;
     }
 
     @Override
     public Void visitLabeledStatement(LabeledStatementTree node, CompilationUnitSpec compilationUnitSpec) {
-        statements.add(new LabeledStatementSpec(node, compilationUnitSpec, (LoopBlockSpec) statementLocatedBlock));
+        blockStatements.add(new LabeledStatementSpec(node, compilationUnitSpec, (LoopBlockSpec) statementLocatedBlock));
         return null;
     }
 
     @Override
     public Void visitBreak(BreakTree node, CompilationUnitSpec compilationUnitSpec) {
-        statements.add(new BreakStatementSpec(node, (LoopBlockSpec) statementLocatedBlock));
+        blockStatements.add(new BreakStatementSpec(node, (LoopBlockSpec) statementLocatedBlock));
         return null;
     }
 
     @Override
     public Void visitContinue(ContinueTree node, CompilationUnitSpec compilationUnitSpec) {
-        statements.add(new ContinueStatementSpec(node, (LoopBlockSpec) statementLocatedBlock));
+        blockStatements.add(new ContinueStatementSpec(node, (LoopBlockSpec) statementLocatedBlock));
         return null;
     }
 }

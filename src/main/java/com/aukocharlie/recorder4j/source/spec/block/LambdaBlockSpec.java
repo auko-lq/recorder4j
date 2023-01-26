@@ -13,7 +13,6 @@ public class LambdaBlockSpec extends MethodBlockSpec {
         super(node, compilationUnitSpec, null);
     }
 
-
     @Override
     public List<AbstractBlockSpec> getLambdaBlockList() {
         List<AbstractBlockSpec> lambdaBlocks = super.getLambdaBlockList();

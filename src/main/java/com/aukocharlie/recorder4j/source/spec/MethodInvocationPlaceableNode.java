@@ -12,7 +12,7 @@ import java.util.NoSuchElementException;
 public interface MethodInvocationPlaceableNode {
 
     /**
-     * Check whether nodes has next invocation in order.
+     * Check whether node has next invocation in order.
      * <p>
      * Pay attention to idempotence.
      */

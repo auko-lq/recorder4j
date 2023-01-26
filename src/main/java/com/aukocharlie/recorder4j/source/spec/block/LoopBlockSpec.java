@@ -1,14 +1,8 @@
 package com.aukocharlie.recorder4j.source.spec.block;
 
-import com.aukocharlie.recorder4j.source.scanner.LoopStatementScanner;
-import com.aukocharlie.recorder4j.source.scanner.StatementScanner;
+import com.aukocharlie.recorder4j.source.scanner.LoopBlockScanner;
+import com.aukocharlie.recorder4j.source.scanner.BlockScanner;
 import com.aukocharlie.recorder4j.source.spec.CompilationUnitSpec;
-import com.aukocharlie.recorder4j.source.spec.statement.BreakStatementSpec;
-import com.aukocharlie.recorder4j.source.spec.statement.ContinueStatementSpec;
-import com.aukocharlie.recorder4j.source.spec.statement.LabeledStatementSpec;
-import com.aukocharlie.recorder4j.source.spec.statement.loop.DoWhileLoopSpec;
-import com.aukocharlie.recorder4j.source.spec.statement.loop.ForLoopSpec;
-import com.aukocharlie.recorder4j.source.spec.statement.loop.WhileLoopSpec;
 import com.sun.source.tree.*;
 
 /**
@@ -62,7 +56,7 @@ public class LoopBlockSpec extends AbstractBlockSpec {
     }
 
     @Override
-    protected StatementScanner getScanner() {
-        return new LoopStatementScanner(this);
+    protected BlockScanner getScanner() {
+        return new LoopBlockScanner(this);
     }
 }

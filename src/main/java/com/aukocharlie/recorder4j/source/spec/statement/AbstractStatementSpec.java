@@ -5,7 +5,7 @@ import com.aukocharlie.recorder4j.source.spec.AbstractMethodInvocationIterator;
 /**
  * @author auko
  */
-public abstract class AbstractStatementSpec extends AbstractMethodInvocationIterator {
+public abstract class AbstractStatementSpec extends AbstractMethodInvocationIterator implements Statement {
 
 
 }

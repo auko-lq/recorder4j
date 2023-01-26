@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * @author auko
  */
-public class ExpressionStatementSpec extends AbstractStatementSpec implements Statement {
+public class ExpressionStatementSpec extends AbstractStatementSpec {
 
     AbstractExpressionSpec expression;
 

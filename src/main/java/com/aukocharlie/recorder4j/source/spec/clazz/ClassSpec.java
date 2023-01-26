@@ -1,8 +1,11 @@
-package com.aukocharlie.recorder4j.source.spec;
+package com.aukocharlie.recorder4j.source.spec.clazz;
 
 import com.aukocharlie.recorder4j.source.MethodMetadata;
 import com.aukocharlie.recorder4j.source.scanner.MembersScanner;
+import com.aukocharlie.recorder4j.source.spec.CompilationUnitSpec;
 import com.aukocharlie.recorder4j.source.spec.block.AbstractBlockSpec;
+import com.aukocharlie.recorder4j.source.spec.block.BlockStatement;
+import com.aukocharlie.recorder4j.source.spec.expression.MethodInvocationExpressionSpec;
 import com.aukocharlie.recorder4j.source.spec.statement.StaticInitializer;
 import com.sun.source.tree.ClassTree;
 import lombok.Getter;
@@ -12,7 +15,7 @@ import java.util.*;
 /**
  * @author auko
  */
-public class ClassSpec {
+public class ClassSpec implements BlockStatement {
 
     @Getter
     private final List<StaticInitializer> staticInitializers;
@@ -37,5 +40,29 @@ public class ClassSpec {
         this.staticInitializers = scanner.getStaticInitializers();
         this.lambdaBlocks = scanner.getLambdaBlocks();
         this.methodBlocks = scanner.getMethodBlocks();
+    }
+
+    // TODO
+    @Override
+    public List<AbstractBlockSpec> getLambdaBlockList() {
+        return null;
+    }
+
+    // TODO
+    @Override
+    public boolean hasNextMethodInvocation() {
+        return false;
+    }
+
+    // TODO
+    @Override
+    public MethodInvocationExpressionSpec nextMethodInvocation() {
+        return null;
+    }
+
+    // TODO
+    @Override
+    public void reset() {
+
     }
 }

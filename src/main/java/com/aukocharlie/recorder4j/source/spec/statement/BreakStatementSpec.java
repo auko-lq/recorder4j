@@ -13,7 +13,7 @@ import java.util.NoSuchElementException;
 /**
  * @author auko
  */
-public class BreakStatementSpec extends AbstractStatementSpec implements Statement {
+public class BreakStatementSpec extends AbstractStatementSpec {
 
     private final LoopBlockSpec nodeLocatedLoop;
 

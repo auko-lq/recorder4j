@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ *
+ *
  * @author auko
  */
 public class IfSpec  extends AbstractStatementSpec implements ControlFlow<Boolean> {
@@ -30,6 +32,9 @@ public class IfSpec  extends AbstractStatementSpec implements ControlFlow<Boolea
 //        this.thenBlock = new AbstractBlockSpec(node.getThenStatement(), compilationUnitSpec);
 //        // TODO：else if ？
 //        this.elseBlock = new AbstractBlockSpec(node.getElseStatement(), compilationUnitSpec);
+        class Test{
+
+        }
     }
 
     @Override

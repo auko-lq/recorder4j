@@ -2,6 +2,7 @@ package com.aukocharlie.recorder4j.source.spec.statement;
 
 import com.aukocharlie.recorder4j.source.spec.CompilationUnitSpec;
 import com.aukocharlie.recorder4j.source.spec.block.AbstractBlockSpec;
+import com.aukocharlie.recorder4j.source.spec.expression.Expression;
 import com.aukocharlie.recorder4j.source.spec.expression.MethodInvocationExpressionSpec;
 import com.sun.source.tree.VariableTree;
 
@@ -53,5 +54,11 @@ public class StaticFieldInitializerSpec extends AbstractStatementSpec implements
     @Override
     public void reset() {
 
+    }
+
+    @Override
+    public Expression nextExpression() {
+        // TODO: return?
+        return null;
     }
 }

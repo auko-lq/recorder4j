@@ -1,7 +1,8 @@
 package com.aukocharlie.recorder4j.source.spec.block;
 
-import com.aukocharlie.recorder4j.source.scanner.StatementScanner;
+import com.aukocharlie.recorder4j.source.scanner.BlockScanner;
 import com.aukocharlie.recorder4j.source.spec.*;
+import com.aukocharlie.recorder4j.source.spec.expression.Expression;
 import com.aukocharlie.recorder4j.source.spec.statement.*;
 import com.sun.source.tree.*;
 
@@ -11,17 +12,17 @@ import java.util.List;
 /**
  * @author auko
  */
-public abstract class AbstractBlockSpec extends AbstractMethodInvocationIterator implements LambdaPlaceable {
+public abstract class AbstractBlockSpec extends AbstractMethodInvocationIterator implements Statement {
 
     /**
      * There are three cases for the value:
-     * <p>1. When the block is located in static, then the value is <em>static</em>.
+     * <p>1. When the block is located in static, the value is <em>static</em>.
      * <p>2. When the block is located in a method block, the value is the method name.
      * <p>3. When the block is located in a lambda block, the value is <em>null</em>.
      */
     public String name;
 
-    List<Statement> statements = new ArrayList<>();
+    List<BlockStatement> blockStatements = new ArrayList<>();
     int currentStatementIndex = 0;
 
     boolean returned = false;
@@ -32,36 +33,24 @@ public abstract class AbstractBlockSpec extends AbstractMethodInvocationIterator
             return;
         }
 
-        StatementScanner scanner = getScanner();
+        BlockScanner scanner = getScanner();
         if (node instanceof BlockTree) {
             scanner.scan(((BlockTree) node).getStatements(), compilationUnitSpec);
         } else {
             // While statement is not a block, treat it as a block with only one statement
             scanner.scan(node, compilationUnitSpec);
         }
-        statements = scanner.getStatements();
+        blockStatements = scanner.getBlockStatements();
     }
 
     public AbstractBlockSpec(StatementTree node, CompilationUnitSpec compilationUnitSpec) {
         this(node, compilationUnitSpec, null);
     }
 
-    public AbstractBlockSpec(List<? extends StatementTree> nodes, CompilationUnitSpec compilationUnitSpec, String name) {
-        this.name = name;
-        if (nodes == null) {
-            return;
-        }
-        getScanner().scan(nodes, compilationUnitSpec);
-    }
-
-    public AbstractBlockSpec(List<? extends StatementTree> nodes, CompilationUnitSpec compilationUnitSpec) {
-        this(nodes, compilationUnitSpec, null);
-    }
-
     @Override
     public List<AbstractBlockSpec> getLambdaBlockList() {
         List<AbstractBlockSpec> lambdaList = new ArrayList<>();
-        for (Statement statement : statements) {
+        for (BlockStatement statement : blockStatements) {
             for (AbstractBlockSpec blockSpec : statement.getLambdaBlockList()) {
                 if (blockSpec.name == null) {
                     // Usually just set the method name to the name of the outermost lambda block in the method block.
@@ -75,13 +64,19 @@ public abstract class AbstractBlockSpec extends AbstractMethodInvocationIterator
 
     @Override
     protected void setExecutionOrder() {
-        if (statements != null) {
-            nodeInExecutionOrder.addAll(statements);
+        if (blockStatements != null) {
+            nodeInExecutionOrder.addAll(blockStatements);
         }
     }
 
-    protected StatementScanner getScanner() {
-        return new StatementScanner();
+    @Override
+    public Expression nextExpression() {
+        //TODO: return?
+        return null;
+    }
+
+    protected BlockScanner getScanner() {
+        return new BlockScanner();
     }
 
     /**
@@ -94,7 +89,7 @@ public abstract class AbstractBlockSpec extends AbstractMethodInvocationIterator
     }
 
     protected boolean blockReturned() {
-        return this.returned || this.currentStatementIndex == this.statements.size();
+        return this.returned || this.currentStatementIndex == this.blockStatements.size();
     }
 
     public void doReturn() {

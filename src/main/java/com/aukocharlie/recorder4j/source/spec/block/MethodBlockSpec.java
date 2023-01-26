@@ -1,7 +1,7 @@
 package com.aukocharlie.recorder4j.source.spec.block;
 
-import com.aukocharlie.recorder4j.source.scanner.MethodStatementScanner;
-import com.aukocharlie.recorder4j.source.scanner.StatementScanner;
+import com.aukocharlie.recorder4j.source.scanner.MethodBlockScanner;
+import com.aukocharlie.recorder4j.source.scanner.BlockScanner;
 import com.aukocharlie.recorder4j.source.spec.CompilationUnitSpec;
 import com.sun.source.tree.*;
 
@@ -15,7 +15,7 @@ public class MethodBlockSpec extends AbstractBlockSpec {
     }
 
     @Override
-    protected StatementScanner getScanner() {
-        return new MethodStatementScanner(this);
+    protected BlockScanner getScanner() {
+        return new MethodBlockScanner(this);
     }
 }

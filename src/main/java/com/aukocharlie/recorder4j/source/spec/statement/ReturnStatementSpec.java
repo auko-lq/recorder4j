@@ -13,7 +13,7 @@ import java.util.NoSuchElementException;
 /**
  * @author auko
  */
-public class ReturnStatementSpec extends AbstractStatementSpec implements Statement {
+public class ReturnStatementSpec extends AbstractStatementSpec {
 
     private final AbstractExpressionSpec returnValueExpr;
 

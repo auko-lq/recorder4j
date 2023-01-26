@@ -2,7 +2,7 @@ package com.aukocharlie.recorder4j.source;
 
 import com.aukocharlie.recorder4j.constant.CommonConstants;
 import com.aukocharlie.recorder4j.exception.RecorderRuntimeException;
-import com.aukocharlie.recorder4j.source.spec.ClassSpec;
+import com.aukocharlie.recorder4j.source.spec.clazz.ClassSpec;
 import com.aukocharlie.recorder4j.source.spec.block.AbstractBlockSpec;
 import com.aukocharlie.recorder4j.util.TypeSolverUtils;
 import com.github.javaparser.JavaParser;

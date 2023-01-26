@@ -2,8 +2,8 @@ package com.aukocharlie.recorder4j.source.spec;
 
 import com.aukocharlie.recorder4j.exception.RecorderRuntimeException;
 import com.aukocharlie.recorder4j.source.SourcePosition;
-import com.aukocharlie.recorder4j.source.SourceScanner;
 import com.aukocharlie.recorder4j.source.scanner.ClassScanner;
+import com.aukocharlie.recorder4j.source.spec.clazz.ClassSpec;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseResult;
 import com.github.javaparser.ast.CompilationUnit;
